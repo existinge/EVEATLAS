@@ -1,0 +1,12 @@
+.obsidian/workspace*
+.obsidian/cache
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+private/
+secrets/
+*.key
+*.pem
+.DS_Store
