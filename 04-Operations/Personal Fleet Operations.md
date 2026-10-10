@@ -10,7 +10,7 @@ Build an operational AI workforce to reduce manual supervision across business b
 4. **Fleet Operations** — provider and job health, queued work, budget visibility, human approvals and exceptional incidents.
 
 ## Immediate first operational automation
-`tools/website_watch.py` and `.github/workflows/website-watch.yml` provide read-only HTTPS health checking and GitHub incident creation on failure. This is a limited real automation, not autonomous website repair. The scheduled workflow runs only after it reaches the repository default branch and GitHub Actions are enabled. It is not running merely because a PR contains the file.
+`tools/website_watch.py` and `.github/workflows/website-watch.yml` provide read-only HTTPS health checking and GitHub Actions failure status and archived run receipt. This is a limited real automation, not autonomous website repair. The scheduled workflow runs only after it reaches the repository default branch and GitHub Actions are enabled. It is not running merely because a PR contains the file.
 
 ## Implementation gates
 - No always-on dependency on the operator's personal PC.
@@ -26,7 +26,7 @@ Build an operational AI workforce to reduce manual supervision across business b
 Active objectives, latest healthy check, credit/grant opportunities awaiting review, jobs waiting for Codex, approvals needed, weekly API usage, and blocked reasons.
 
 ## First 2 measurable milestones
-- Website check scheduled in cloud, failure produces a durable issue and a receipt, healthy run does not create an issue.
+- Website check scheduled in cloud, failure marks the workflow failed and produces a receipt, healthy run does not create an issue.
 - Credits scout generates a verified weekly opportunity brief with official eligibility citations, original dates and application-ready drafts, without applying automatically.
 
 ## Next integration
