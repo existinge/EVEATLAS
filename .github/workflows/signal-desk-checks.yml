@@ -1,0 +1,31 @@
+name: Signal Desk checks
+on:
+  push:
+    paths:
+      - 'tools/signal_desk.py'
+      - 'tests/test_signal_desk.py'
+      - 'examples/signal-desk-candidates.json'
+      - '.github/workflows/signal-desk-checks.yml'
+  pull_request:
+    paths:
+      - 'tools/signal_desk.py'
+      - 'tests/test_signal_desk.py'
+      - 'examples/signal-desk-candidates.json'
+      - '.github/workflows/signal-desk-checks.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Audit vault
+        run: python tools/atlas.py audit
+      - name: Offline smoke test
+        run: python tools/signal_desk.py examples/signal-desk-candidates.json
