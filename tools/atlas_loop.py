@@ -10,6 +10,8 @@ import subprocess
 import sys
 import time
 import uuid
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import atlas_treasurer as treasurer
 
 DEFAULT_DB = Path(__file__).resolve().parents[1] / "private" / "atlas-loop.sqlite3"
 TERMINAL = {"COMPLETE", "BLOCKED", "CANCELLED", "FAILED"}
@@ -41,6 +43,7 @@ def connect(path=DEFAULT_DB):
     CREATE TABLE IF NOT EXISTS reviews(run_id TEXT PRIMARY KEY, verdict TEXT NOT NULL,
       reviewer TEXT NOT NULL, evidence TEXT NOT NULL, timestamp TEXT NOT NULL);
     """)
+    treasurer.ensure_schema(db)
     return db
 
 def log(db, run, task, kind, data):
@@ -73,7 +76,7 @@ def validate_plan(tasks):
 
 def create_run(db, objective, tasks, budget=2.0):
     validate_plan(tasks)
-    if budget < 0: raise ValueError("negative budget")
+    treasurer.cents(budget)  # refuse invalid or negative limits
     rid = "run-" + uuid.uuid4().hex[:12]
     with db:
         db.execute("INSERT INTO runs(id,objective,status,budget,created) VALUES(?,?,?,?,?)",
@@ -147,7 +150,7 @@ def tick(db,rid,workspace=".",allow_commands=False):
                 db.execute("UPDATE tasks SET state='BLOCKED',updated=? WHERE id=?",(now(),task["id"]))
                 log(db,rid,task["id"],"blocked",{"reason":"retry cap"})
             continue
-        if run["spent"] >= run["budget"] and task["worker"]!="local":
+        if treasurer.snapshot(db,rid)["available_cents"] <= 0 and task["worker"]!="local":
             with db:
                 db.execute("UPDATE runs SET status='BLOCKED' WHERE id=?",(rid,))
                 log(db,rid,task["id"],"blocked",{"reason":"budget"})
@@ -198,7 +201,7 @@ def status(db,rid):
     run=db.execute("SELECT * FROM runs WHERE id=?",(rid,)).fetchone()
     if not run: raise ValueError("unknown run")
     tasks=[dict(t) for t in db.execute("SELECT * FROM tasks WHERE run_id=?",(rid,))]
-    return {"run":dict(run),"tasks":tasks,
+    return {"run":dict(run),"tasks":tasks,"treasurer":treasurer.advise(db,rid),
             "review":next((dict(r) for r in db.execute("SELECT * FROM reviews WHERE run_id=?",(rid,))),None)}
 
 def main():
@@ -212,6 +215,11 @@ def main():
     a=sub.add_parser("review");a.add_argument("run");a.add_argument("verdict",choices=["approved","changes_required","blocked"]);a.add_argument("--evidence",required=True)
     a=sub.add_parser("approve");a.add_argument("approval")
     a=sub.add_parser("deny");a.add_argument("approval")
+    a=sub.add_parser("budget");a.add_argument("run")
+    a=sub.add_parser("reserve");a.add_argument("run");a.add_argument("task");a.add_argument("provider");a.add_argument("model");a.add_argument("maximum_cost");a.add_argument("--id")
+    a=sub.add_parser("settle");a.add_argument("reservation");a.add_argument("actual_cost");a.add_argument("--source",choices=["provider_reported","invoice_verified","gateway_metered"],required=True)
+    a=sub.add_parser("uncertain");a.add_argument("reservation");a.add_argument("reason")
+    a=sub.add_parser("release");a.add_argument("reservation");a.add_argument("reason")
     args=p.parse_args()
     db=connect(args.db)
     try:
@@ -220,6 +228,13 @@ def main():
             out={"run_id":create_run(db,d["objective"],d["tasks"],args.budget)}
         elif args.action=="tick": out={"status":tick(db,args.run,args.workspace,args.allow_commands)}
         elif args.action=="status":out=status(db,args.run)
+        elif args.action=="budget":out=treasurer.advise(db,args.run)
+        elif args.action=="reserve":out={"reservation_id":treasurer.reserve(db,args.run,args.task,args.provider,args.model,args.maximum_cost,args.id)}
+        elif args.action=="settle":out=treasurer.reconcile(db,args.reservation,args.actual_cost,args.source)
+        elif args.action=="uncertain":
+            treasurer.mark_uncertain(db,args.reservation,args.reason);out={"reservation":args.reservation,"status":"uncertain"}
+        elif args.action=="release":
+            treasurer.release(db,args.reservation,args.reason);out={"reservation":args.reservation,"status":"released"}
         elif args.action=="review":out={"status":final_review(db,args.run,args.verdict,args.evidence)}
         elif args.action in {"pause","resume","cancel"}:
             with db:
