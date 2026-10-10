@@ -46,3 +46,6 @@ One objective. Shared state. Specialized and replaceable workers. Measured spend
 
 ## EveClaw executive / mediator handoff
 Read `02-Agents/EveClaw Executive Mediation.md` for the canonical ownership boundary. EveClaw is GPT executive reasoning; OpenClaw mediates sessions, scoped dispatch and receipts; ATLAS alone owns authoritative task/dependency/review state. Treasurer is deterministic. Do not equate an OpenClaw session completion with ATLAS acceptance, or assume three IDE windows are connected workers.
+
+## Connection truth versus model configuration
+A model change (e.g. GPT-6 Sol -> Luna) is not ATLAS onboarding. On every EveClaw bootstrap, report model selection and ATLAS connectivity independently, using the connection contract in `02-Agents/EveClaw Executive Mediation.md`. Only an authenticated authoritative runtime request and verified receipt may establish a live mediator handshake. Repo access alone means documentation access, not task-state or dispatch capability.
