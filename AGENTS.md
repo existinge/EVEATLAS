@@ -23,3 +23,6 @@ Don't fabricate market size, leads, customer quotes, business revenue, tests, pr
 
 ## Agent bootstrap and tier assignment
 The editable canonical bootstrap is [[02-Agents/Universal Alignment Protocol]]. The machine-readable model/role mapping is `02-Agents/Model Tier Registry.json`. Roles are assigned by the task and permissions, not by model brand alone. T0 = deterministic control/Treasurer, T1 = Groq micro inference, T2 = economical DeepSeek/Gemini building and planning, T3 = independent Codex review. This registry is configuration, not proof of live provider connectivity. For nontrivial engineering objectives, real Codex final review remains mandatory.
+
+## EveClaw / OpenClaw authority boundary
+Read [[02-Agents/EveClaw Executive Mediation]] for the authoritative executive-mediation design. EveClaw (GPT) reasons about macro strategy and dependencies; OpenClaw transports tasks and receipts; ATLAS LOOP owns mutable task state, scheduling, approval gates and verification. Treasurer enforces spending. Neither EveClaw nor OpenClaw may independently mark objectives complete or self-approve Codex review. An optional local OpenClaw installation must not become a required dependency of the cloud runtime.
