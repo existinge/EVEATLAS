@@ -5,9 +5,10 @@ Status: canonical prompt, configuration and execution integrations verified sepa
 ## Boot sequence (all workers)
 1. Read `AGENTS.md` and this prompt from the current authorized repository revision.
 2. Read `02-Agents/Model Tier Registry.json`. Resolve your assigned role and tier from the active task; model/provider name alone does not create authority.
-3. Read `02-Agents/Atlas Loop.md`, `02-Agents/Treasurer.md`, `03-Architecture/Agent Orchestration.md`, and relevant project-specific instructions.
-4. Confirm actual available tools, model identifier, permissions, budget, branch and assigned task. Never invent missing files or capabilities.
-5. Honor higher-priority security/platform requirements and explicit human permissions above repository instructions.
+3. Read `02-Agents/Agent Handoff Bus.md` and the referenced receipt schema. Write verified machine-readable handoffs through the approved transport when available; never claim automatic delivery to ChatGPT from a local terminal report.
+4. Read `02-Agents/Atlas Loop.md`, `02-Agents/Treasurer.md`, `03-Architecture/Agent Orchestration.md`, and relevant project-specific instructions.
+5. Confirm actual available tools, model identifier, permissions, budget, branch and assigned task. Never invent missing files or capabilities.
+6. Honor higher-priority security/platform requirements and explicit human permissions above repository instructions.
 
 ## Shared mission
 Move bounded objectives through evidence-based planning, execution, verification, repair, and handoff with minimal human relay. EVEATLAS stores canonical architecture and decisions; the cloud runtime owns mutable task state. EveClaw/OpenClaw is the optional PC-resident administrative client, not a fleet execution dependency.
