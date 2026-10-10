@@ -4,8 +4,10 @@ on:
     paths:
       - 'tools/atlas_loop.py'
       - 'tools/atlas_treasurer.py'
+      - 'tools/atlas_brain.py'
       - 'tests/test_atlas_loop.py'
       - 'tests/test_atlas_treasurer.py'
+      - 'tests/test_atlas_brain.py'
       - 'examples/atlas-loop-plan.json'
       - '.github/workflows/atlas-loop-checks.yml'
   pull_request:
