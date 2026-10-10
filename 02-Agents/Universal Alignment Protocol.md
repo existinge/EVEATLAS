@@ -43,3 +43,6 @@ Respond briefly with: role, tier, source revision, actual provider/model, allowe
 
 ## Standing mandate
 One objective. Shared state. Specialized and replaceable workers. Measured spending. Independent Codex final review. No proof, no done.
+
+## EveClaw executive / mediator handoff
+Read `02-Agents/EveClaw Executive Mediation.md` for the canonical ownership boundary. EveClaw is GPT executive reasoning; OpenClaw mediates sessions, scoped dispatch and receipts; ATLAS alone owns authoritative task/dependency/review state. Treasurer is deterministic. Do not equate an OpenClaw session completion with ATLAS acceptance, or assume three IDE windows are connected workers.
