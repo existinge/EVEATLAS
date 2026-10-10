@@ -1,0 +1,14 @@
+[
+  {
+    "claim": "Grok Bot's official account announced X search, reading and monitoring",
+    "source_url": "https://x.com/bot/status/2107949161878606089",
+    "published_date": "2026-10-08",
+    "source_type": "official_announcement",
+    "evidence": "Reported announcement in the supplied article; original source not independently opened in this example.",
+    "decision": "blocked_until_checked",
+    "status": "needs_review",
+    "practical_use": "Evaluate an X research adapter if access and costs are confirmed.",
+    "caveat": "A sample record is not evidence of a working integration or exhaustive X coverage.",
+    "recommendation": "watch"
+  }
+]
