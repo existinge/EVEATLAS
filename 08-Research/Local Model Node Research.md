@@ -80,8 +80,16 @@ Single run each, 4K ctx, 200 generated tokens, temperature 0, via `tools/local_m
 | `granite4.2:8b` (5.3 GB) | 17.9 | 137.8 | 1.1 | pass | 0.0 |
 | `gemma4:latest` (9.6 GB) | 26.7 | 123.3 | 16.5 | pass | +3.3 |
 
-Reading (INFERENCE, n=1): `lfm2.5:8b` is ~2.8x faster than `gemma4` and fits with no swap growth, but failed the JSON smoke test; the failure cause is undetermined (model vs. the test's `format=json` handling vs. thinking tokens) and must be investigated before it is trusted for tool calls. `granite4.2:8b` is slower than `gemma4` here but reliable on JSON and light on memory. `gemma4` is the strongest all-rounder installed but is the only one that pushed the machine into swap.
+Reading (INFERENCE, n=1): `lfm2.5:8b` is ~2.8x faster than `gemma4` and fits with no swap growth, but failed the JSON smoke test; the failure cause is undetermined (see diagnosis below). `granite4.2:8b` is slower than `gemma4` here but reliable on JSON and light on memory. `gemma4` is the strongest all-rounder installed but is the only one that pushed the machine into swap.
 
 **System warning:** after the runs, swap was 9.5 of 10.0 GB used (encrypted, ~0.75 GB free). Memory pressure from other applications — not these models — is the dominant constraint; fix it (quit apps / restart) before drawing conclusions or running a resident model.
 
 Not yet done: decision-model tests (`laya`, `tev1`), GGUF vs MLX comparison, JSON-failure diagnosis for `lfm2.5`.
+
+### `lfm2.5:8b` diagnosis (MEASURED, n=5 prompts; same day)
+- The earlier "JSON FAIL" was a **test artifact**: with `format=json` the model returned valid JSON but invented its own schema (`weather`/`params`) instead of the one in the prompt — an instruction-following miss on an ad-hoc schema, not a broken output format.
+- **Native tool calling (Ollama `tools` API): 5/5 correct** (right tool, right argument; correctly made no call for a plain arithmetic question), ~70–77 tok/s sustained, identical with `think` true/false.
+- **Caveat — reasoning:** the model emits a `<think>` block before answering; `think:false` did not change token counts or suppress it on this Ollama build (0.33.2). Budget `num_predict` generously (a 120-token cap returned empty content because thinking consumed it). Reasoning inflates latency per answer even at 75 tok/s.
+- **Not yet evaluated:** answer/code quality (my 300-token probe was consumed by the thinking preamble), long-context behaviour, multi-turn agent loops. Speed + tool-call correctness alone do not make it a good worker.
+- Benchmark tool updated: the schema-strict JSON check was replaced with a native tool-call check (`tool_ok`).
+- Status: model left installed (5.2 GB) for further evaluation.
