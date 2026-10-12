@@ -93,3 +93,25 @@ Not yet done: decision-model tests (`laya`, `tev1`), GGUF vs MLX comparison, JSO
 - **Not yet evaluated:** answer/code quality (my 300-token probe was consumed by the thinking preamble), long-context behaviour, multi-turn agent loops. Speed + tool-call correctness alone do not make it a good worker.
 - Benchmark tool updated: the schema-strict JSON check was replaced with a native tool-call check (`tool_ok`).
 - Status: model left installed (5.2 GB) for further evaluation.
+
+## Decision-model (decider) tests — 2026-10-12 (MEASURED, tiny smoke set; `tools/decider_eval.py`)
+**Discovery:** Ollama ≥0.35/0.40 exposes `POST /v1/systemone`, explicitly "follows TypeSafe's Jev API" (state + up to 64 typed questions: `choice` / `noul` (true-false probability) / `score` (rubric)). Eve Lab's JEV worker (`typesafe-ai/jev`, see `provider_registry.yaml`) uses the same concept via the Vercel AI Gateway, so a local decider is a plausible drop-in *at the interface level*. Not yet verified against Eve Lab's actual wrapper (`src/jev/gateway.ts` maps the gateway evaluation-model protocol, not `/v1/systemone`) — an adapter would be required.
+Setup: the installed Ollama app (0.33.2) is too old; the official 0.40.3 binary runs as a **sidecar** on port 11435 (`~/.localllm/ollama-0.40.3`), sharing the model store. The installed app was not modified.
+
+Test: 12 job-application emails (5-way `choice` + `needs_reply` true/false, no criteria text) and 4 agent-step policy gates (go/no-go). Author-written labels; very small n; question wording not tuned.
+
+| Model | Size | Classify | Needs reply | Gate | Median latency | License |
+|---|---|---|---|---|---|---|
+| `laya` (ModernBERT-large, 421M) | 0.85 GB | 10/12 | 5/12 | 2/4 | **63 ms** | Apache 2.0 |
+| `tev1:0.8b` | 0.8 GB | 9/12 | 7/12 | 3/4 | 134 ms | dataset/training scripts MIT |
+| `tev1:4b` | 4.4 GB | **12/12** | **11/12** | 3/4 | 794 ms | see model page |
+
+Observations (INFERENCE from n=16):
+- Output is probabilities with **zero generated tokens**; `tev1:4b` was far more confident/discriminating (e.g. 0.997 on a clear interview request vs laya 0.54).
+- `laya` is fastest but weakest on my *custom* labels; it is fine-tuned on email triage/safety/intent/fact-check and has a **512-token context** — long emails must be truncated. Its `needs_reply` result (5/12) is no better than chance here, partly because my question had no criteria.
+- All three misjudged "read the local tracker and summarize" as unsafe (p≈0.1–0.3): gates are conservative — acceptable direction for an approval gate, but it shows decider outputs must be validated before they gate anything. Deterministic policy code remains authoritative ([[00-Atlas/Home]], approval gates in [[AGENTS]]).
+- Calibration and agreement with real JEV outputs are **unmeasured**. ECE figures on model pages are vendor-reported.
+
+Other open decision models on the Ollama library (not tested): `nimble:9b` (Bespoke Labs, Qwen3.5-9B base, Apache 2.0, 9.3 GB, needs Ollama ≥0.35), `clef-flash:9b` (Cloudflare, multimodal, 11 GB, Apache 2.0) and the larger `clef` — all too heavy to keep resident alongside a worker on 16 GB. Liquid AI `d1-3B` / `d1-omni-600M` were reported by web search but were not seen in the Ollama library and are unverified.
+
+Proposed pattern (needs ADR + approval): worker model (`gemma4` or `lfm2.5:8b`) does generation; a resident decider (`tev1:4b`, or `tev1:0.8b`/`laya` where latency matters) does typed routing/classification/gating; strong cloud reviewer remains the final critic. Treasurer logs decider calls as \$0 API cost with latency.
