@@ -3,7 +3,7 @@
   "name": "mac-local-node",
   "role": "Cheap local worker + typed decider. Never the executive brain, never a self-reviewer. Final review stays with a GPT/Codex-class model.",
   "requirements": {"os": "macOS arm64 (Apple Silicon)", "ram_gb": 16, "free_disk_gb": 8, "python": ">=3.9 (stdlib only)"},
-  "server": {"host": "127.0.0.1", "port": 11435},
+  "server": {"host": "0.0.0.0", "port": 11435},
   "ollama": {
     "min_version": "0.40.0",
     "pinned": "0.40.3",
@@ -15,7 +15,8 @@
     "OLLAMA_NUM_PARALLEL": "1",
     "OLLAMA_FLASH_ATTENTION": "1",
     "OLLAMA_KV_CACHE_TYPE": "q8_0",
-    "OLLAMA_KEEP_ALIVE": "-1"
+    "OLLAMA_KEEP_ALIVE": "-1",
+    "OLLAMA_ORIGINS": "*"
   },
   "worker": {
     "model": "lfm2.5:8b",
@@ -56,6 +57,6 @@
     "No secrets, tokens or private data in this folder or in prompts logged to Git.",
     "Local output is a draft or a hypothesis until independently reviewed.",
     "Do not replace deterministic validation or approval gates with decider output.",
-    "Server binds to 127.0.0.1 only."
+    "Server binds to LAN (0.0.0.0) for authorized node-to-node communication; keep on private trusted LAN."
   ]
 }

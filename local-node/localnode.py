@@ -14,14 +14,19 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 CFG = json.loads((HERE / "node.json").read_text())
-HOST, PORT = CFG["server"]["host"], int(os.environ.get("LOCALNODE_PORT", CFG["server"]["port"]))
-BASE = f"http://{HOST}:{PORT}"
+BIND_HOST = os.environ.get("LOCALNODE_HOST", CFG["server"]["host"])
+PORT = int(os.environ.get("LOCALNODE_PORT", CFG["server"]["port"]))
+BASE = f"http://127.0.0.1:{PORT}"
 STATE = Path.home() / ".localnode"
 WORKER, DECIDER = CFG["worker"]["model"], CFG["decider"]["model"]
 
 
 def sh(cmd):
     return subprocess.run(cmd, shell=True, capture_output=True, text=True).stdout
+
+
+def lan_ip():
+    return sh("ipconfig getifaddr en0 2>/dev/null || ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{print $2}' | head -1").strip() or "127.0.0.1"
 
 
 def api(path, body=None, timeout=600):
@@ -99,7 +104,7 @@ def start():
         binary = find_binary()
         if not binary:
             sys.exit("No Ollama >= %s found. Run ./setup.sh first." % CFG["ollama"]["min_version"])
-        env = {**os.environ, **CFG["env"], "OLLAMA_HOST": f"{HOST}:{PORT}"}
+        env = {**os.environ, **CFG["env"], "OLLAMA_HOST": f"{BIND_HOST}:{PORT}"}
         p = subprocess.Popen([binary, "serve"], env=env, stdout=open(STATE / "server.log", "a"),
                              stderr=subprocess.STDOUT, start_new_session=True)
         (STATE / "server.pid").write_text(str(p.pid))
@@ -121,7 +126,7 @@ def start():
             except OSError: pass
         p = subprocess.Popen(argv, stdout=open(STATE / f"{name}.log", "a"), stderr=subprocess.STDOUT, start_new_session=True)
         pf.write_text(str(p.pid))
-    print(f"ready: {BASE}  worker={WORKER} ({CFG['worker']['endpoint']})  decider={DECIDER} ({CFG['decider']['endpoint']})")
+    print(f"ready: local={BASE}  LAN=http://{lan_ip()}:{PORT}  worker={WORKER} ({CFG['worker']['endpoint']})  decider={DECIDER} ({CFG['decider']['endpoint']})")
     status()
 
 
@@ -144,7 +149,7 @@ def guard():
 
 def status():
     ok = up()
-    print(f"server: {'UP' if ok else 'DOWN'} {BASE} | loaded: {loaded() if ok else '-'} | free mem: {free_pct()}% | swap: {swap_gb():.2f}GB")
+    print(f"server: {'UP' if ok else 'DOWN'} (local {BASE} | LAN http://{lan_ip()}:{PORT}) | loaded: {loaded() if ok else '-'} | free mem: {free_pct()}% | swap: {swap_gb():.2f}GB")
 
 
 def ensure():
