@@ -32,10 +32,41 @@ Caveats: single short prompt, 4K ctx, cold load while swap was ~2.6→8.8 GB. Pr
 - **Treasurer integration:** local runs cost \$0 API but consume time/energy/thermal budget — log tok/s and load time per run alongside cloud spend; watchdog events (memory/swap/thermal unloads) are escalation signals.
 - **Re-check cadence:** review new releases monthly or when a candidate is claimed to fit ≤ ~10 GB; do not chase every release.
 
-## Watchlist (all UNVERIFIED here)
-Qwen 3.5 9B class (~5 GB Q4, reported strong for tool use); Gemma 4 E2B (smaller/faster fallback); a ≤12B MoE coder; MLX-served variants of the above via mlx-lm/LM Studio.
+## Watchlist
+Superseded by the 2026-10-12 availability survey below (that survey is based on the live Ollama library; speeds still UNMEASURED here).
 
 ## Runtime
 `~/.gemini/antigravity/scratch/local-llm-runtime/localllm.py` (Mac-local utility, not a source of truth): Ollama tuning, keep-awake, memory/swap/thermal watchdog. Not yet started on this Mac as of this note.
 
 Related: [[03-Architecture/Source of Truth]], [[04-Operations/Model Cost and Cache Policy]], [[02-Agents/Skills/cost-aware-routing]], [[04-Operations/Mac Antigravity Node Handoff]].
+
+## Availability survey — 2026-10-12 (source: ollama.com/library and per-model pages; sizes as listed, speeds NOT measured here)
+
+### Fits a 16 GB Mac (≤ ~9 GB)
+| Model | Size | Notes (from library description) |
+|---|---|---|
+| `lfm2.5:8b` | 5.2 GB | LFM2.5-8B-A1B, edge MoE (~1B active) "built for fast, reliable tool calling on consumer hardware" — top candidate for worker speed |
+| `granite4.2:8b` / `:3b` | 5.3 / 2.2 GB | IBM, Apache 2.0; tool use, thinking, structured JSON output, RAG |
+| `ornith-1.5:9b` | 6.6 GB | self-improvement-trained family; capability unverified |
+| `tev1:4b` / `:0.8b` | 4.5 / ~1 GB | **decision model** (fast typed classification) |
+| `laya` (421M / 322M multilingual, MLX fp16) | tiny | **decision model**, ModernBERT-large based, "typed-decisions" variant; MLX-only tags |
+| `nimble:9b` | 9.3 GB | 9B decision model; borderline on 16 GB |
+| `gemma4:latest` (installed) | 9.6 GB | measured 27.3 tok/s |
+
+### Does NOT fit 16 GB (all-experts-resident rule)
+`qwen3.8:27b` 18 GB; `muse-glimmer:30b` (Meta, 30B always-on agents) 18 GB; `north-mini-code-1.0` (Cohere, 30B-A3B coder) ~19 GB; `laguna-xs-2.1` (33B-A3B) ~20 GB q4; `nemotron-3.5-lightning:30b` (30B-A3B) 23 GB; `ornith-1.5:35b` 23 GB; `clef-flash:9b` 11 GB. These are the "frontier of local agents" in the library but need ≥ 32 GB. On this Mac they are for reference only.
+Note: the earlier "Qwen 3.6 27B" question maps to `qwen3.8:27b` (18 GB) in today's library; `qwen3.6` tags were not checked.
+`glm-5.3-flash` appears only as a `:cloud` tag — Ollama cloud models are remote (spend/privacy implications, not local).
+
+### Frontier techniques for a base 16 GB Apple Silicon machine (REPORTED, unverified here)
+- **Decision models** (new class): one forward pass, no generated tokens, calibrated probabilities. Matches Eve Lab's JEV pattern (typed judgments). Local `laya`/`tev1` could take high-volume classification/routing/triage off paid gateways at \$0 — HYPOTHESIS, needs a quality comparison against current JEV outputs before any routing change.
+- **MLX-format tags** now ship in Ollama (`:27b-mlx`, `laya` MLX-only); MLX decode reportedly 15–25% faster. Test `gemma4`/`lfm2.5` GGUF vs MLX with `tools/local_model_bench.py`.
+- **Native multi-token prediction** (MLX stack, e.g. MTPLX) reported 1.6–2.2x decode speedup; separate draft-model speculative decoding reportedly backfires on llama.cpp/Metal.
+- **KV-cache compression** (TurboQuant-style, 3–4 bit) reported 3–5x smaller KV; community MLX implementations only. Current cheap win already applied: `OLLAMA_KV_CACHE_TYPE=q8_0`.
+- **Neural Engine is not the LLM path**; stay on GPU/Metal.
+- **Harness QoL (REPORTED):** Pi agent (minimal prompt, live llama.cpp model switching), OpenCode (client/server daemon, router tiers fast/medium/heavy), Aider, Cline; all use an OpenAI-compatible endpoint, so the Mac node can serve them via `http://<mac>:11434/v1`. Tiered routing (small local for file reading/grep/classification → heavier/cloud only when needed) mirrors [[02-Agents/Skills/cost-aware-routing]].
+
+### Proposed next measurements (each needs a download; ask the human first)
+1. `lfm2.5:8b` and `granite4.2:8b` through `tools/local_model_bench.py` vs `gemma4` (speed + JSON smoke).
+2. `laya:421m-typed-decisions-mlx-fp16` and `tev1:4b` on a labelled sample of real JEV-style judgments; compare agreement with existing outputs.
+3. GGUF vs MLX tag of the same model.
