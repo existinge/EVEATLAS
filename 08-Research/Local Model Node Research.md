@@ -70,3 +70,18 @@ Note: the earlier "Qwen 3.6 27B" question maps to `qwen3.8:27b` (18 GB) in today
 1. `lfm2.5:8b` and `granite4.2:8b` through `tools/local_model_bench.py` vs `gemma4` (speed + JSON smoke).
 2. `laya:421m-typed-decisions-mlx-fp16` and `tev1:4b` on a labelled sample of real JEV-style judgments; compare agreement with existing outputs.
 3. GGUF vs MLX tag of the same model.
+
+## Benchmark results — 2026-10-12 (MEASURED on MacBook Air M4 16 GB; raw rows in `data/local_model_bench.jsonl`)
+Single run each, 4K ctx, 200 generated tokens, temperature 0, via `tools/local_model_bench.py`. Models were pulled, tested and removed (disk is tight).
+
+| Model | Decode tok/s | Prefill tok/s | Load s | JSON smoke | Swap Δ GB |
+|---|---|---|---|---|---|
+| `lfm2.5:8b` (5.2 GB) | **75.4** | 96.9 | 1.4 | **FAIL** | 0.0 |
+| `granite4.2:8b` (5.3 GB) | 17.9 | 137.8 | 1.1 | pass | 0.0 |
+| `gemma4:latest` (9.6 GB) | 26.7 | 123.3 | 16.5 | pass | +3.3 |
+
+Reading (INFERENCE, n=1): `lfm2.5:8b` is ~2.8x faster than `gemma4` and fits with no swap growth, but failed the JSON smoke test; the failure cause is undetermined (model vs. the test's `format=json` handling vs. thinking tokens) and must be investigated before it is trusted for tool calls. `granite4.2:8b` is slower than `gemma4` here but reliable on JSON and light on memory. `gemma4` is the strongest all-rounder installed but is the only one that pushed the machine into swap.
+
+**System warning:** after the runs, swap was 9.5 of 10.0 GB used (encrypted, ~0.75 GB free). Memory pressure from other applications — not these models — is the dominant constraint; fix it (quit apps / restart) before drawing conclusions or running a resident model.
+
+Not yet done: decision-model tests (`laya`, `tev1`), GGUF vs MLX comparison, JSON-failure diagnosis for `lfm2.5`.
