@@ -1,0 +1,61 @@
+{
+  "schema": "atlas.local-node/1",
+  "name": "mac-local-node",
+  "role": "Cheap local worker + typed decider. Never the executive brain, never a self-reviewer. Final review stays with a GPT/Codex-class model.",
+  "requirements": {"os": "macOS arm64 (Apple Silicon)", "ram_gb": 16, "free_disk_gb": 8, "python": ">=3.9 (stdlib only)"},
+  "server": {"host": "127.0.0.1", "port": 11435},
+  "ollama": {
+    "min_version": "0.40.0",
+    "pinned": "0.40.3",
+    "download": "https://github.com/ollama/ollama/releases/download/v0.40.3/ollama-darwin.tgz",
+    "note": "Run as a sidecar on its own port so an older installed Ollama app is never modified."
+  },
+  "env": {
+    "OLLAMA_MAX_LOADED_MODELS": "2",
+    "OLLAMA_NUM_PARALLEL": "1",
+    "OLLAMA_FLASH_ATTENTION": "1",
+    "OLLAMA_KV_CACHE_TYPE": "q8_0",
+    "OLLAMA_KEEP_ALIVE": "-1"
+  },
+  "worker": {
+    "model": "lfm2.5:8b",
+    "approx_gb": 5.2,
+    "ctx": 8192,
+    "endpoint": "/v1/chat/completions",
+    "native_tools": true,
+    "min_num_predict": 1500,
+    "notes": "Always emits a <think> block (think:false did not suppress it on Ollama 0.33/0.40 as tested). Budget >=1500 output tokens or content comes back empty. Quality is NOT yet evaluated; speed and tool-call correctness only."
+  },
+  "decider": {
+    "model": "tev1:0.8b",
+    "approx_gb": 0.8,
+    "endpoint": "/v1/systemone",
+    "question_types": ["choice", "noul", "score"],
+    "limits": {"max_questions": 64, "options": "2-24 recommended (26 max)"},
+    "notes": "Zero generated tokens; returns probabilities. Advisory only: deterministic policy code stays authoritative for approval gates. Use tev1:4b (4.4 GB) if accuracy matters more than memory."
+  },
+  "guard": {
+    "free_pct_min": 10,
+    "swap_growth_gb_max": 1.5,
+    "strikes": 3,
+    "poll_s": 5,
+    "on_trip": "unload_worker_keep_decider",
+    "note": "Swap is judged by GROWTH since start, not absolute use: macOS keeps old swap allocated after pressure subsides."
+  },
+  "measured": {
+    "date": "2026-10-12",
+    "machine": "MacBook Air M4 16GB",
+    "worker_decode_tps": "70-77",
+    "worker_tool_call_accuracy": "5/5 (n=5)",
+    "decider_median_latency_ms": 134,
+    "decider_smoke": "classify 9/12, needs_reply 7/12, gate 3/4 (author-labelled, tiny n)",
+    "evidence": "08-Research/Local Model Node Research.md"
+  },
+  "boundaries": [
+    "No outreach, submissions, spending, publishing or production changes without explicit human approval.",
+    "No secrets, tokens or private data in this folder or in prompts logged to Git.",
+    "Local output is a draft or a hypothesis until independently reviewed.",
+    "Do not replace deterministic validation or approval gates with decider output.",
+    "Server binds to 127.0.0.1 only."
+  ]
+}

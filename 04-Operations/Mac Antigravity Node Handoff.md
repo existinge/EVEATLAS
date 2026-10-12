@@ -28,7 +28,7 @@ Make the MacBook a competent builder/execution node in the EVE/ATLAS loop withou
 | OpenClaw / EveClaw runtime | UNKNOWN on Mac | no `openclaw` binary or files here (expected on the PC) |
 | Hermes agent (`~/.hermes`) | PARTIAL/idle | job-search persona, local Ollama `gemma4` default, no cron, no sessions/memories; not part of ATLAS |
 | Codex (`~/.codex`) | PARTIAL | config present, model set, Computer Use + browser plugins enabled; `codex` CLI not on PATH |
-| Local inference | RUNNING-capable | Ollama with `qwen2.5-coder:14b`, `gemma4`; cheap-worker use only |
+| Local inference (paired worker + decider) | IMPLEMENTED & RUNNING | `local-node/`: `lfm2.5:8b` (75.5 tok/s, native tools) + `tev1:0.8b` (134 ms typed decider) on sidecar Ollama 0.40.3; both resident in 16 GB RAM; smoke test PASS (`NODE OK`); see `local-node/INSTRUCTIONS.md` |
 | Skills | PARTIAL | EVEATLAS `02-Agents/Skills/*.md` (6, docs only, not wired to agents); rAIdar `.agents/skills`; Antigravity workspace skills unrelated (SpiFun, shopper-pair) |
 | Polaris | UNKNOWN | no artifacts found on this Mac or in accessible repos |
 | Hopecore Job Engine | UNKNOWN here | only related: `existinge/job-email-agent` (Outlook/Graph classifier, public); no pipeline code for research→draft→review→send |

@@ -8,3 +8,4 @@
 6. Never cache private credentials or customer data into public or shared contexts.
 
 Caching is a deployment objective, **not yet verified active**.
+For local zero-API-cost execution nodes (paired worker + decider), see `local-node/INSTRUCTIONS.md` and [[08-Research/Local Model Node Research]].
