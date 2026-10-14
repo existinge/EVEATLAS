@@ -13,16 +13,18 @@ Primary file: `tools/atlas_loop.py`. It uses standard-library Python only and is
 - Deterministic local fixture worker
 - Restricted opt-in unittest command worker
 - Output contract verification
-- Pause, resume, cancel commands
+- Exponential retry backoff (`next_attempt_at`), retry cap ends in `FAILED`
+- `atlas_brain` retry advice: repeated identical failure switches to an alternate available worker or fails closed; critical cost incidents block the run
+- Pause, resume, cancel with validated status transitions (cannot resume CANCELLED/COMPLETE/FAILED)
 - Explicit approval records
 - Mandatory `AWAITING_FINAL_REVIEW` state and Codex-only reviewer label
-- Status JSON, model preferences and provider stubs that FAIL CLOSED
+- Status JSON and provider stubs that FAIL CLOSED (provider workers are registered as unavailable)
 
 ## Not implemented yet
 - Real Codex invocation and authenticated review receipt (CLI review is **manual attestation only**, not cryptographic identity verification)
 - DeepSeek or Gemini credentials, supported endpoint integration and measured prices
 - Jev/TypeSafe adapter or decisions
-- Autonomous generation of repair instructions and automatic worker reassignment
+- Autonomous generation of repair instructions (reassignment only among available registered workers)
 - Crash-safe external job reconciliation, true concurrent DAG scheduling
 - Background worker service, notifications, Mission Control web UI
 - Enforced process sandboxing for arbitrary source code, complete monetary accounting

@@ -22,11 +22,66 @@ class LoopTests(unittest.TestCase):
         self.assertEqual(loop.status(self.db,rid)["run"]["status"],"AWAITING_FINAL_REVIEW")
         with self.assertRaises(ValueError):loop.final_review(self.db,rid,"approved","looks good","gemini")
         self.assertEqual(loop.final_review(self.db,rid,"approved","Codex manual review receipt"),"COMPLETE")
-    def test_bad_output_retries_then_blocks(self):
-        rid=loop.create_run(self.db,"broken",[task(contains="missing",max_attempts=2)])
-        self.assertEqual(loop.tick(self.db,rid),"RUNNING")
-        self.assertEqual(loop.tick(self.db,rid),"RUNNING")
+    def test_bad_output_retries_then_fails(self):
+        rid=loop.create_run(self.db,"broken",[task(contains="missing",max_attempts=3)])
+        self.assertEqual(loop.tick(self.db,rid,backoff_base=0),"RUNNING")
+        # second identical failure: brain advises switch_strategy, no alternate worker -> FAILED
+        self.assertEqual(loop.tick(self.db,rid,backoff_base=0),"FAILED")
+        t=loop.status(self.db,rid)["tasks"][0]
+        self.assertEqual((t["state"],t["attempts"]),("FAILED",2))
+        self.assertEqual(loop.tick(self.db,rid),"FAILED")
+    def test_retry_cap_reaches_failed(self):
+        rid=loop.create_run(self.db,"cap",[task(contains="missing",max_attempts=1)])
+        self.assertEqual(loop.tick(self.db,rid,backoff_base=0),"FAILED")
+        kinds=[r[0] for r in self.db.execute("SELECT kind FROM events WHERE run_id=?",(rid,))]
+        self.assertIn("failed",kinds)
+    def test_backoff_delays_retry(self):
+        import datetime as dt
+        t0=dt.datetime(2026,1,1,tzinfo=dt.timezone.utc)
+        rid=loop.create_run(self.db,"backoff",[task(contains="missing",max_attempts=3)])
+        loop.tick(self.db,rid,backoff_base=10,clock=lambda:t0)
+        loop.tick(self.db,rid,backoff_base=10,clock=lambda:t0+dt.timedelta(seconds=5))
+        self.assertEqual(loop.status(self.db,rid)["tasks"][0]["attempts"],1)
+        loop.tick(self.db,rid,backoff_base=10,clock=lambda:t0+dt.timedelta(seconds=11))
+        self.assertEqual(loop.status(self.db,rid)["tasks"][0]["attempts"],2)
+        self.assertEqual(loop.backoff_seconds(3,10),40)
+        self.assertEqual(loop.backoff_seconds(50,10),loop.BACKOFF_MAX_SECONDS)
+    def test_switch_strategy_fails_closed_without_alternative(self):
+        r=task();r["worker"]="deepseek";r["max_attempts"]=4
+        rid=loop.create_run(self.db,"switch",[r])
+        loop.tick(self.db,rid,backoff_base=0);loop.tick(self.db,rid,backoff_base=0)
+        # no LLM adapter is available, so switching cannot succeed and the task fails closed
+        self.assertEqual(loop.status(self.db,rid)["tasks"][0]["state"],"FAILED")
+        r=task();r["worker"]="command";r["acceptance"]={"argv":["bad"]};r["max_attempts"]=4
+        rid=loop.create_run(self.db,"switch2",[r])
+        loop.tick(self.db,rid,backoff_base=0)
+        loop.tick(self.db,rid,backoff_base=0)
+        t=loop.status(self.db,rid)["tasks"][0]
+        self.assertEqual(t["state"],"FAILED")
+    def test_critical_incident_blocks(self):
+        rid=loop.create_run(self.db,"crit",[task()])
+        with self.db:loop.treasurer.incident(self.db,rid,"critical","test",{})
         self.assertEqual(loop.tick(self.db,rid),"BLOCKED")
+    def test_approval_levels(self):
+        rid=loop.create_run(self.db,"lv",[task()])
+        self.assertTrue(loop.request_approval(self.db,rid,"publish","external"))
+        with self.assertRaises(ValueError):loop.request_approval(self.db,rid,"x","read")
+        with self.assertRaises(ValueError):loop.request_approval(self.db,rid,"x","bogus")
+    def test_control_transitions(self):
+        with self.assertRaises(ValueError):loop.control(self.db,"run-missing","pause")
+        rid=loop.create_run(self.db,"ctl",[task()])
+        with self.assertRaises(ValueError):loop.control(self.db,rid,"resume")
+        loop.control(self.db,rid,"pause")
+        with self.assertRaises(ValueError):loop.control(self.db,rid,"pause")
+        self.assertEqual(loop.tick(self.db,rid),"QUEUED")
+        self.assertEqual(loop.control(self.db,rid,"resume"),"QUEUED")
+        self.assertEqual(loop.control(self.db,rid,"cancel"),"CANCELLED")
+        for a in ("resume","pause","cancel"):
+            with self.assertRaises(ValueError):loop.control(self.db,rid,a)
+        rid=loop.create_run(self.db,"done",[task()])
+        loop.tick(self.db,rid);loop.final_review(self.db,rid,"approved","receipt")
+        with self.assertRaises(ValueError):loop.control(self.db,rid,"resume")
+        with self.assertRaises(ValueError):loop.control(self.db,rid,"cancel")
     def test_cycles_and_missing_deps(self):
         with self.assertRaises(ValueError):loop.validate_plan([task("a",["b"]),task("b",["a"])])
         with self.assertRaises(ValueError):loop.validate_plan([task("a",["not_found"])])

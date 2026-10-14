@@ -1,22 +1,37 @@
 """ATLAS LOOP: persistent bounded orchestration; stdlib only, local/safe by default."""
 import argparse
 import datetime as dt
-import hashlib
 import json
-import os
 from pathlib import Path
 import sqlite3
 import subprocess
 import sys
-import time
 import uuid
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import atlas_treasurer as treasurer
+from atlas_brain import Worker, choose_worker, retry_advice
 
 DEFAULT_DB = Path(__file__).resolve().parents[1] / "private" / "atlas-loop.sqlite3"
 TERMINAL = {"COMPLETE", "BLOCKED", "CANCELLED", "FAILED"}
-MODEL_PREFERENCES = {"builder": ["deepseek-flash", "gemini-flash"], "planner": ["gemini-flash", "deepseek-flash"], "final_reviewer": ["codex"]}
 LEVELS = {"read": 0, "prepare": 1, "workspace_write": 2, "external": 3, "irreversible": 4}
+BACKOFF_BASE_SECONDS = 2
+BACKOFF_MAX_SECONDS = 300
+# Run-control transitions: action -> statuses it may be applied from.
+CONTROL_FROM = {"pause": {"QUEUED", "RUNNING", "AWAITING_FINAL_REVIEW"},
+                "resume": {"QUEUED", "RUNNING", "AWAITING_FINAL_REVIEW"},
+                "cancel": {"QUEUED", "RUNNING", "AWAITING_FINAL_REVIEW", "BLOCKED"}}
+
+def worker_registry(allow_commands=False):
+    """Worker capabilities known to the runtime. Provider adapters are not
+    configured, so they are listed as unavailable and never routed to."""
+    return [Worker("local", frozenset({"local"}), True, 0, priority=10),
+            Worker("command", frozenset({"unittest"}), bool(allow_commands), 0, priority=20),
+            Worker("deepseek", frozenset({"llm"}), False, 0, priority=30),
+            Worker("gemini", frozenset({"llm"}), False, 0, priority=40),
+            Worker("codex", frozenset({"llm", "review"}), False, 0, priority=50)]
+
+WORKER_CAPABILITIES = {"local": ["local"], "command": ["unittest"], "deepseek": ["llm"],
+                       "gemini": ["llm"], "codex": ["llm"]}
 
 def now():
     return dt.datetime.now(dt.timezone.utc).isoformat()
@@ -34,7 +49,7 @@ def connect(path=DEFAULT_DB):
       name TEXT NOT NULL, worker TEXT NOT NULL, state TEXT NOT NULL,
       deps TEXT NOT NULL, acceptance TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0,
       max_attempts INTEGER NOT NULL DEFAULT 3, artifact TEXT, error TEXT,
-      updated TEXT NOT NULL);
+      updated TEXT NOT NULL, next_attempt_at TEXT, strategy TEXT);
     CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT,run_id TEXT NOT NULL,
       task_id TEXT, kind TEXT NOT NULL, data TEXT NOT NULL, timestamp TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS approvals(id TEXT PRIMARY KEY,run_id TEXT NOT NULL,
@@ -43,6 +58,10 @@ def connect(path=DEFAULT_DB):
     CREATE TABLE IF NOT EXISTS reviews(run_id TEXT PRIMARY KEY, verdict TEXT NOT NULL,
       reviewer TEXT NOT NULL, evidence TEXT NOT NULL, timestamp TEXT NOT NULL);
     """)
+    cols = {r[1] for r in db.execute("PRAGMA table_info(tasks)")}
+    for col in ("next_attempt_at", "strategy"):
+        if col not in cols:  # upgrade databases created before backoff support
+            db.execute(f"ALTER TABLE tasks ADD COLUMN {col} TEXT")
     treasurer.ensure_schema(db)
     return db
 
@@ -91,7 +110,11 @@ def create_run(db, objective, tasks, budget=2.0):
     return rid
 
 def request_approval(db,rid,action,level):
-    if level < 3: raise ValueError("approval only for consequential actions")
+    if isinstance(level, str):
+        if level not in LEVELS: raise ValueError("unknown approval level")
+        level = LEVELS[level]
+    if level not in LEVELS.values(): raise ValueError("unknown approval level")
+    if level < LEVELS["external"]: raise ValueError("approval only for consequential actions")
     aid = "approval-" + uuid.uuid4().hex[:12]
     with db:
         db.execute("INSERT INTO approvals(id,run_id,action,level) VALUES(?,?,?,?)",(aid,rid,action,level))
@@ -134,23 +157,78 @@ def verify(task, result):
         return False,"output mismatch"
     return True,"verified output contract"
 
-def tick(db,rid,workspace=".",allow_commands=False):
+def backoff_seconds(attempts, base=None):
+    base = BACKOFF_BASE_SECONDS if base is None else base
+    return min(BACKOFF_MAX_SECONDS, base * (2 ** max(0, attempts - 1)))
+
+def failure_signatures(db, task_id):
+    rows = db.execute("SELECT data FROM events WHERE task_id=? AND kind='repair_pending' ORDER BY id", (task_id,))
+    return [json.loads(r["data"]).get("error", "")[:200] for r in rows]
+
+def critical_incidents(db, rid):
+    return [dict(r) for r in db.execute("SELECT severity, code FROM cost_incidents WHERE run_id=? AND severity='critical'", (rid,))]
+
+def _fail_task(db, rid, task, reason):
+    with db:
+        db.execute("UPDATE tasks SET state='FAILED',next_attempt_at=NULL,updated=? WHERE id=?", (now(), task["id"]))
+        log(db, rid, task["id"], "failed", {"reason": reason})
+
+def _after_failure(db, rid, task, error, allow_commands, backoff_base, clock):
+    """Record the failure, then ask atlas_brain what to do next."""
+    with db:
+        db.execute("UPDATE tasks SET state='REPAIR_PENDING',error=?,updated=? WHERE id=?", (error, now(), task["id"]))
+        log(db, rid, task["id"], "repair_pending", {"error": error, "worker": task["worker"]})
+    attempts = task["attempts"] + 1
+    advice = retry_advice(attempts, task["max_attempts"], failure_signatures(db, task["id"]), critical_incidents(db, rid))
+    if advice["action"] == "stop":
+        with db:
+            db.execute("UPDATE runs SET status='BLOCKED' WHERE id=?", (rid,))
+            log(db, rid, task["id"], "blocked", {"reason": advice["reason"]})
+        return
+    if advice["action"] == "escalate":
+        _fail_task(db, rid, task, advice["reason"]); return
+    if advice["action"] == "switch_strategy":
+        others = [w for w in worker_registry(allow_commands) if w.name != task["worker"]]
+        route = choose_worker(WORKER_CAPABILITIES[task["worker"]], others,
+                              treasurer.snapshot(db, rid)["available_cents"])
+        if route["action"] != "route":
+            _fail_task(db, rid, task, "repeated_identical_failure_no_alternative"); return
+        with db:
+            db.execute("UPDATE tasks SET worker=?,strategy=? WHERE id=?", (route["worker"], "switched:" + task["worker"], task["id"]))
+            log(db, rid, task["id"], "strategy_switched", {"from": task["worker"], "to": route["worker"]})
+    wait = backoff_seconds(attempts, backoff_base)
+    due = (clock() + dt.timedelta(seconds=wait)).isoformat()
+    with db:
+        db.execute("UPDATE tasks SET next_attempt_at=? WHERE id=?", (due, task["id"]))
+        log(db, rid, task["id"], "backoff", {"seconds": wait, "next_attempt_at": due})
+
+def tick(db,rid,workspace=".",allow_commands=False,backoff_base=None,clock=None):
+    clock = clock or (lambda: dt.datetime.now(dt.timezone.utc))
     run=db.execute("SELECT * FROM runs WHERE id=?",(rid,)).fetchone()
     if not run: raise ValueError("unknown run")
     if run["paused"] or run["status"] in TERMINAL or run["status"]=="AWAITING_FINAL_REVIEW":
         return run["status"]
+    incidents = critical_incidents(db, rid)
+    if incidents:
+        with db:
+            db.execute("UPDATE runs SET status='BLOCKED' WHERE id=?",(rid,))
+            log(db,rid,None,"blocked",{"reason":"critical_state"})
+        return "BLOCKED"
     tasks=db.execute("SELECT * FROM tasks WHERE run_id=? ORDER BY rowid",(rid,)).fetchall()
     completed={t["id"].split(":",1)[1] for t in tasks if t["state"]=="COMPLETE"}
+    current=clock()
     for task in tasks:
-        if task["state"] in {"COMPLETE","BLOCKED"}: continue
+        if task["state"] in {"COMPLETE","BLOCKED","FAILED"}: continue
         deps=json.loads(task["deps"])
         if not set(deps).issubset(completed):continue
+        if task["next_attempt_at"] and dt.datetime.fromisoformat(task["next_attempt_at"]) > current:
+            continue  # backing off
         if task["attempts"] >= task["max_attempts"]:
-            with db:
-                db.execute("UPDATE tasks SET state='BLOCKED',updated=? WHERE id=?",(now(),task["id"]))
-                log(db,rid,task["id"],"blocked",{"reason":"retry cap"})
-            continue
-        if treasurer.snapshot(db,rid)["available_cents"] <= 0 and task["worker"]!="local":
+            _fail_task(db,rid,task,"retry_cap"); continue
+        route = choose_worker(WORKER_CAPABILITIES[task["worker"]],
+                              [w for w in worker_registry(allow_commands) if w.name == task["worker"]],
+                              treasurer.snapshot(db,rid)["available_cents"])
+        if route["action"] != "route" and task["worker"] != "local" and treasurer.snapshot(db,rid)["available_cents"] <= 0:
             with db:
                 db.execute("UPDATE runs SET status='BLOCKED' WHERE id=?",(rid,))
                 log(db,rid,task["id"],"blocked",{"reason":"budget"})
@@ -158,31 +236,54 @@ def tick(db,rid,workspace=".",allow_commands=False):
         with db:
             db.execute("UPDATE tasks SET state='RUNNING',attempts=attempts+1,updated=? WHERE id=?",(now(),task["id"]))
             db.execute("UPDATE runs SET status='RUNNING' WHERE id=?",(rid,))
-            log(db,rid,task["id"],"dispatch",{"worker":task["worker"]})
+            log(db,rid,task["id"],"dispatch",{"worker":task["worker"],"route":route["action"]})
         try:
             result=execute(task,workspace,allow_commands)
             valid,reason=verify(task,result)
             if not valid: raise RuntimeError(reason)
             with db:
-                db.execute("UPDATE tasks SET state='COMPLETE',artifact=?,error=NULL,updated=? WHERE id=?",
+                db.execute("UPDATE tasks SET state='COMPLETE',artifact=?,error=NULL,next_attempt_at=NULL,updated=? WHERE id=?",
                            (json.dumps(result),now(),task["id"]))
                 log(db,rid,task["id"],"verified",result)
         except (RuntimeError,subprocess.TimeoutExpired,OSError) as exc:
-            with db:
-                db.execute("UPDATE tasks SET state='REPAIR_PENDING',error=?,updated=? WHERE id=?",(str(exc),now(),task["id"]))
-                log(db,rid,task["id"],"repair_pending",{"error":str(exc)})
+            _after_failure(db,rid,task,str(exc),allow_commands,backoff_base,clock)
         break
-    tasks=db.execute("SELECT state FROM tasks WHERE run_id=?",(rid,)).fetchall()
-    states=[t["state"] for t in tasks]
+    run=db.execute("SELECT status FROM runs WHERE id=?",(rid,)).fetchone()
+    if run["status"]=="BLOCKED": return "BLOCKED"
+    states=[t["state"] for t in db.execute("SELECT state FROM tasks WHERE run_id=?",(rid,))]
     if all(s=="COMPLETE" for s in states):
         with db:
             db.execute("UPDATE runs SET status='AWAITING_FINAL_REVIEW' WHERE id=?",(rid,))
             log(db,rid,None,"awaiting_codex",{"requirement":"independent Codex final review"})
         return "AWAITING_FINAL_REVIEW"
+    if "FAILED" in states:
+        with db:
+            db.execute("UPDATE runs SET status='FAILED' WHERE id=?",(rid,))
+            log(db,rid,None,"run_failed",{"failed_tasks":states.count("FAILED")})
+        return "FAILED"
     if "BLOCKED" in states:
         with db: db.execute("UPDATE runs SET status='BLOCKED' WHERE id=?",(rid,))
         return "BLOCKED"
     return "RUNNING"
+
+def control(db, rid, action):
+    """Pause, resume or cancel a run, enforcing valid status transitions."""
+    if action not in CONTROL_FROM: raise ValueError("unknown control action")
+    with db:
+        run = db.execute("SELECT status, paused FROM runs WHERE id=?", (rid,)).fetchone()
+        if not run: raise ValueError("unknown run")
+        if run["status"] not in CONTROL_FROM[action]:
+            raise ValueError(f"cannot {action} a run in status {run['status']}")
+        if action == "pause":
+            if run["paused"]: raise ValueError("run already paused")
+            db.execute("UPDATE runs SET paused=1 WHERE id=?", (rid,))
+        elif action == "resume":
+            if not run["paused"]: raise ValueError("run is not paused")
+            db.execute("UPDATE runs SET paused=0 WHERE id=?", (rid,))
+        else:
+            db.execute("UPDATE runs SET status='CANCELLED', paused=0 WHERE id=?", (rid,))
+        log(db, rid, None, action, {"from_status": run["status"]})
+    return db.execute("SELECT status, paused FROM runs WHERE id=?", (rid,)).fetchone()["status"]
 
 def final_review(db,rid,verdict,evidence,reviewer="codex"):
     if reviewer!="codex": raise ValueError("final reviewer must be Codex")
@@ -237,10 +338,7 @@ def main():
             treasurer.release(db,args.reservation,args.reason);out={"reservation":args.reservation,"status":"released"}
         elif args.action=="review":out={"status":final_review(db,args.run,args.verdict,args.evidence)}
         elif args.action in {"pause","resume","cancel"}:
-            with db:
-                db.execute("UPDATE runs SET paused=?,status=? WHERE id=?",(int(args.action=="pause"),"CANCELLED" if args.action=="cancel" else "RUNNING",args.run))
-                log(db,args.run,None,args.action,{})
-            out={"action":args.action,"run":args.run}
+            out={"action":args.action,"run":args.run,"status":control(db,args.run,args.action)}
         else:
             decide_approval(db,args.approval,args.action=="approve");out={"approval":args.approval,"decision":args.action}
         print(json.dumps(out,indent=2));return 0
