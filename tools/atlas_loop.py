@@ -2,6 +2,7 @@
 import argparse
 import datetime as dt
 import json
+import os
 from pathlib import Path
 import sqlite3
 import subprocess
@@ -11,6 +12,7 @@ import uuid
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import atlas_treasurer as treasurer
 from atlas_brain import Worker, choose_worker, retry_advice
+import atlas_providers as providers_mod
 
 DEFAULT_DB = Path(__file__).resolve().parents[1] / "private" / "atlas-loop.sqlite3"
 TERMINAL = {"COMPLETE", "BLOCKED", "CANCELLED", "FAILED"}
@@ -18,21 +20,26 @@ LEVELS = {"read": 0, "prepare": 1, "workspace_write": 2, "external": 3, "irrever
 BACKOFF_BASE_SECONDS = 2
 BACKOFF_MAX_SECONDS = 300
 # Run-control transitions: action -> statuses it may be applied from.
-CONTROL_FROM = {"pause": {"QUEUED", "RUNNING", "AWAITING_FINAL_REVIEW"},
-                "resume": {"QUEUED", "RUNNING", "AWAITING_FINAL_REVIEW"},
-                "cancel": {"QUEUED", "RUNNING", "AWAITING_FINAL_REVIEW", "BLOCKED"}}
+ACTIVE = {"QUEUED", "RUNNING", "AWAITING_FINAL_REVIEW", "AWAITING_APPROVAL"}
+CONTROL_FROM = {"pause": ACTIVE, "resume": ACTIVE, "cancel": ACTIVE | {"BLOCKED"}}
 
-def worker_registry(allow_commands=False):
-    """Worker capabilities known to the runtime. Provider adapters are not
-    configured, so they are listed as unavailable and never routed to."""
+def worker_registry(allow_commands=False, providers=None, costs=None):
+    """Worker capabilities known to the runtime. A provider worker is available
+    only when its adapter was explicitly enabled and configured (see atlas_providers).
+    `costs` maps worker name -> estimated cents for the task being routed."""
+    providers, costs = providers or {}, costs or {}
     return [Worker("local", frozenset({"local"}), True, 0, priority=10),
             Worker("command", frozenset({"unittest"}), bool(allow_commands), 0, priority=20),
+            Worker("openclaw", frozenset({"llm"}), "openclaw" in providers, costs.get("openclaw", 0), priority=25),
             Worker("deepseek", frozenset({"llm"}), False, 0, priority=30),
             Worker("gemini", frozenset({"llm"}), False, 0, priority=40),
             Worker("codex", frozenset({"llm", "review"}), False, 0, priority=50)]
 
-WORKER_CAPABILITIES = {"local": ["local"], "command": ["unittest"], "deepseek": ["llm"],
+WORKER_CAPABILITIES = {"local": ["local"], "command": ["unittest"], "openclaw": ["llm"], "deepseek": ["llm"],
                        "gemini": ["llm"], "codex": ["llm"]}
+
+def dt_cents(c):
+    return f"{c // 100}.{c % 100:02d}"
 
 def now():
     return dt.datetime.now(dt.timezone.utc).isoformat()
@@ -88,7 +95,7 @@ def validate_plan(tasks):
         visiting.remove(node); seen.add(node)
     for node in graph: visit(node)
     for t in tasks:
-        if t.get("worker") not in {"local", "command", "codex", "deepseek", "gemini"}:
+        if t.get("worker") not in {"local", "command", "openclaw", "codex", "deepseek", "gemini"}:
             raise ValueError("unknown worker")
         if not isinstance(t.get("acceptance"), dict):
             raise ValueError("acceptance must be an object")
@@ -135,8 +142,8 @@ def execute(task, workspace, allow_commands=False, timeout=30):
     if task["worker"] == "local":
         data = spec.get("content", "local deterministic fixture")
         return {"text":data,"worker":"local"}
-    if task["worker"] in {"codex","deepseek","gemini"}:
-        raise RuntimeError(task["worker"]+" adapter not configured; provider execution not simulated")
+    if task["worker"] in {"openclaw","codex","deepseek","gemini"}:
+        raise RuntimeError(task["worker"]+" adapter not enabled/configured; provider execution not simulated")
     if not allow_commands:
         raise RuntimeError("command execution disabled (pass --allow-commands with a trusted plan)")
     argv = spec.get("argv")
@@ -174,7 +181,7 @@ def _fail_task(db, rid, task, reason):
         db.execute("UPDATE tasks SET state='FAILED',next_attempt_at=NULL,updated=? WHERE id=?", (now(), task["id"]))
         log(db, rid, task["id"], "failed", {"reason": reason})
 
-def _after_failure(db, rid, task, error, allow_commands, backoff_base, clock):
+def _after_failure(db, rid, task, error, allow_commands, backoff_base, clock, providers=None):
     """Record the failure, then ask atlas_brain what to do next."""
     with db:
         db.execute("UPDATE tasks SET state='REPAIR_PENDING',error=?,updated=? WHERE id=?", (error, now(), task["id"]))
@@ -189,7 +196,7 @@ def _after_failure(db, rid, task, error, allow_commands, backoff_base, clock):
     if advice["action"] == "escalate":
         _fail_task(db, rid, task, advice["reason"]); return
     if advice["action"] == "switch_strategy":
-        others = [w for w in worker_registry(allow_commands) if w.name != task["worker"]]
+        others = [w for w in worker_registry(allow_commands, providers) if w.name != task["worker"]]
         route = choose_worker(WORKER_CAPABILITIES[task["worker"]], others,
                               treasurer.snapshot(db, rid)["available_cents"])
         if route["action"] != "route":
@@ -203,7 +210,44 @@ def _after_failure(db, rid, task, error, allow_commands, backoff_base, clock):
         db.execute("UPDATE tasks SET next_attempt_at=? WHERE id=?", (due, task["id"]))
         log(db, rid, task["id"], "backoff", {"seconds": wait, "next_attempt_at": due})
 
-def tick(db,rid,workspace=".",allow_commands=False,backoff_base=None,clock=None):
+def _approval_gate(db, rid, provider_name):
+    """One APPROVED 'paid_dispatch:<provider>' record authorizes paid calls for this run,
+    still bounded by the run budget. Returns 'approved', 'denied' or 'pending'."""
+    action = "paid_dispatch:" + provider_name
+    rows = [r["status"] for r in db.execute("SELECT status FROM approvals WHERE run_id=? AND action=?", (rid, action))]
+    if "APPROVED" in rows: return "approved"
+    if "DENIED" in rows: return "denied"
+    if "PENDING" not in rows: request_approval(db, rid, action, "external")
+    return "pending"
+
+def _paid_execute(db, rid, task, provider, spec, reservation):
+    prompt = spec["prompt"]
+    try:
+        out = provider.complete(prompt, providers_mod.max_tokens_for(spec))
+    except providers_mod.ProviderError as exc:
+        if exc.billable_unknown: treasurer.mark_uncertain(db, reservation, str(exc))
+        else: treasurer.release(db, reservation, "request rejected before generation: " + str(exc))
+        raise RuntimeError(str(exc)) from None
+    result = {"text": out["text"], "worker": provider.name, "model": out["model"], "reservation_id": reservation,
+              "input_tokens": out["input_tokens"], "output_tokens": out["output_tokens"]}
+    if out["input_tokens"] is None or out["output_tokens"] is None:
+        # No guessing: leave the hold uncertain for human reconciliation (blocks further paid dispatch).
+        treasurer.mark_uncertain(db, reservation, "gateway returned no usage; settle manually")
+        result["cost_usd"] = None
+        return result
+    cost = provider.cost(out["input_tokens"], out["output_tokens"])
+    treasurer.reconcile(db, reservation, cost, "gateway_metered", out["input_tokens"], out["output_tokens"])
+    result["cost_usd"] = str(cost)
+    return result
+
+def _block(db, rid, task_id, reason):
+    with db:
+        db.execute("UPDATE runs SET status='BLOCKED' WHERE id=?",(rid,))
+        log(db,rid,task_id,"blocked",{"reason":reason})
+    return "BLOCKED"
+
+def tick(db,rid,workspace=".",allow_commands=False,backoff_base=None,clock=None,providers=None):
+    providers = providers or {}
     clock = clock or (lambda: dt.datetime.now(dt.timezone.utc))
     run=db.execute("SELECT * FROM runs WHERE id=?",(rid,)).fetchone()
     if not run: raise ValueError("unknown run")
@@ -226,20 +270,46 @@ def tick(db,rid,workspace=".",allow_commands=False,backoff_base=None,clock=None)
             continue  # backing off
         if task["attempts"] >= task["max_attempts"]:
             _fail_task(db,rid,task,"retry_cap"); continue
+        provider = providers.get(task["worker"])
+        spec = json.loads(task["acceptance"]); costs = {}; reservation = None
+        if provider:
+            if not isinstance(spec.get("prompt"), str) or not spec["prompt"].strip():
+                _fail_task(db,rid,task,"provider task requires a prompt"); continue
+            try: max_tokens = providers_mod.max_tokens_for(spec)
+            except ValueError as exc:
+                _fail_task(db,rid,task,str(exc)); continue
+            costs[provider.name] = providers_mod.cost_cents_ceiling(provider.estimate_max_cost(spec["prompt"], max_tokens))
+            if db.execute("SELECT 1 FROM cost_reservations WHERE run_id=? AND state='uncertain'",(rid,)).fetchone():
+                return _block(db,rid,task["id"],"reconcile_uncertain_charge_before_paid_dispatch")
+            gate = _approval_gate(db, rid, provider.name)
+            if gate == "denied":
+                _fail_task(db,rid,task,"paid_dispatch_denied"); continue
+            if gate == "pending":
+                with db:
+                    db.execute("UPDATE runs SET status='AWAITING_APPROVAL' WHERE id=?",(rid,))
+                    log(db,rid,task["id"],"awaiting_approval",{"action":"paid_dispatch:"+provider.name,"estimated_max_cents":costs[provider.name]})
+                return "AWAITING_APPROVAL"
+        available = treasurer.snapshot(db,rid)["available_cents"]
         route = choose_worker(WORKER_CAPABILITIES[task["worker"]],
-                              [w for w in worker_registry(allow_commands) if w.name == task["worker"]],
-                              treasurer.snapshot(db,rid)["available_cents"])
-        if route["action"] != "route" and task["worker"] != "local" and treasurer.snapshot(db,rid)["available_cents"] <= 0:
-            with db:
-                db.execute("UPDATE runs SET status='BLOCKED' WHERE id=?",(rid,))
-                log(db,rid,task["id"],"blocked",{"reason":"budget"})
-            return "BLOCKED"
+                              [w for w in worker_registry(allow_commands, providers, costs) if w.name == task["worker"]],
+                              available)
+        if provider:
+            if route["action"] != "route":
+                return _block(db,rid,task["id"],"budget")
+            try:
+                reservation = treasurer.reserve(db,rid,task["id"],provider.name,provider.model,
+                                                dt_cents(costs[provider.name]))
+            except ValueError as exc:
+                return _block(db,rid,task["id"],"budget: "+str(exc))
+        elif route["action"] != "route" and task["worker"] != "local" and available <= 0:
+            return _block(db,rid,task["id"],"budget")
         with db:
             db.execute("UPDATE tasks SET state='RUNNING',attempts=attempts+1,updated=? WHERE id=?",(now(),task["id"]))
             db.execute("UPDATE runs SET status='RUNNING' WHERE id=?",(rid,))
             log(db,rid,task["id"],"dispatch",{"worker":task["worker"],"route":route["action"]})
         try:
-            result=execute(task,workspace,allow_commands)
+            result=(_paid_execute(db,rid,task,provider,spec,reservation) if provider
+                    else execute(task,workspace,allow_commands))
             valid,reason=verify(task,result)
             if not valid: raise RuntimeError(reason)
             with db:
@@ -247,7 +317,7 @@ def tick(db,rid,workspace=".",allow_commands=False,backoff_base=None,clock=None)
                            (json.dumps(result),now(),task["id"]))
                 log(db,rid,task["id"],"verified",result)
         except (RuntimeError,subprocess.TimeoutExpired,OSError) as exc:
-            _after_failure(db,rid,task,str(exc),allow_commands,backoff_base,clock)
+            _after_failure(db,rid,task,str(exc),allow_commands,backoff_base,clock,providers)
         break
     run=db.execute("SELECT status FROM runs WHERE id=?",(rid,)).fetchone()
     if run["status"]=="BLOCKED": return "BLOCKED"
@@ -286,10 +356,10 @@ def control(db, rid, action):
         log(db, rid, None, action, {"from_status": run["status"]})
     return db.execute("SELECT status, paused FROM runs WHERE id=?", (rid,)).fetchone()["status"]
 
-STOP_STATUSES = TERMINAL | {"AWAITING_FINAL_REVIEW"}
+STOP_STATUSES = TERMINAL | {"AWAITING_FINAL_REVIEW", "AWAITING_APPROVAL"}
 
 def run_loop(db,rid,workspace=".",allow_commands=False,max_ticks=100,max_seconds=300,
-             backoff_base=None,sleep=time.sleep,monotonic=time.monotonic,clock=None):
+             backoff_base=None,sleep=time.sleep,monotonic=time.monotonic,clock=None,providers=None):
     """Tick on one connection until the run stops, is paused, or a safety cap trips.
     Waits for the earliest backoff deadline instead of busy-looping."""
     if max_ticks < 1 or max_seconds <= 0: raise ValueError("caps must be positive")
@@ -299,11 +369,12 @@ def run_loop(db,rid,workspace=".",allow_commands=False,max_ticks=100,max_seconds
         run = db.execute("SELECT status, paused FROM runs WHERE id=?", (rid,)).fetchone()
         if not run: raise ValueError("unknown run")
         if run["paused"]: return {"status": run["status"], "ticks": ticks, "stopped": "paused"}
-        if run["status"] in STOP_STATUSES: return {"status": run["status"], "ticks": ticks, "stopped": "run_state"}
+        if run["status"] in TERMINAL | {"AWAITING_FINAL_REVIEW"} or (run["status"] == "AWAITING_APPROVAL" and ticks):
+            return {"status": run["status"], "ticks": ticks, "stopped": "run_state"}
         if ticks >= max_ticks: return {"status": run["status"], "ticks": ticks, "stopped": "max_ticks"}
         remaining = max_seconds - (monotonic() - started)
         if remaining <= 0: return {"status": run["status"], "ticks": ticks, "stopped": "max_seconds"}
-        state = tick(db, rid, workspace, allow_commands, backoff_base, clock); ticks += 1
+        state = tick(db, rid, workspace, allow_commands, backoff_base, clock, providers); ticks += 1
         if state in STOP_STATUSES: continue
         pending = db.execute("""SELECT MIN(next_attempt_at) FROM tasks WHERE run_id=? AND state='REPAIR_PENDING'
                              AND next_attempt_at IS NOT NULL""", (rid,)).fetchone()[0]
@@ -341,7 +412,9 @@ def main():
     sub=p.add_subparsers(dest="action",required=True)
     a=sub.add_parser("start");a.add_argument("plan");a.add_argument("--budget",type=float,default=2.0)
     a=sub.add_parser("tick");a.add_argument("run");a.add_argument("--allow-commands",action="store_true");a.add_argument("--workspace",default=".")
+    a.add_argument("--enable-openclaw",action="store_true",help="opt in to paid calls via the OpenClaw gateway (needs env config)")
     a=sub.add_parser("run");a.add_argument("run");a.add_argument("--allow-commands",action="store_true");a.add_argument("--workspace",default=".")
+    a.add_argument("--enable-openclaw",action="store_true",help="opt in to paid calls via the OpenClaw gateway (needs env config)")
     a.add_argument("--max-ticks",type=int,default=100);a.add_argument("--max-seconds",type=float,default=300)
     for name in ("status","pause","resume","cancel"):
         a=sub.add_parser(name);a.add_argument("run")
@@ -359,8 +432,12 @@ def main():
         if args.action=="start":
             d=json.loads(Path(args.plan).read_text(encoding="utf-8"))
             out={"run_id":create_run(db,d["objective"],d["tasks"],args.budget)}
-        elif args.action=="tick": out={"status":tick(db,args.run,args.workspace,args.allow_commands)}
-        elif args.action=="run":out=run_loop(db,args.run,args.workspace,args.allow_commands,args.max_ticks,args.max_seconds)
+        elif args.action=="tick":
+            prov=providers_mod.configured_providers(os.environ,args.enable_openclaw)
+            out={"status":tick(db,args.run,args.workspace,args.allow_commands,providers=prov)}
+        elif args.action=="run":
+            prov=providers_mod.configured_providers(os.environ,args.enable_openclaw)
+            out=run_loop(db,args.run,args.workspace,args.allow_commands,args.max_ticks,args.max_seconds,providers=prov)
         elif args.action=="status":out=status(db,args.run)
         elif args.action=="budget":out=treasurer.advise(db,args.run)
         elif args.action=="reserve":out={"reservation_id":treasurer.reserve(db,args.run,args.task,args.provider,args.model,args.maximum_cost,args.id)}
