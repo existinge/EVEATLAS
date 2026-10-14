@@ -6,6 +6,7 @@ from pathlib import Path
 import sqlite3
 import subprocess
 import sys
+import time
 import uuid
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import atlas_treasurer as treasurer
@@ -285,6 +286,35 @@ def control(db, rid, action):
         log(db, rid, None, action, {"from_status": run["status"]})
     return db.execute("SELECT status, paused FROM runs WHERE id=?", (rid,)).fetchone()["status"]
 
+STOP_STATUSES = TERMINAL | {"AWAITING_FINAL_REVIEW"}
+
+def run_loop(db,rid,workspace=".",allow_commands=False,max_ticks=100,max_seconds=300,
+             backoff_base=None,sleep=time.sleep,monotonic=time.monotonic,clock=None):
+    """Tick on one connection until the run stops, is paused, or a safety cap trips.
+    Waits for the earliest backoff deadline instead of busy-looping."""
+    if max_ticks < 1 or max_seconds <= 0: raise ValueError("caps must be positive")
+    clock = clock or (lambda: dt.datetime.now(dt.timezone.utc))
+    started = monotonic(); ticks = 0; state = None
+    while True:
+        run = db.execute("SELECT status, paused FROM runs WHERE id=?", (rid,)).fetchone()
+        if not run: raise ValueError("unknown run")
+        if run["paused"]: return {"status": run["status"], "ticks": ticks, "stopped": "paused"}
+        if run["status"] in STOP_STATUSES: return {"status": run["status"], "ticks": ticks, "stopped": "run_state"}
+        if ticks >= max_ticks: return {"status": run["status"], "ticks": ticks, "stopped": "max_ticks"}
+        remaining = max_seconds - (monotonic() - started)
+        if remaining <= 0: return {"status": run["status"], "ticks": ticks, "stopped": "max_seconds"}
+        state = tick(db, rid, workspace, allow_commands, backoff_base, clock); ticks += 1
+        if state in STOP_STATUSES: continue
+        pending = db.execute("""SELECT MIN(next_attempt_at) FROM tasks WHERE run_id=? AND state='REPAIR_PENDING'
+                             AND next_attempt_at IS NOT NULL""", (rid,)).fetchone()[0]
+        if pending:
+            wait = (dt.datetime.fromisoformat(pending) - clock()).total_seconds()
+            if wait > 0:
+                remaining = max_seconds - (monotonic() - started)
+                if wait > remaining:
+                    return {"status": state, "ticks": ticks, "stopped": "max_seconds"}
+                sleep(wait)
+
 def final_review(db,rid,verdict,evidence,reviewer="codex"):
     if reviewer!="codex": raise ValueError("final reviewer must be Codex")
     if verdict not in {"approved","changes_required","blocked"}: raise ValueError("invalid verdict")
@@ -311,6 +341,8 @@ def main():
     sub=p.add_subparsers(dest="action",required=True)
     a=sub.add_parser("start");a.add_argument("plan");a.add_argument("--budget",type=float,default=2.0)
     a=sub.add_parser("tick");a.add_argument("run");a.add_argument("--allow-commands",action="store_true");a.add_argument("--workspace",default=".")
+    a=sub.add_parser("run");a.add_argument("run");a.add_argument("--allow-commands",action="store_true");a.add_argument("--workspace",default=".")
+    a.add_argument("--max-ticks",type=int,default=100);a.add_argument("--max-seconds",type=float,default=300)
     for name in ("status","pause","resume","cancel"):
         a=sub.add_parser(name);a.add_argument("run")
     a=sub.add_parser("review");a.add_argument("run");a.add_argument("verdict",choices=["approved","changes_required","blocked"]);a.add_argument("--evidence",required=True)
@@ -328,6 +360,7 @@ def main():
             d=json.loads(Path(args.plan).read_text(encoding="utf-8"))
             out={"run_id":create_run(db,d["objective"],d["tasks"],args.budget)}
         elif args.action=="tick": out={"status":tick(db,args.run,args.workspace,args.allow_commands)}
+        elif args.action=="run":out=run_loop(db,args.run,args.workspace,args.allow_commands,args.max_ticks,args.max_seconds)
         elif args.action=="status":out=status(db,args.run)
         elif args.action=="budget":out=treasurer.advise(db,args.run)
         elif args.action=="reserve":out={"reservation_id":treasurer.reserve(db,args.run,args.task,args.provider,args.model,args.maximum_cost,args.id)}

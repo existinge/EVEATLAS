@@ -15,6 +15,7 @@ Primary file: `tools/atlas_loop.py`. It uses standard-library Python only and is
 - Output contract verification
 - Exponential retry backoff (`next_attempt_at`), retry cap ends in `FAILED`
 - `atlas_brain` retry advice: repeated identical failure switches to an alternate available worker or fails closed; critical cost incidents block the run
+- `run` command: ticks on one DB connection until complete/awaiting review/blocked/paused/cancelled/failed, sleeping until the next backoff deadline, capped by `--max-ticks` and `--max-seconds`
 - Pause, resume, cancel with validated status transitions (cannot resume CANCELLED/COMPLETE/FAILED)
 - Explicit approval records
 - Mandatory `AWAITING_FINAL_REVIEW` state and Codex-only reviewer label
@@ -32,8 +33,7 @@ Primary file: `tools/atlas_loop.py`. It uses standard-library Python only and is
 ## Manual local demonstration
 ```bash
 python tools/atlas_loop.py --db private/atlas-loop.sqlite3 start examples/atlas-loop-plan.json
-python tools/atlas_loop.py --db private/atlas-loop.sqlite3 tick RUN_ID
-python tools/atlas_loop.py --db private/atlas-loop.sqlite3 tick RUN_ID
+python tools/atlas_loop.py --db private/atlas-loop.sqlite3 run RUN_ID --max-ticks 100 --max-seconds 300
 python tools/atlas_loop.py --db private/atlas-loop.sqlite3 status RUN_ID
 ```
 The sample run stops in `AWAITING_FINAL_REVIEW`. Only after a real review, manually record its result with `review RUN_ID approved --evidence "reference to actual Codex findings"`. This command is not itself proof Codex ran.

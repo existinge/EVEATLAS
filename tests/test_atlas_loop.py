@@ -99,5 +99,37 @@ class LoopTests(unittest.TestCase):
         rid=loop.create_run(self.db,"pause",[task()])
         with self.db:self.db.execute("UPDATE runs SET paused=1 WHERE id=?",(rid,))
         self.assertEqual(loop.tick(self.db,rid),"QUEUED")
+    def test_run_loop_completes_to_review_gate(self):
+        rid=loop.create_run(self.db,"run",[task(),task("b",["a"])])
+        out=loop.run_loop(self.db,rid,sleep=lambda s:self.fail("no sleep needed"))
+        self.assertEqual((out["status"],out["ticks"],out["stopped"]),("AWAITING_FINAL_REVIEW",2,"run_state"))
+    def test_run_loop_backs_off_then_fails(self):
+        import datetime as dt
+        now=[dt.datetime(2026,1,1,tzinfo=dt.timezone.utc)];slept=[]
+        def sleep(s):slept.append(s);now[0]+=dt.timedelta(seconds=s)
+        rid=loop.create_run(self.db,"bad",[task(contains="missing",max_attempts=3)])
+        out=loop.run_loop(self.db,rid,backoff_base=5,sleep=sleep,clock=lambda:now[0])
+        self.assertEqual(out["status"],"FAILED")
+        self.assertEqual(slept,[5])
+    def test_run_loop_caps(self):
+        rid=loop.create_run(self.db,"cap",[task(),task("b",["a"])])
+        self.assertEqual(loop.run_loop(self.db,rid,max_ticks=1)["stopped"],"max_ticks")
+        rid=loop.create_run(self.db,"slow",[task(contains="missing",max_attempts=3)])
+        out=loop.run_loop(self.db,rid,backoff_base=100,max_seconds=10,sleep=lambda s:self.fail("must not sleep past cap"))
+        self.assertEqual(out["stopped"],"max_seconds")
+        with self.assertRaises(ValueError):loop.run_loop(self.db,rid,max_ticks=0)
+    def test_run_loop_respects_pause_and_cancel(self):
+        rid=loop.create_run(self.db,"p",[task()])
+        loop.control(self.db,rid,"pause")
+        self.assertEqual(loop.run_loop(self.db,rid)["stopped"],"paused")
+        loop.control(self.db,rid,"cancel")
+        self.assertEqual(loop.run_loop(self.db,rid)["status"],"CANCELLED")
+    def test_run_cli_end_to_end(self):
+        import subprocess,sys,json
+        tool=str(Path(loop.__file__));dbp=str(Path(self.tmp.name)/"cli.db")
+        plan=str(Path(loop.__file__).resolve().parents[1]/"examples"/"atlas-loop-plan.json")
+        rid=json.loads(subprocess.check_output([sys.executable,tool,"--db",dbp,"start",plan]))["run_id"]
+        out=json.loads(subprocess.check_output([sys.executable,tool,"--db",dbp,"run",rid,"--max-ticks","10"]))
+        self.assertEqual(out["status"],"AWAITING_FINAL_REVIEW")
 
 if __name__=="__main__":unittest.main()
