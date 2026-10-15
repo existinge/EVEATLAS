@@ -58,3 +58,8 @@ Eve explicitly requested this isolated structure test on 2026-10-15. Preserve th
 - [Implementation notice and packet examples — experiment branch](https://github.com/existinge/EVEATLAS/blob/experiment/deepseek-free-review/04-Operations/Implementation%20Tests/DeepSeek%20Free%20Review%20Structure%20Test.md)
 
 These links deliberately include the branch: the implementation notice is not on `main`. Read both branches explicitly; a checkout of one does not contain the other. This documentation connects the workflow but does not demonstrate that a running Grokbot/Scholar has loaded it.
+
+## System map and patch awareness
+Start scoped system research with [[08-Research/Scholar System Map]], then read relevant dated patch notes and verify current branch/revision. Keep a macro view of the goal-to-outcome workflow and a micro view of components, interfaces and missing connections. Do not confuse proposed, implemented, tested and deployed states.
+For every recommendation, explain the Atlas need, affected systems, dependencies, expected change, budget/permission effects, bounded test and rollback. Cite the evidence revision. Mark stale or unverified status explicitly.
+Every significant patch must supply a compact system-map delta. A builder/maintainer applies the canonical map update; Scholar remains advisory and records corrections or findings in its own reports. A note being committed does not prove the running Scholar loaded it. Require an actual acknowledgement/version report before claiming delivery.
