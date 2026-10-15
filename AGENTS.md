@@ -26,3 +26,10 @@ The editable canonical bootstrap is [[02-Agents/Universal Alignment Protocol]]. 
 
 ## EveClaw / OpenClaw authority boundary
 Read [[02-Agents/EveClaw Executive Mediation]] for the authoritative executive-mediation design. EveClaw (GPT) reasons about macro strategy and dependencies; OpenClaw transports tasks and receipts; ATLAS LOOP owns mutable task state, scheduling, approval gates and verification. Treasurer enforces spending. Neither EveClaw nor OpenClaw may independently mark objectives complete or self-approve Codex review. An optional local OpenClaw installation must not become a required dependency of the cloud runtime.
+
+## Significant change records (standing operator requirement, 2026-10-15)
+Every significant repository change MUST include a dated, descriptively titled patch/handoff note in the same branch or PR. Significant includes runtime behavior, architecture, permissions, routing, dependencies, deployment/configuration, and agent policy. A trivial typo may be exempt; bundling meaningful work as a typo is not.
+Use [[06-Templates/Change Handoff Template]]. Include YYYY-MM-DD date, purpose and behavior, exact scope/files, branch/revision, implementation steps, dependencies/prerequisites, tests actually run and results, deployment status, known limitations, next owner/action, and rollback. Use descriptive filenames starting with the date. Put operational trial notes under 04-Operations/Implementation Tests; link the note from the PR so the next agent can find it.
+Never describe proposed documentation as enforced runtime behavior. Keep implemented, tested, deployed and live-proven statuses distinct. Changes are not handoff-ready until their note is present. Agents resuming work must read the relevant note, verify prerequisites and report blockers instead of silently bypassing Atlas.
+
+Current isolated coordinator-boundary trial: [[04-Operations/Implementation Tests/Coordinator Execution Boundary Patch]]. Latest handoff: [[04-Operations/Implementation Tests/2026-10-15 Coordinator Boundaries and Runtime Audit Handoff]]. This trial has not changed live permissions.
