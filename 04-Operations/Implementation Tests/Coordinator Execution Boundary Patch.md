@@ -102,3 +102,16 @@ Build in order: identity/tool boundary -> artifact handoff and validation -> aut
 
 ## Rollback and promotion
 This is an isolated structure test, not a permanent role rewrite. No live permissions, model configuration, gateway settings or main files changed by this notice. Discard/close the branch to abandon the proposal. Promotion requires implementation evidence and an explicit deployment decision. Restricting prompts alone is not a passed enforcement test.
+
+## System-change -> Scholar refresh (loop implementation requirement)
+This is a required lifecycle rule to implement, not an existing automated subscription.
+Trigger after acceptance of a significant architecture, workflow, routing, role/permission, provider-adapter, persistence or deployment change. Routine task/project progress does not trigger it. Detect scope from changed paths plus an explicit system-impact declaration; unknown scope requests classification rather than silently skipping.
+1. Builder emits a versioned system-change event with unique event ID, changed revision, patch-note link, affected components/interfaces, before/after structural delta, dependencies, verification/deployment status and cost/permission implications. Exclude private task/project content.
+2. Atlas persists that event and a durable Scholar-refresh work item atomically with acceptance of the system change, or via a transactional outbox. Never depend on the model remembering to send it.
+3. Authorized maintainer/worker updates the compact canonical map; preserve distinct proposed/implemented/tested/deployed statuses and branch provenance. Scholar reads the map but does not gain general repo-write permissions.
+4. Deliver the event/map revision to Scholar through an implemented authenticated adapter. Scholar acknowledges the map/event version it loaded; a receipt is required before reporting awareness.
+5. Retries are bounded and idempotent. Coalesce a burst of patches to the newest map while retaining event history. Failed delivery is visible as SCHOLAR_SYNC_PENDING/FAILED; no coordinator takeover or silent success.
+6. Record change acceptance separately from knowledge synchronization. Do not repeat an already applied deployment because map delivery failed. Keep the overall system handoff open until synchronization succeeds or an operator explicitly records a deferment.
+7. Daily Scholar research starts by checking pending system deltas and map freshness. If stale, refresh or label its structural baseline unverified; do not make confident adoption claims from stale topology. An unchanged map needs a lightweight version check, not a full-vault audit.
+8. Daily field watch runs on a separately configured scheduler with explicit timezone, budget, source policy and bounded output. No daily routine has been installed by this patch. Produce a short source-backed report linking findings to current system gaps; no forced recommendations when none qualify.
+Acceptance tests: significant workflow change queues a refresh; routine task updates do not; duplicate events deliver once; missing acknowledgement remains pending; delayed/failed delivery preserves accepted change state; daily research detects stale map; private task payloads never reach Scholar.
