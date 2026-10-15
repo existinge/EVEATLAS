@@ -706,3 +706,6 @@ Do not return an architectural proposal in place of performing the research.
 
 ## 2026-10-14 user overrides
 Crush on You (2025 ALOS Studios): DROPPED / DO NOT RECOMMEND. User sampled the 20-minute TOTAL runtime, noted two ad placements within 30 seconds and weak acting from a lead. Hard reject; do not suggest again or describe as three full-length episodes. No/Skip: The Renovation; Loy Kaew First Love; Under the Moonlight (Chiang Mai University); 2nd Chance (1Camera Studio); I Promise I Will Come Back; Blessing of Love; Mission to the Moon; Because I Want You; The Boy and I Who Will Break Up in 100 Days. Do not label these watched unless user confirms. New searches should span all countries and prefer completed works.
+
+## 2026-10-14 viewer feedback — Asagi & Hiromi
+Asagi & Hiromi: The Door to Tomorrow (浅葱と広海; user referred to it as 麻木と博美): WATCHED / DO NOT RECOMMEND AGAIN. User thought it was a good obscure discovery but reported no substantial enacted romance: mostly light flirting, then one lead dies and leaves a letter. Separate discovery novelty from romance quality. Do not score tragic implication, posthumous letters, or flirtation alone as a satisfying romantic relationship or payoff. Verify original-title identity/aliases before future matching; preserve the user's viewing assessment.
