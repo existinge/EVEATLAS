@@ -12,6 +12,7 @@ Build a diversified portfolio of **measured, real income streams**, protecting t
 - [[09-Metrics/Business Scorecard]] — measurement
 - [[08-Research/Validation Playbook]] — research standards
 - [[02-Agents/Agent Registry]] — agent roles
+- [[02-Agents/Scholar]] — self-study advisor and its reports
 - [[04-Operations/Review Gate]] — review
 - [[04-Operations/Model Cost and Cache Policy]] — cost
 - [[03-Architecture/Source of Truth]] — authority boundaries
