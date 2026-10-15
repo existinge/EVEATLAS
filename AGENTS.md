@@ -21,3 +21,8 @@ No secrets, tokens, private customer/client data, HR details, private identity/m
 
 ## Quality
 Don't fabricate market size, leads, customer quotes, business revenue, tests, product readiness, API pricing, certifications or customer outcomes. Follow platform rules for reviews, scraping and AI-generated publishing. Independent review and human signoff before high-impact merges.
+
+## Significant change handoffs and Scholar refresh (operator requirement, 2026-10-15)
+Every significant repo change requires a dated, descriptively titled handoff note in its branch/PR: purpose, files/scope, revision, implementation instructions, dependencies, tests actually run/results, deployment status, limitations, next owner/action and rollback. Trivial typo fixes may be exempt.
+Significant structural/workflow changes also require a compact macro/micro delta and a durable Scholar map-refresh work item at change acceptance. Exclude routine task/project details. [[08-Research/Scholar System Map]] must distinguish proposed, implemented, tested and deployed states. Record actual loaded revision/acknowledgement before claiming delivery; missing transport remains pending. Daily research checks map freshness; no daily routine or transport is implied by these instructions.
+See [[08-Research/Scholar Reports/2026-10-15 System Awareness Refresh Handoff]] for implementation dependencies and next steps.
