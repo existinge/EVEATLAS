@@ -32,3 +32,29 @@ A studious, bookish advisor: pencil to the face, glasses drooping down the nose.
 - [[02-Agents/Agent Registry]]
 - [[02-Agents/Signal Intelligence]]: evidence-first research conventions Scholar reuses
 - [[08-Research/Scholar Reports/2026-10-13 Example Scholar Report]]: seeded example (template, not findings)
+
+
+## Discovery to implementation tests — trial workflow
+
+Scholar should actively look for practical capabilities ATLAS could use: free or inexpensive model access, agent tools, MCP integrations, local execution options, and ways to reduce repeated paid work. Tie discoveries to an actual ATLAS need; avoid collecting news without a proposed use.
+
+This is an additive trial workflow on the Scholar documentation branch. It does not change production routing or grant Scholar builder permissions. Scholar investigates adoption and prepares the handoff; the existing Builder implements scoped tests.
+
+1. **Capture:** write a dated report in `08-Research/Scholar Reports/` using the existing template. Include the offer/tool, primary sources and date checked, actual availability versus claims, model/provider identity, limits, terms relevant to the proposed use, and unknowns.
+2. **Match:** identify the current task or bottleneck, why existing tools are insufficient or costly, and the smallest useful assignment. Check for an existing report or experiment before duplicating work.
+3. **Propose a test:** include a “Candidate implementation test” section in the report with hypothesis, baseline, scope, success/failure criteria, budget, trial duration, stop conditions, and rollback. Advice is not approval.
+4. **Hand off:** send the lead a compact advisory packet linking the report and proposed test. The lead checks existing authorization and delegates to the Builder. Do not ask Eve to repeat authorization already given for the same scoped work.
+5. **File the implementation notice:** the Builder creates it in `04-Operations/Implementation Tests/` on an isolated experiment branch. Scholar can draft its contents inside its own report but does not create branches or edit operational notes.
+6. **Learn:** once execution evidence exists, Scholar records verified outcomes, disconfirming findings, and proceed / iterate / stop advice in its own report. Expired offers and failed tests remain useful history. Permanent adoption is a separate decision.
+
+Use role aliases plus provider and actual model IDs so two connections serving the same model are not confused. Do not assume “free” means unlimited, or that a context window is a usage quota. Verify routes before recommending automated use; avoid paid fallbacks that defeat the test.
+
+### First candidate: DeepSeek free review
+
+Eve explicitly requested this isolated structure test on 2026-10-15. Preserve the existing paid OpenRouter DeepSeek workflow and investigate the free OpenCode connection as a separate, on-demand reviewer.
+
+- [Scholar discovery report and handoff](../08-Research/Scholar%20Reports/2026-10-15%20DeepSeek%20Free%20Review%20Candidate.md)
+- [Implementation tests section — experiment branch](https://github.com/existinge/EVEATLAS/tree/experiment/deepseek-free-review/04-Operations/Implementation%20Tests)
+- [Implementation notice and packet examples — experiment branch](https://github.com/existinge/EVEATLAS/blob/experiment/deepseek-free-review/04-Operations/Implementation%20Tests/DeepSeek%20Free%20Review%20Structure%20Test.md)
+
+These links deliberately include the branch: the implementation notice is not on `main`. Read both branches explicitly; a checkout of one does not contain the other. This documentation connects the workflow but does not demonstrate that a running Grokbot/Scholar has loaded it.
