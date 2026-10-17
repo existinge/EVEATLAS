@@ -317,3 +317,81 @@ while (((Get-Date) - $start).TotalSeconds -lt $MaxDurationSec) {
 - **`GpuUtilPct` drops to `55%–75%` while `GameCpuPct` plateaus at `35%–45%`:** The game's Main/Render threads and worker pool are saturated and hitting the CPU's **L3 Cache capacity/latency ceiling** during heavy ability/entity spam.
 - **`TotalCpuPct - GameCpuPct > 15%` mid-fight:** Background processes escaped core isolation and caused OS context-switching stutters.
 - **`GpuTempC >= 84°C` with dropping `GpuClockMHz`:** GPU hit NVIDIA's stock thermal throttle target; raise Temp Limit to `88°C` or increase fan curve in MSI Afterburner / NVIDIA App.
+
+---
+
+## 7. Phase 6: "The Last Drop" — PCIe Interrupt Offload, Kernel Memory & Ghost Daemon Audit
+
+Once Phases 1–5 are verified, apply this final kernel/hardware pass to tighten `0.1%` / `1%` frame-time lows and eliminate micro-stutters caused by Core 0 ISR/DPC contention, kernel memory compression, delayed TCP ACKs, or invisible background scans:
+
+### A. Why Core 0 Interrupt Offloading Matters
+By default on Windows, even when PCIe MSI Mode (`MSISupported = 1`) is active, `DevicePolicy` is unset—routing **100% of GPU (`nvlddmkm.sys` / `dxgkrnl.sys`) and Network (`ndis.sys`) hardware interrupts onto Logical Core 0**, which is the exact core where Source 2 and Unreal Engine schedule the game's **Main Thread**.
+- **Fix:** Pin the GPU's MSI interrupts to **Logical Core 2 (Physical Core 1, mask `04 00`)** at `High` priority (`DevicePriority = 3`), and pin Network Adapter interrupts to **Logical Core 4 (Physical Core 2, mask `10 00`)** at `Normal` priority (`DevicePriority = 2`).
+
+### B. Portable "Last Drop" Kernel & Interrupt Script (Requires Admin)
+
+```powershell
+$ErrorActionPreference = 'Continue'
+
+# --- 1. Offload GPU & Network PCIe MSI Interrupts Off Core 0 ---
+Get-PnpDevice -PresentOnly | Where-Object { $_.Class -eq 'Display' -and $_.InstanceId -like 'PCI*' } | ForEach-Object {
+    $msiKey = "HKLM:\SYSTEM\CurrentControlSet\Enum\$($_.InstanceId)\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties"
+    $affKey = "HKLM:\SYSTEM\CurrentControlSet\Enum\$($_.InstanceId)\Device Parameters\Interrupt Management\Affinity Policy"
+    if (-not (Test-Path $msiKey)) { New-Item -Path $msiKey -Force | Out-Null }
+    if (-not (Test-Path $affKey)) { New-Item -Path $affKey -Force | Out-Null }
+    Set-ItemProperty -Path $msiKey -Name "MSISupported" -Value 1 -Type DWord
+    Set-ItemProperty -Path $affKey -Name "DevicePriority" -Value 3 -Type DWord
+    Set-ItemProperty -Path $affKey -Name "DevicePolicy" -Value 4 -Type DWord
+    Set-ItemProperty -Path $affKey -Name "AssignmentSetOverride" -Value ([byte[]](0x04, 0x00)) -Type Binary
+    Write-Host "[OK] GPU MSI Interrupts ($($_.FriendlyName)): Priority=High(3), Pinned to Core 2 (Offloaded from Core 0)." -ForegroundColor Green
+}
+
+Get-PnpDevice -PresentOnly | Where-Object { $_.Class -eq 'Net' -and $_.InstanceId -like 'PCI*' } | ForEach-Object {
+    $msiKey = "HKLM:\SYSTEM\CurrentControlSet\Enum\$($_.InstanceId)\Device Parameters\Interrupt Management\MessageSignaledInterruptProperties"
+    $affKey = "HKLM:\SYSTEM\CurrentControlSet\Enum\$($_.InstanceId)\Device Parameters\Interrupt Management\Affinity Policy"
+    if (-not (Test-Path $msiKey)) { New-Item -Path $msiKey -Force | Out-Null }
+    if (-not (Test-Path $affKey)) { New-Item -Path $affKey -Force | Out-Null }
+    Set-ItemProperty -Path $msiKey -Name "MSISupported" -Value 1 -Type DWord
+    Set-ItemProperty -Path $affKey -Name "DevicePriority" -Value 2 -Type DWord
+    Set-ItemProperty -Path $affKey -Name "DevicePolicy" -Value 4 -Type DWord
+    Set-ItemProperty -Path $affKey -Name "AssignmentSetOverride" -Value ([byte[]](0x10, 0x00)) -Type Binary
+    Write-Host "[OK] NIC MSI Interrupts ($($_.FriendlyName)): Priority=Normal(2), Pinned to Core 4 (Offloaded from Core 0)." -ForegroundColor Green
+}
+
+# --- 2. Kernel Foreground Quantum & Executive Paging ---
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl" -Name "Win32PrioritySeparation" -Value 38 -Type DWord
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" -Name "DisablePagingExecutive" -Value 1 -Type DWord
+
+# --- 3. Disable Windows Kernel Memory Compression (Saves L3 Cache Bandwidth) ---
+Disable-MMAgent -MemoryCompression -ErrorAction SilentlyContinue
+Write-Host "[OK] Windows Kernel Memory Compression disabled." -ForegroundColor Green
+
+# --- 4. Disable Nagle's Algorithm (TcpAckFrequency=1, TCPNoDelay=1) on Active NICs ---
+Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" | ForEach-Object {
+    $p = Get-ItemProperty $_.PSPath -ErrorAction SilentlyContinue
+    if ($p.DhcpIPAddress -or $p.IPAddress) {
+        Set-ItemProperty -Path $_.PSPath -Name "TcpAckFrequency" -Value 1 -Type DWord
+        Set-ItemProperty -Path $_.PSPath -Name "TCPNoDelay" -Value 1 -Type DWord
+        Write-Host "[OK] Disabled Nagle's Algorithm on interface $($_.PSChildName)." -ForegroundColor Green
+    }
+}
+```
+
+### C. Ghost Daemon & Headless Defender Scan Audit
+If `TotalCpuPct` still shows unexplained `6%–35%` background usage at idle or mid-match, check for these two silent culprits:
+1. **Crash-Looping Local Agent Supervisors (`node.exe` / `python.exe`):**
+   - Inspect all running Node/Python processes and their accumulated CPU seconds:
+     ```powershell
+     Get-CimInstance Win32_Process -Filter "Name = 'node.exe' OR Name = 'python.exe'" | Select-Object ProcessId, CommandLine
+     ```
+   - Watch for local bridges/gateways (e.g., `supervisor.mjs`, `openclaw`, local MCP daemons) crash-looping every 3 seconds against a closed localhost port—each `CreateProcess` + V8 JIT initialization spikes all CPU cores. Stop/disable unneeded background agents on gaming rigs.
+2. **Headless WMI Windows Defender Scans (`Event ID 1000` without `1001`/`1002`):**
+   - WMI-triggered scans (`Start-MpScan`) run invisibly inside `MsMpEng.exe` for up to 2 hours without showing a progress bar or Cancel button in the Windows Security GUI.
+   - Check the Defender Operational Event Log and abort any active headless scan + force low CPU priority for future scans (requires Admin):
+     ```powershell
+     Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-Windows Defender/Operational'; Id=1000,1001,1002} -MaxEvents 3 | Select-Object TimeCreated, Id, Message | Format-List
+     $mp = Get-ChildItem "C:\ProgramData\Microsoft\Windows Defender\Platform\*\MpCmdRun.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+     if ($mp) { & $mp.FullName -Scan -Cancel }
+     Set-MpPreference -EnableLowCpuPriority $true -ScanAvgCPULoadFactor 5 -ErrorAction SilentlyContinue
+     ```
+
