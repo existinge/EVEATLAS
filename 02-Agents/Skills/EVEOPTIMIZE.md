@@ -375,17 +375,26 @@ Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfac
         Write-Host "[OK] Disabled Nagle's Algorithm on interface $($_.PSChildName)." -ForegroundColor Green
     }
 }
+
+# --- 5. Disable Legacy EmptyStandbyList Scheduled Tasks (Causes 10-Min Kernel PFN Stutters & Purges Shader Cache) ---
+Get-ScheduledTask | Where-Object { $_.TaskName -match "EMPTYSTANDBY|StandbyList" -or ($_.Actions.Execute -match "EmptyStandbyList") } | ForEach-Object {
+    Disable-ScheduledTask -InputObject $_ -ErrorAction SilentlyContinue | Out-Null
+    Write-Host "[OK] Disabled legacy standby-purge scheduled task: $($_.TaskName)" -ForegroundColor Green
+}
 ```
 
-### C. Ghost Daemon & Headless Defender Scan Audit
-If `TotalCpuPct` still shows unexplained `6%–35%` background usage at idle or mid-match, check for these two silent culprits:
-1. **Crash-Looping Local Agent Supervisors (`node.exe` / `python.exe`):**
+### C. Ghost Daemon, Headless Defender Scan & `EmptyStandbyList` Audit
+If `TotalCpuPct` still shows unexplained `6%–35%` background usage at idle or periodic mid-match hitches, check for these three silent culprits:
+1. **Legacy `EmptyStandbyList.exe` Scheduled Tasks (Firing Every 5–10 Minutes):**
+   - Many gaming PCs have a legacy 2017 Windows 10 scheduled task (`EMPTYSTANDBY`) running `EmptyStandbyList.exe` every 5–10 minutes (`PT5M` / `PT10M`).
+   - On Windows 11, calling `MemoryPurgeStandbyList` mid-match locks the kernel Page Frame Number (PFN) database (causing an immediate 15–50ms stutter) and purges cached game `.vpk`/`.pak` assets and compiled GPU shader caches (`NV_Cache`) out of spare RAM, forcing hard page faults to disk. Always disable periodic `EmptyStandbyList` tasks (Process Lasso's `ClearStandbyFreeRAMThresholdMB=1024` handles low-RAM edge cases safely without blind timers).
+2. **Crash-Looping Local Agent Supervisors (`node.exe` / `python.exe`):**
    - Inspect all running Node/Python processes and their accumulated CPU seconds:
      ```powershell
      Get-CimInstance Win32_Process -Filter "Name = 'node.exe' OR Name = 'python.exe'" | Select-Object ProcessId, CommandLine
      ```
    - Watch for local bridges/gateways (e.g., `supervisor.mjs`, `openclaw`, local MCP daemons) crash-looping every 3 seconds against a closed localhost port—each `CreateProcess` + V8 JIT initialization spikes all CPU cores. Stop/disable unneeded background agents on gaming rigs.
-2. **Headless WMI Windows Defender Scans (`Event ID 1000` without `1001`/`1002`):**
+3. **Headless WMI Windows Defender Scans (`Event ID 1000` without `1001`/`1002`):**
    - WMI-triggered scans (`Start-MpScan`) run invisibly inside `MsMpEng.exe` for up to 2 hours without showing a progress bar or Cancel button in the Windows Security GUI.
    - Check the Defender Operational Event Log and abort any active headless scan + force low CPU priority for future scans (requires Admin):
      ```powershell
@@ -394,4 +403,5 @@ If `TotalCpuPct` still shows unexplained `6%–35%` background usage at idle or 
      if ($mp) { & $mp.FullName -Scan -Cancel }
      Set-MpPreference -EnableLowCpuPriority $true -ScanAvgCPULoadFactor 5 -ErrorAction SilentlyContinue
      ```
+
 
