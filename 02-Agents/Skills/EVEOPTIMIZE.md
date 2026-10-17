@@ -11,6 +11,13 @@ description: >-
 
 See [[02-Agents/Agent Registry]], [[02-Agents/Skills/experiment-design]], [[02-Agents/Skills/context-handoff]].
 
+> [!IMPORTANT]
+> **AGENT BOOTSTRAP (READ THIS FIRST):** Built-in web-fetch tools (`read_url_content` / `webfetch`) truncate responses at **8 KB (~line 117)**. You **MUST** first download the complete 450-line runbook to disk via PowerShell and read it locally with `view_file`:
+> ```powershell
+> Invoke-RestMethod "https://raw.githubusercontent.com/existinge/EVEATLAS/main/02-Agents/Skills/EVEOPTIMIZE.md" -OutFile "$env:TEMP\EVEOPTIMIZE.md"
+> ```
+> Once downloaded, call `view_file` on `$env:TEMP\EVEOPTIMIZE.md` (`StartLine=1, EndLine=450`) to read all phases completely!
+
 **Purpose:** Enable any autonomous coding agent (Antigravity, Claude Code, Cursor, OpenClaw) to perform a deterministic, hardware-aware end-to-end gaming optimization and live match telemetry audit on a Windows PC—without hardcoded paths, blind placebo tweaks, or breaking anti-cheat / mod managers.
 
 ---
@@ -404,4 +411,13 @@ If `TotalCpuPct` still shows unexplained `6%–35%` background usage at idle or 
      Set-MpPreference -EnableLowCpuPriority $true -ScanAvgCPULoadFactor 5 -ErrorAction SilentlyContinue
      ```
 
+---
 
+## 8. Phase 7: Multi-Monitor & High-Refresh DWM Optimization
+
+1. **Phantom "Powered-Off" Monitors Still Rendering in Windows:**
+   - Turning off a 2nd or 3rd monitor via its physical power button often only kills the backlight without dropping DisplayPort/HDMI Hot-Plug Detect (HPD). Windows (`dwm.exe`) and the GPU continue allocating VRAM and scanning out to the powered-off display (forcing NVIDIA GPUs into the `P0` max memory-clock state at 50–65W idle and mixing mismatched refresh rates).
+   - **Rule:** Query `EnumDisplayDevices` + `EnumDisplaySettings` for all active desktop displays (`StateFlags & 1`). Disconnect any unused 3rd display in software (`dmPelsWidth = 0, dmPelsHeight = 0`) during gaming.
+2. **Never Lower a Secondary Monitor's Resolution to Save FPS—Lower Its Refresh Rate Instead:**
+   - Dropping a secondary `3440x1440` or `2560x1440` monitor to `1080p` saves `<0.2%` 2D shader load while making text blurry.
+   - Instead, keep the secondary monitor at **native resolution** and drop its **Refresh Rate to `60Hz`** (or an exact integer divisor of the primary monitor, e.g., `60Hz` or `100Hz` alongside a `300Hz` primary, or `60Hz`/`120Hz` alongside a `240Hz` primary). This cuts secondary VRAM scanout bandwidth and Discord/browser repaint overhead by 60%+ while eliminating non-integer DWM VSync beat-frequency judder.
