@@ -1,4 +1,4 @@
-# Agent Registry
+﻿# Agent Registry
 
 | Role | Responsible for | Default allowed | Stop boundary |
 |---|---|---|---|
@@ -8,4 +8,4 @@
 | Independent reviewer | critical assessment of diff and evidence | read docs/code and report issues | never self-approve |
 | Finance reporter | aggregate business performance | redacted reconciled summaries | no private financial data in public Git |
 
-See [[02-Agents/Skills/opportunity-research]], [[02-Agents/Skills/experiment-design]], [[02-Agents/Skills/adversarial-review]], [[02-Agents/Skills/context-handoff]], [[02-Agents/Skills/cost-aware-routing]].
+See [[02-Agents/Skills/opportunity-research]], [[02-Agents/Skills/experiment-design]], [[02-Agents/Skills/adversarial-review]], [[02-Agents/Skills/context-handoff]], [[02-Agents/Skills/cost-aware-routing]], [[02-Agents/Skills/EVEOPTIMIZE]].
