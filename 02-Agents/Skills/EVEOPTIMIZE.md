@@ -1,47 +1,44 @@
 ---
 name: eveoptimize
 description: >-
-  EVEOPTIMIZE: Portable, agent-executable competitive PC gaming optimization tuner,
-  Source 2 (Deadlock/CS2) & Unreal Engine (Valorant/Marvel Rivals) runbook, Process Lasso
-  core-isolation engine, BIOS/OS latency checklist, and discreet live match telemetry
-  profiler. Drop this file into any coding agent to audit, tune, and benchmark any Windows gaming PC.
+  EVEOPTIMIZE: Portable, agent-executable competitive PC gaming optimization tuner.
+  Dynamically scans installed games across all drives, asks the user which title(s)
+  to prioritize, identifies each game's engine (Source 2, Unreal Engine 4/5, Unity,
+  or Custom), and applies tailored engine + OS + Process Lasso + BIOS/GPU/Kernel
+  optimizations with live match telemetry profiling.
 ---
 
-# Skill: EVEOPTIMIZE — Competitive PC & Source 2 Optimization Tuner
+# Skill: EVEOPTIMIZE — Adaptive PC & Game-Engine Optimization Tuner
 
 See [[02-Agents/Agent Registry]], [[02-Agents/Skills/experiment-design]], [[02-Agents/Skills/context-handoff]].
 
 > [!IMPORTANT]
-> **AGENT BOOTSTRAP (READ THIS FIRST):** Built-in web-fetch tools (`read_url_content` / `webfetch`) truncate responses at **8 KB (~line 117)**. You **MUST** first download the complete 450-line runbook to disk via PowerShell and read it locally with `view_file`:
+> **AGENT BOOTSTRAP (READ THIS FIRST):** Built-in web-fetch tools (`read_url_content` / `webfetch`) truncate responses at **8 KB (~line 115)**. You **MUST** first download this complete runbook to disk via PowerShell and read it locally with `view_file`:
 > ```powershell
 > Invoke-RestMethod "https://raw.githubusercontent.com/existinge/EVEATLAS/main/02-Agents/Skills/EVEOPTIMIZE.md" -OutFile "$env:TEMP\EVEOPTIMIZE.md"
 > ```
-> Once downloaded, call `view_file` on `$env:TEMP\EVEOPTIMIZE.md` (`StartLine=1, EndLine=450`) to read all phases completely!
+> Once downloaded, call `view_file` on `$env:TEMP\EVEOPTIMIZE.md` (`StartLine=1, EndLine=500`) to read all phases completely before executing!
 
-**Purpose:** Enable any autonomous coding agent (Antigravity, Claude Code, Cursor, OpenClaw) to perform a deterministic, hardware-aware end-to-end gaming optimization and live match telemetry audit on a Windows PC—without hardcoded paths, blind placebo tweaks, or breaking anti-cheat / mod managers.
+**Purpose:** Enable any autonomous coding agent (Antigravity, Claude Code, Cursor, OpenClaw) to perform a deterministic, hardware-aware and **game-engine-specific** optimization and live telemetry audit on any Windows gaming PC—**without hardcoded game lists, hardcoded user paths, or blind placebo tweaks**.
 
 ---
 
 ## 1. Core Engineering Rules (Non-Negotiable)
 
-1. **Never Starve Games of Physical Cores in Process Lasso:**
-   - Never restrict a modern game (`deadlock.exe`, `valorant-win64-shipping.exe`, `overwatch.exe`, `cs2.exe`) to a subset of cores on a single-CCD CPU (e.g., locking an 8-core/16-thread CPU to `0–11` / `0xFFF`). Doing so cuts off physical cores and forces game worker threads onto SMT sibling hyperthreads where they contend with the Main and Render threads.
-   - **Correct Rule:** Dynamically query total logical threads $T$ (`0` to $T-1$). Grant games **all threads (`0..(T-1)`)** at `High` priority, and quarantine background Chromium/overlay helpers (`discord.exe`, `steamwebhelper.exe`, `epicwebhelper.exe`, `blizzardbrowser.exe`, `leagueclientuxrender.exe`) to the **last physical core (`(T-2)-(T-1)`)** at **`Below Normal`** priority.
-2. **Always Target the Real Shipping Binary (Not Just the Launcher):**
-   - Unreal Engine games run inside a child shipping binary:
-     - Valorant: `VALORANT-Win64-Shipping.exe` (launcher is `VALORANT.exe`)
-     - Marvel Rivals: `Marvel-Win64-Shipping.exe` (launcher is `Marvel.exe`)
-   - Always register both the launcher and the `-Win64-Shipping.exe` binary in Process Lasso, Windows Kernel `PerfOptions`, and DirectX `UserGpuPreferences`.
-3. **Source 2 (`Deadlock` / `CS2`) Specific Invariants:**
-   - **Never add `-no_prewarm_map`** to Steam Launch Options—skipping map asset prewarming causes severe (~100 FPS) shader/particle compilation stalls on the first ability cast of every teamfight.
-   - **Set `-threads <PhysicalCores + 1>`** (e.g., `-threads 9` on an 8-core CPU) so Source 2 allocates 1 main thread + 1 worker per physical core without saturating SMT siblings.
-   - **Never save `gameinfo.gi` with a UTF-8 BOM (`EF BB BF`)**—Source 2's `KeyValues` parser and Deadlock Mod Manager (DMM) fail if a 3-byte BOM is present. Always write using `New-Object System.Text.UTF8Encoding($false)`.
+1. **Never Hardcode Game Titles—Always Scan & Ask First:**
+   - Every user plays different titles across different engines. The agent must **scan all local drives for installed games**, classify each game's engine (**Source 2**, **Unreal Engine 4/5**, **Unity**, or **Custom Engine**), and **ask the user which game(s) they want to prioritize**.
+2. **Never Starve Games of Physical Cores in Process Lasso:**
+   - Never restrict a modern game to a subset of cores on a single-CCD CPU (e.g., locking an 8-core/16-thread CPU to `0–11` / `0xFFF`). Doing so cuts off physical cores and forces game worker threads onto SMT sibling hyperthreads where they contend with the Main and Render threads.
+   - **Correct Rule:** Dynamically query total logical threads $T$ (`0` to $T-1$). Grant all discovered/selected games **all threads (`0..(T-1)`)** at `High` priority, and quarantine detected background Chromium/overlay helpers (`discord.exe`, `steamwebhelper.exe`, `epicwebhelper.exe`, `blizzardbrowser.exe`, `leagueclientuxrender.exe`, `overwolfbrowser.exe`) to the **last physical core (`(T-2)-(T-1)`)** at **`Below Normal`** priority.
+3. **Always Target the Real Shipping Binary (Not the Launcher Stub):**
+   - Many games (especially Unreal Engine 4/5) have a root launcher `.exe` that spawns a child `*-Win64-Shipping.exe` binary under `Binaries\Win64\`.
+   - Always resolve and target the actual runtime binary (e.g., `*-Win64-Shipping.exe` for Unreal, `game\bin\win64\*.exe` for Source 2) in Process Lasso, Windows Kernel `PerfOptions`, and DirectX `UserGpuPreferences`.
 
 ---
 
-## 2. Phase 1: Dynamic Hardware & OS Discovery (Run First)
+## 2. Phase 1: Dynamic Hardware, OS & Game-Engine Discovery (Run First)
 
-The agent must execute this read-only discovery block first to map the target machine's CPU topology, VBS state, GPU VBIOS power limits, Process Lasso installation, and installed games:
+Execute this read-only discovery script first. It maps the user's CPU topology, VBS state, GPU VBIOS power limits, connected monitors, and **automatically scans all drives to discover installed games and classify their game engine**:
 
 ```powershell
 $cpu = Get-CimInstance Win32_Processor
@@ -62,15 +59,78 @@ $ram = Get-CimInstance Win32_PhysicalMemory | Select-Object Manufacturer, Speed,
 } | Format-List
 
 nvidia-smi --query-gpu=name,driver_version,power.limit,power.default_limit,power.max_limit,temperature.gpu --format=csv 2>$null
+
+# --- Auto-Scan Installed Games & Identify Engine Type Across All Drives ---
+$drives = Get-PSDrive -PSProvider FileSystem | Select-Object -ExpandProperty Root
+$libraryRoots = @()
+foreach ($d in $drives) {
+    foreach ($sub in @(
+        "Program Files (x86)\Steam\steamapps\common",
+        "Program Files\Steam\steamapps\common",
+        "SteamLibrary\steamapps\common",
+        "Program Files\Epic Games",
+        "Epic Games",
+        "Riot Games",
+        "Program Files (x86)\Overwatch",
+        "Overwatch",
+        "XboxGames",
+        "GOG Games"
+    )) {
+        $p = Join-Path $d $sub
+        if (Test-Path $p) { $libraryRoots += $p }
+    }
+}
+
+$discoveredGames = foreach ($lib in ($libraryRoots | Select-Object -Unique)) {
+    Get-ChildItem -Path $lib -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+        $gameDir = $_.FullName
+        $exes = Get-ChildItem -Path $gameDir -Recurse -Depth 4 -Filter "*.exe" -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name -notmatch "Crash|Unins|Setup|Clean|Repair|DXSETUP|vc_redist|UnityCrash|Helper|Launcher|Updater|Benchmark|Server" }
+
+        if ($exes) {
+            $engine = "Custom / Native"
+            $primaryExe = $exes | Sort-Object Length -Descending | Select-Object -First 1
+
+            $ueShipping = $exes | Where-Object { $_.Name -like "*-Win64-Shipping.exe" -or $_.FullName -like "*\Binaries\Win64\*.exe" } | Sort-Object Length -Descending | Select-Object -First 1
+            $source2Exe = $exes | Where-Object { $_.FullName -like "*\game\bin\win64\*.exe" } | Select-Object -First 1
+            $hasGameInfo = Test-Path (Join-Path $gameDir "game\*\gameinfo.gi")
+            $hasUnity = (Test-Path (Join-Path $gameDir "UnityPlayer.dll")) -or ((Get-ChildItem $gameDir -Directory -Filter "*_Data" -ErrorAction SilentlyContinue).Count -gt 0)
+
+            if ($source2Exe -or $hasGameInfo) {
+                $engine = "Source 2"
+                if ($source2Exe) { $primaryExe = $source2Exe }
+            } elseif ($ueShipping) {
+                $engine = "Unreal Engine (UE4/UE5)"
+                $primaryExe = $ueShipping
+            } elseif ($hasUnity) {
+                $engine = "Unity"
+            }
+
+            [PSCustomObject]@{
+                GameTitle  = $_.Name
+                Engine     = $engine
+                ExeName    = $primaryExe.Name
+                ExePath    = $primaryExe.FullName
+                InstallDir = $gameDir
+            }
+        }
+    }
+}
+$discoveredGames | Format-Table -AutoSize
 ```
+
+### Mandatory User Check-In After Phase 1
+Present the discovered hardware summary and the table of detected games + engines to the user, and **ask**:
+1. **Which primary game(s)** they want deep engine-level optimization for (e.g., a Source 2 title, an Unreal Engine 4/5 shooter, a Unity title, etc.).
+2. Whether they want **all discovered games** included in the system-wide Process Lasso / DirectX / Kernel priority rules (recommended).
 
 ---
 
 ## 3. Phase 2: VBS / Hypervisor & BIOS Baseline
 
 ### A. Windows VBS / Memory Integrity (HVCI)
-- If `VBS_Status` is `2` (Running), nested page-table translations impose a **10%–18% penalty on 1% low FPS** in L3-cache-bound games (Deadlock, Valorant, CS2).
-- **Riot Vanguard Compatibility:** On Windows 11, Riot Vanguard does **not** require VBS/Memory Integrity to be enabled as long as **TPM 2.0** and **Secure Boot** are enabled in BIOS.
+- If `VBS_Status` is `2` (Running), nested page-table translations impose a **10%–18% penalty on 1% low FPS** in L3-cache-bound games (Source 2, Unreal Engine 5, competitive shooters).
+- **Anti-Cheat Note (Riot Vanguard / BattleEye / EAC):** On Windows 11, kernel anti-cheats work cleanly with VBS/Memory Integrity **Off (`0`)** as long as **TPM 2.0** and **Secure Boot** remain enabled in BIOS.
 - To disable VBS (requires Admin + Reboot, or toggle **Off** in *Windows Security $\rightarrow$ Device Security $\rightarrow$ Core Isolation $\rightarrow$ Memory Integrity*):
   ```powershell
   reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard" /v EnableVirtualizationBasedSecurity /t REG_DWORD /d 0 /f
@@ -81,15 +141,15 @@ nvidia-smi --query-gpu=name,driver_version,power.limit,power.default_limit,power
 ### B. BIOS Checklist (Present to User if Rebooting)
 - **Memory Profile:** Enable **DOCP / XMP / EXPO** (verify `RAM_SpeedMHz` matches rated kit speed).
 - **AMD Ryzen Infinity Fabric (Zen 3 / DDR4):** Lock `FCLK Frequency` to `RAM_SpeedMHz / 2` (e.g., `1800MHz` for `DDR4-3600`) to force 1:1 coupled mode.
-- **PCIe Resizable BAR:** Enable `Above 4G Decoding` + `Re-Size BAR Support`.
+- **PCIe Resizable BAR:** Enable `Above 4G Decoding` + `Re-Size BAR Support` (or `Smart Access Memory`).
 - **AMD SMU / Scheduler:** Enable `CPPC`, `CPPC Preferred Cores`, and `Global C-States`.
-- **Precision Boost Overdrive (PBO2):** Set `PBO = Advanced`, `PBO Limits = Motherboard`, `Curve Optimizer = All Cores, Negative, 15 to 20` (typically yields `+100 MHz` sustained all-core boost in teamfights while reducing temperatures).
+- **Precision Boost Overdrive (PBO2):** Set `PBO = Advanced`, `PBO Limits = Motherboard`, `Curve Optimizer = All Cores, Negative, 15 to 20` (raises sustained all-core gaming boost by `+75–125 MHz` while lowering temps).
 
 ---
 
-## 4. Phase 3: Portable System-Wide Game & Hardware Tuner
+## 4. Phase 3: Dynamic System-Wide Scheduler, DirectX & GPU Power Tuner
 
-Run this self-adapting PowerShell script to configure **DirectX Flip-Model (`HKCU`)**, **GameDVR disable (`HKCU`)**, **Process Lasso (`prolasso.ini`)**, **Windows Kernel `PerfOptions` (`HKLM`)**, **MMCSS Network Unthrottling (`HKLM`)**, and **NVIDIA GPU Power Limit Unlock**:
+This script **dynamically binds whatever games were discovered/confirmed in Phase 1** (zero hardcoded game lists) into **DirectX Flip-Model (`HKCU`)**, **Process Lasso (`prolasso.ini`)**, **Windows Kernel `PerfOptions` (`HKLM`)**, **MMCSS Network Unthrottling (`HKLM`)**, and **NVIDIA GPU Power Limit Unlock**:
 
 > **Agent Execution Note:** If the agent's terminal runs inside a sandboxed Job Object where `Start-Process -Verb RunAs` returns `The request is not supported`, save the script below to `$env:TEMP\eveoptimize_apply.ps1`, create a self-elevating `.bat` wrapper on the user's Desktop, open Explorer with `explorer.exe /select,"<path-to-bat>"` for the user to double-click, verify the changes, and delete the temporary `.bat`.
 
@@ -107,44 +167,15 @@ $bgAffinityMask = ([int64]1 -shl $bgStartThread) -bor ([int64]1 -shl $lastThread
 
 Write-Host "[EVEOPTIMIZE] Detected $totalThreads threads: Games -> $allCoresRange | Background Helpers -> $bgCoresRange (0x$('{0:X}' -f $bgAffinityMask))" -ForegroundColor Cyan
 
-# --- 2. Auto-Discover Installed Game Executables Across Local Drives ---
-$knownGamePatterns = @(
-    "*\Deadlock\game\bin\win64\deadlock.exe",
-    "*\VALORANT\live\ShooterGame\Binaries\Win64\VALORANT-Win64-Shipping.exe",
-    "*\VALORANT\live\VALORANT.exe",
-    "*\Overwatch\_retail_\Overwatch.exe",
-    "*\Aniimo\Aniimo.exe",
-    "*\Marvel*\Marvel-Win64-Shipping.exe",
-    "*\League of Legends\Game\League of Legends.exe",
-    "*\Counter-Strike Global Offensive\game\bin\win64\cs2.exe"
-)
-
-$commonRoots = @(
-    "C:\Program Files (x86)\Steam\steamapps\common",
-    "C:\Program Files\Steam\steamapps\common",
-    "D:\SteamLibrary\steamapps\common",
-    "E:\SteamLibrary\steamapps\common",
-    "C:\Riot Games",
-    "D:\Riot Games",
-    "C:\Program Files (x86)\Overwatch",
-    "D:\Overwatch"
-) | Where-Object { Test-Path $_ }
-
-$foundGameExes = @()
-foreach ($root in $commonRoots) {
-    $exes = Get-ChildItem -Path $root -Recurse -Filter "*.exe" -ErrorAction SilentlyContinue |
-        Where-Object {
-            $full = $_.FullName
-            ($knownGamePatterns | Where-Object { $full -like $_ }).Count -gt 0
-        }
-    $foundGameExes += $exes.FullName
-}
-$foundGameExes = $foundGameExes | Select-Object -Unique
+# --- 2. Use Discovered Game Executables ($discoveredGames from Phase 1) ---
+# Ensure $targetGameExes contains the full paths of all discovered/selected game binaries:
+$targetGamePaths = $discoveredGames.ExePath | Select-Object -Unique
+$targetGameNames = ($discoveredGames.ExeName | ForEach-Object { $_.ToLower() }) | Select-Object -Unique
 
 # --- 3. Apply DirectX High-Performance & Flip-Model Optimizations (HKCU) ---
 $gpuPrefPath = "HKCU:\Software\Microsoft\DirectX\UserGpuPreferences"
 if (-not (Test-Path $gpuPrefPath)) { New-Item -Path $gpuPrefPath -Force | Out-Null }
-foreach ($exePath in $foundGameExes) {
+foreach ($exePath in $targetGamePaths) {
     Set-ItemProperty -Path $gpuPrefPath -Name $exePath -Value "GpuPreference=2;SwapEffectUpgradeEnable=1;" -Type String
     Write-Host "[OK] DirectX Flip-Model + High-Perf GPU bound: $exePath" -ForegroundColor Green
 }
@@ -161,32 +192,34 @@ $appCapPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR"
 if (-not (Test-Path $appCapPath)) { New-Item -Path $appCapPath -Force | Out-Null }
 Set-ItemProperty -Path $appCapPath -Name "AppCaptureEnabled" -Value 0 -Type DWord -ErrorAction SilentlyContinue
 
-# --- 5. Configure Process Lasso If Installed (Requires Admin, UTF-16LE) ---
+# --- 5. Dynamically Configure Process Lasso If Installed (Requires Admin, UTF-16LE) ---
 $iniPath = "C:\ProgramData\ProcessLasso\config\prolasso.ini"
+$bgHelpers = @("discord.exe", "steamwebhelper.exe", "epicwebhelper.exe", "blizzardbrowser.exe", "leagueclientuxrender.exe", "overwolfbrowser.exe")
+
 if (Test-Path $iniPath) {
     Copy-Item $iniPath "$iniPath.bak_eveoptimize" -Force
     $content = [System.IO.File]::ReadAllText($iniPath, [System.Text.Encoding]::Unicode)
 
-    $priorities = "DefaultPriorities=valorant-win64-shipping.exe,high,valorant.exe,high,marvel-win64-shipping.exe,high,marvel.exe,high,overwatch.exe,high,aniimo.exe,high,league of legends.exe,high,cs2.exe,high,project_citadel.exe,high,deadlock.exe,high,discordsystemhelper.exe,normal,discord.exe,below normal,steamwebhelper.exe,below normal,epicwebhelper.exe,below normal,blizzardbrowser.exe,below normal,leagueclientuxrender.exe,below normal,icloudphotos.exe,idle,iclouddrive.exe,idle,apsdaemon.exe,idle"
-    $ioPriorities = "DefaultIOPriorities=project_citadel.exe,3,deadlock.exe,3,valorant-win64-shipping.exe,3,overwatch.exe,3,aniimo.exe,3,marvel-win64-shipping.exe,3,league of legends.exe,3,cs2.exe,3"
-    $memPriorities = "DefaultMemoryPriorities=project_citadel.exe,5,deadlock.exe,5,valorant-win64-shipping.exe,5,overwatch.exe,5,aniimo.exe,5,marvel-win64-shipping.exe,5,league of legends.exe,5,cs2.exe,5"
-    $gpuPriorities = "DefaultGPUPriorities=overwatch.exe,4,deadlock.exe,4,valorant-win64-shipping.exe,4,aniimo.exe,4,marvel-win64-shipping.exe,4"
-    $affinities = "DefaultAffinitiesEx=discord.exe,0,$bgCoresRange,steamwebhelper.exe,0,$bgCoresRange,epicwebhelper.exe,0,$bgCoresRange,blizzardbrowser.exe,0,$bgCoresRange,leagueclientuxrender.exe,0,$bgCoresRange,project_citadel.exe,0,$allCoresRange,deadlock.exe,0,$allCoresRange,valorant-win64-shipping.exe,0,$allCoresRange,valorant.exe,0,$allCoresRange,overwatch.exe,0,$allCoresRange,aniimo.exe,0,$allCoresRange,marvel-win64-shipping.exe,0,$allCoresRange,marvel.exe,0,$allCoresRange,league of legends.exe,0,$allCoresRange,cs2.exe,0,$allCoresRange"
-    $gamingPaths = "AutomaticGamingModeProcessPaths=project_citadel.exe;deadlock.exe;valorant-win64-shipping.exe;overwatch.exe;aniimo.exe;marvel-win64-shipping.exe;league of legends.exe;cs2.exe;"
+    $prioEntries = ($targetGameNames | ForEach-Object { "$_,high" }) + ($bgHelpers | ForEach-Object { "$_,below normal" }) + @("icloudphotos.exe,idle", "iclouddrive.exe,idle", "apsdaemon.exe,idle")
+    $ioEntries   = $targetGameNames | ForEach-Object { "$_,3" }
+    $memEntries  = $targetGameNames | ForEach-Object { "$_,5" }
+    $gpuEntries  = $targetGameNames | ForEach-Object { "$_,4" }
+    $affEntries  = ($bgHelpers | ForEach-Object { "$_,0,$bgCoresRange" }) + ($targetGameNames | ForEach-Object { "$_,0,$allCoresRange" })
+    $gameModeStr = ($targetGameNames -join ";") + ";"
 
-    $content = $content -replace 'DefaultPriorities=.*', $priorities
-    $content = $content -replace 'DefaultIOPriorities=.*', $ioPriorities
-    $content = $content -replace 'DefaultMemoryPriorities=.*', $memPriorities
-    $content = $content -replace 'DefaultGPUPriorities=.*', $gpuPriorities
-    $content = $content -replace 'DefaultAffinitiesEx=.*', $affinities
-    $content = $content -replace 'AutomaticGamingModeProcessPaths=.*', $gamingPaths
+    $content = $content -replace 'DefaultPriorities=.*', ("DefaultPriorities=" + ($prioEntries -join ","))
+    $content = $content -replace 'DefaultIOPriorities=.*', ("DefaultIOPriorities=" + ($ioEntries -join ","))
+    $content = $content -replace 'DefaultMemoryPriorities=.*', ("DefaultMemoryPriorities=" + ($memEntries -join ","))
+    $content = $content -replace 'DefaultGPUPriorities=.*', ("DefaultGPUPriorities=" + ($gpuEntries -join ","))
+    $content = $content -replace 'DefaultAffinitiesEx=.*', ("DefaultAffinitiesEx=" + ($affEntries -join ","))
+    $content = $content -replace 'AutomaticGamingModeProcessPaths=.*', ("AutomaticGamingModeProcessPaths=" + $gameModeStr)
 
     [System.IO.File]::WriteAllText($iniPath, $content, [System.Text.Encoding]::Unicode)
-    Write-Host "[OK] Process Lasso updated ($allCoresRange for games, $bgCoresRange for background helpers)." -ForegroundColor Green
+    Write-Host "[OK] Process Lasso dynamically updated for $($targetGameNames.Count) games ($allCoresRange) & background helpers ($bgCoresRange)." -ForegroundColor Green
 }
 
 # --- 6. Live Quarantine of Running Background Helpers ---
-Get-Process discord, steamwebhelper, epicwebhelper, blizzardbrowser, leagueclientuxrender -ErrorAction SilentlyContinue | ForEach-Object {
+Get-Process discord, steamwebhelper, epicwebhelper, blizzardbrowser, leagueclientuxrender, overwolfbrowser -ErrorAction SilentlyContinue | ForEach-Object {
     try {
         $_.ProcessorAffinity = [IntPtr]$bgAffinityMask
         $_.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::BelowNormal
@@ -195,8 +228,7 @@ Get-Process discord, steamwebhelper, epicwebhelper, blizzardbrowser, leagueclien
 
 # --- 7. Windows Kernel PerfOptions & MMCSS Network Unthrottling (Requires Admin) ---
 $ifeoBase = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
-$gameExes = @("deadlock.exe", "VALORANT-Win64-Shipping.exe", "Overwatch.exe", "Aniimo.exe", "Marvel-Win64-Shipping.exe", "League of Legends.exe", "cs2.exe")
-foreach ($exe in $gameExes) {
+foreach ($exe in $discoveredGames.ExeName) {
     $perfKey = Join-Path $ifeoBase "$exe\PerfOptions"
     if (-not (Test-Path $perfKey)) { New-Item -Path $perfKey -Force | Out-Null }
     Set-ItemProperty -Path $perfKey -Name "CpuPriorityClass" -Value 3 -Type DWord
@@ -236,44 +268,59 @@ if ($gpuLimits) {
 
 ---
 
-## 5. Phase 4: Deadlock (Source 2) & Mod Manager Deep Tuning
+## 5. Phase 4: Engine-Specific Deep Tuning Modules (Apply Based on Target Game's Engine)
 
-### A. Deadlock Mod Manager (DMM) "Launch Without Mods" + Custom `gameinfo.gi` Fix
-DMM validates `<Deadlock>\game\citadel\gameinfo.gi` against `gameinfo.gi.bak` by removing its `// Deadlock Mod Manager - Start ... End` block and comparing the files byte-for-byte.
-1. Wrap the `SearchPaths` block in `gameinfo.gi` with:
-   ```text
-   		// Deadlock Mod Manager - Start
-   		SearchPaths
-   		{
-   			Game				citadel
-   			Game				core
-   		}
-   		// Deadlock Mod Manager - End
-   ```
-2. Save an identical copy to `gameinfo.gi.bak` **without** the `// Deadlock Mod Manager - Start` and `// Deadlock Mod Manager - End` lines.
-3. Always write both files with **UTF-8 No-BOM** (`New-Object System.Text.UTF8Encoding($false)`).
+Select and apply the module(s) matching the engine of the game(s) the user prioritized in Phase 1:
 
-### B. The 4 High-Impact Teamfight ConVars in `gameinfo.gi`
-Ensure these overrides are set inside `gameinfo.gi` (and mirrored in `gameinfo.gi.bak`):
-- `lb_enable_dynamic_lights "false"` — Disables dynamic ability/projectile light bounces on map geometry (saves 15%–25% GPU and render-thread time in 6v6 fights).
-- `citadel_portrait_world_renderer_off "true"` — Disables live 3D hero portrait world rendering in the HUD.
-- `r_citadel_enable_pano_world_blur "false"` — Disables Panorama UI world blur pass.
-- `cl_updaterate "64"` — Matches Deadlock's native 64-tick server rate (do not leave at `128`).
-- `csm_max_num_cascades_override "0"` and `sc_screen_size_lod_scale_override "0.55"`.
+### Module 4A: Unreal Engine 4 & 5 Titles (e.g., Valorant, Marvel Rivals, Fortnite, The Finals, Aniimo, etc.)
+1. **Locate Config Directory:**
+   - Check `$env:LOCALAPPDATA\<GameFolder>\Saved\Config\WindowsClient` (or `WindowsNoEditor` / `Windows`).
+2. **`GameUserSettings.ini` Competitive Baseline:**
+   - Ensure Fullscreen Exclusive mode (`FullscreenMode=0`, `LastConfirmedFullscreenMode=0`, `bUseDynamicResolution=False`, `bUseVSync=False`).
+   - Disable heavy post-processing where exposed (`sg.PostProcessQuality=0`, `sg.ShadowQuality=0` or `1`, `sg.EffectsQuality=0`, `sg.FoliageQuality=0`, `sg.ShadingQuality=0`).
+   - On UE5 titles with Lumen/Nanite (e.g., Marvel Rivals, Fortnite), disable Lumen Global Illumination / Reflections in favor of Screen Space or Off, and enable **DLSS / XeSS / TSR Quality (`75%–85%` 3D resolution)** if GPU-bound at 1440p/4K.
+3. **NVIDIA Reflex & One-Frame Thread Lag:**
+   - Enable **NVIDIA Reflex (`On + Boost`)** in-game so the UE render thread does not queue an extra frame ahead of the game thread.
+   - Verify the `*-Win64-Shipping.exe` child binary (not the root launcher `.exe`) is registered in Process Lasso and `HKCU:\Software\Microsoft\DirectX\UserGpuPreferences`.
 
-### C. Launch Options & Renderer Backend
-- **Steam Launch Options:** `-console -threads <PhysicalCores + 1> -nojoy -nosteamcontroller -nohltv +exec autoexec.cfg`
-- **Renderer (`<Deadlock>\game\citadel\cfg\boot.vcfg`):** Set `"prefer_vulkan" "-dx11"` on NVIDIA Turing/Ampere GPUs to avoid 35–40ms Vulkan shader pipeline hitches.
+### Module 4B: Source 2 Engine Titles (e.g., Deadlock, Counter-Strike 2, Dota 2)
+1. **Launch Options & Worker Thread Allocation:**
+   - Set Steam Launch Options to: `-console -threads <PhysicalCores + 1> -nojoy -nosteamcontroller -nohltv +exec autoexec.cfg`
+   - **Never use `-no_prewarm_map`**—skipping map asset prewarming forces synchronous shader/particle compilation on the first ability cast or grenade throw (~100 FPS hitch).
+2. **Renderer Backend (`boot.vcfg`):**
+   - On NVIDIA Turing/Ampere GPUs experiencing Vulkan shader pipeline stalls, set `"prefer_vulkan" "-dx11"` in `<GameDir>\game\*\cfg\boot.vcfg`.
+3. **Custom `gameinfo.gi` & Mod Manager Compatibility (Deadlock):**
+   - Never save `gameinfo.gi` with a UTF-8 BOM (`EF BB BF`)—always write using `New-Object System.Text.UTF8Encoding($false)`.
+   - If Deadlock Mod Manager (DMM) is installed, wrap `SearchPaths` in `// Deadlock Mod Manager - Start ... End` in `gameinfo.gi` and keep `gameinfo.gi.bak` identical *without* those 2 marker lines so DMM's "Launch without mods" validation succeeds.
+   - High-impact teamfight `gameinfo.gi` ConVars:
+     - `lb_enable_dynamic_lights "false"` (saves 15%–25% GPU & render-thread time in 6v6 fights)
+     - `citadel_portrait_world_renderer_off "true"`
+     - `r_citadel_enable_pano_world_blur "false"`
+     - `cl_updaterate "64"` (match native 64-tick server rate)
+     - `csm_max_num_cascades_override "0"` & `sc_screen_size_lod_scale_override "0.55"`
+
+### Module 4C: Unity Engine Titles (e.g., Escape from Tarkov, Rust, Unity Action/RPGs)
+1. **Check `<GameDir>\*_Data\boot.config`:**
+   - Ensure native multithreaded rendering jobs are enabled (`gfx-enable-gfx-jobs=1`, `gfx-enable-native-gfx-jobs=1`, `wait-for-native-debugger=0`, `gc-max-time-slice=3`). (Back up `boot.config` before editing; skip if the game uses strict file-integrity checks on `boot.config`.)
+2. **Fullscreen Exclusive Override:**
+   - Unity games default to borderless fullscreen (`-window-mode exclusive` in launch options or `SwapEffectUpgradeEnable=1` in `UserGpuPreferences` ensures hardware flip presentation).
+
+### Module 4D: Custom Competitive Engines (e.g., Overwatch 2, League of Legends, Apex Legends)
+1. **Overwatch 2 (`Documents\Overwatch\Settings\Settings_v0.ini`):**
+   - Ensure `FullScreenRefresh` matches maximum monitor refresh rate, `ReduceBuffering = "1"`, `ReflexMode = "2"` (Enabled + Boost), `DynamicRenderScale = "0"`, `HighQualityUpsampling = "0"` (or AMD FSR 2.2 / DLSS if GPU-bound), and `LocalFogDetail = "1"` (Low).
+2. **League of Legends (`Game\Config\game.cfg`):**
+   - Enable `[General] PreferDX9LegacyMode=0`, `WaitForVerticalSync=0`, `EnableFXAA=0`, and quarantine `leagueclientuxrender.exe` (the Chromium client renderer) to the last CPU core (`(T-2)-(T-1)`) at `Below Normal` priority.
 
 ---
 
-## 6. Phase 5: Discreet Live Match Telemetry Profiler
+## 6. Phase 5: Discreet Live Match Telemetry Profiler (Works on Any Game)
 
-To diagnose whether a user is CPU L3-cache bound, GPU bound, thermally throttling, or suffering from background process spikes during an actual match, launch this low-overhead logger in the background (samples every 5 seconds to `$env:TEMP\eveoptimize_telemetry.csv`):
+Pass the user's target game process name (`-ProcessName "<exe_without_extension>"`) to capture 5-second interval telemetry during a live match without impacting FPS:
 
 ```powershell
 param(
-    [string]$ProcessName = "deadlock",
+    [Parameter(Mandatory=$true)]
+    [string]$ProcessName, # e.g. "VALORANT-Win64-Shipping", "Overwatch", "deadlock", "cs2"
     [string]$OutCsv = "$env:TEMP\eveoptimize_telemetry.csv",
     [int]$IntervalSec = 5,
     [int]$MaxDurationSec = 1800
@@ -284,13 +331,13 @@ param(
 $start = Get-Date
 $logicalCores = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
 $baseClock = (Get-CimInstance Win32_Processor).MaxClockSpeed
-$dlProc1 = Get-Process $ProcessName -ErrorAction SilentlyContinue
+$dlProc1 = Get-Process $ProcessName -ErrorAction SilentlyContinue | Sort-Object WorkingSet64 -Descending | Select-Object -First 1
 $t1 = Get-Date
 $cpuTime1 = if ($dlProc1) { $dlProc1.TotalProcessorTime.TotalSeconds } else { 0 }
 
 while (((Get-Date) - $start).TotalSeconds -lt $MaxDurationSec) {
     $counters = Get-Counter '\Processor Information(_Total)\% Processor Performance', '\Processor(_Total)\% Processor Time', '\Memory\Available MBytes' -SampleInterval 2 -MaxSamples 1 -ErrorAction SilentlyContinue
-    $dlProc2 = Get-Process $ProcessName -ErrorAction SilentlyContinue
+    $dlProc2 = Get-Process $ProcessName -ErrorAction SilentlyContinue | Sort-Object WorkingSet64 -Descending | Select-Object -First 1
     $t2 = Get-Date
     $dt = ($t2 - $t1).TotalSeconds
 
@@ -331,12 +378,6 @@ while (((Get-Date) - $start).TotalSeconds -lt $MaxDurationSec) {
 
 Once Phases 1–5 are verified, apply this final kernel/hardware pass to tighten `0.1%` / `1%` frame-time lows and eliminate micro-stutters caused by Core 0 ISR/DPC contention, kernel memory compression, delayed TCP ACKs, or invisible background scans:
 
-### A. Why Core 0 Interrupt Offloading Matters
-By default on Windows, even when PCIe MSI Mode (`MSISupported = 1`) is active, `DevicePolicy` is unset—routing **100% of GPU (`nvlddmkm.sys` / `dxgkrnl.sys`) and Network (`ndis.sys`) hardware interrupts onto Logical Core 0**, which is the exact core where Source 2 and Unreal Engine schedule the game's **Main Thread**.
-- **Fix:** Pin the GPU's MSI interrupts to **Logical Core 2 (Physical Core 1, mask `04 00`)** at `High` priority (`DevicePriority = 3`), and pin Network Adapter interrupts to **Logical Core 4 (Physical Core 2, mask `10 00`)** at `Normal` priority (`DevicePriority = 2`).
-
-### B. Portable "Last Drop" Kernel & Interrupt Script (Requires Admin)
-
 ```powershell
 $ErrorActionPreference = 'Continue'
 
@@ -371,7 +412,6 @@ Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\M
 
 # --- 3. Disable Windows Kernel Memory Compression (Saves L3 Cache Bandwidth) ---
 Disable-MMAgent -MemoryCompression -ErrorAction SilentlyContinue
-Write-Host "[OK] Windows Kernel Memory Compression disabled." -ForegroundColor Green
 
 # --- 4. Disable Nagle's Algorithm (TcpAckFrequency=1, TCPNoDelay=1) on Active NICs ---
 Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces" | ForEach-Object {
@@ -379,7 +419,6 @@ Get-ChildItem "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfac
     if ($p.DhcpIPAddress -or $p.IPAddress) {
         Set-ItemProperty -Path $_.PSPath -Name "TcpAckFrequency" -Value 1 -Type DWord
         Set-ItemProperty -Path $_.PSPath -Name "TCPNoDelay" -Value 1 -Type DWord
-        Write-Host "[OK] Disabled Nagle's Algorithm on interface $($_.PSChildName)." -ForegroundColor Green
     }
 }
 
@@ -390,26 +429,13 @@ Get-ScheduledTask | Where-Object { $_.TaskName -match "EMPTYSTANDBY|StandbyList"
 }
 ```
 
-### C. Ghost Daemon, Headless Defender Scan & `EmptyStandbyList` Audit
-If `TotalCpuPct` still shows unexplained `6%–35%` background usage at idle or periodic mid-match hitches, check for these three silent culprits:
+### Ghost Daemon, Headless Defender Scan & `EmptyStandbyList` Audit
 1. **Legacy `EmptyStandbyList.exe` Scheduled Tasks (Firing Every 5–10 Minutes):**
-   - Many gaming PCs have a legacy 2017 Windows 10 scheduled task (`EMPTYSTANDBY`) running `EmptyStandbyList.exe` every 5–10 minutes (`PT5M` / `PT10M`).
-   - On Windows 11, calling `MemoryPurgeStandbyList` mid-match locks the kernel Page Frame Number (PFN) database (causing an immediate 15–50ms stutter) and purges cached game `.vpk`/`.pak` assets and compiled GPU shader caches (`NV_Cache`) out of spare RAM, forcing hard page faults to disk. Always disable periodic `EmptyStandbyList` tasks (Process Lasso's `ClearStandbyFreeRAMThresholdMB=1024` handles low-RAM edge cases safely without blind timers).
+   - Calling `MemoryPurgeStandbyList` on a 5/10-minute timer locks the kernel PFN database (15–50ms stutter) and purges cached game assets and compiled GPU shaders (`NV_Cache`) out of spare RAM. Always disable periodic `EmptyStandbyList` tasks (Process Lasso's `ClearStandbyFreeRAMThresholdMB=1024` handles low-RAM edge cases safely).
 2. **Crash-Looping Local Agent Supervisors (`node.exe` / `python.exe`):**
-   - Inspect all running Node/Python processes and their accumulated CPU seconds:
-     ```powershell
-     Get-CimInstance Win32_Process -Filter "Name = 'node.exe' OR Name = 'python.exe'" | Select-Object ProcessId, CommandLine
-     ```
-   - Watch for local bridges/gateways (e.g., `supervisor.mjs`, `openclaw`, local MCP daemons) crash-looping every 3 seconds against a closed localhost port—each `CreateProcess` + V8 JIT initialization spikes all CPU cores. Stop/disable unneeded background agents on gaming rigs.
+   - Inspect running Node/Python processes (`Get-CimInstance Win32_Process -Filter "Name = 'node.exe' OR Name = 'python.exe'" | Select-Object ProcessId, CommandLine`) for local bridges/daemons crash-looping against closed ports every few seconds.
 3. **Headless WMI Windows Defender Scans (`Event ID 1000` without `1001`/`1002`):**
-   - WMI-triggered scans (`Start-MpScan`) run invisibly inside `MsMpEng.exe` for up to 2 hours without showing a progress bar or Cancel button in the Windows Security GUI.
-   - Check the Defender Operational Event Log and abort any active headless scan + force low CPU priority for future scans (requires Admin):
-     ```powershell
-     Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-Windows Defender/Operational'; Id=1000,1001,1002} -MaxEvents 3 | Select-Object TimeCreated, Id, Message | Format-List
-     $mp = Get-ChildItem "C:\ProgramData\Microsoft\Windows Defender\Platform\*\MpCmdRun.exe" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
-     if ($mp) { & $mp.FullName -Scan -Cancel }
-     Set-MpPreference -EnableLowCpuPriority $true -ScanAvgCPULoadFactor 5 -ErrorAction SilentlyContinue
-     ```
+   - Check `Get-WinEvent -FilterHashtable @{LogName='Microsoft-Windows-Windows Defender/Operational'; Id=1000,1001,1002} -MaxEvents 3`. Abort active headless scans via `MpCmdRun.exe -Scan -Cancel` and set `Set-MpPreference -EnableLowCpuPriority $true -ScanAvgCPULoadFactor 5`.
 
 ---
 
@@ -417,7 +443,7 @@ If `TotalCpuPct` still shows unexplained `6%–35%` background usage at idle or 
 
 1. **Phantom "Powered-Off" Monitors Still Rendering in Windows:**
    - Turning off a 2nd or 3rd monitor via its physical power button often only kills the backlight without dropping DisplayPort/HDMI Hot-Plug Detect (HPD). Windows (`dwm.exe`) and the GPU continue allocating VRAM and scanning out to the powered-off display (forcing NVIDIA GPUs into the `P0` max memory-clock state at 50–65W idle and mixing mismatched refresh rates).
-   - **Rule:** Query `EnumDisplayDevices` + `EnumDisplaySettings` for all active desktop displays (`StateFlags & 1`). Disconnect any unused 3rd display in software (`dmPelsWidth = 0, dmPelsHeight = 0`) during gaming.
+   - **Rule:** Query `EnumDisplayDevices` + `EnumDisplaySettings` for all active desktop displays (`StateFlags & 1`). Ask the user which monitors they keep on while gaming, and disconnect any unused display in software (`dmPelsWidth = 0, dmPelsHeight = 0`) during gaming.
 2. **Never Lower a Secondary Monitor's Resolution to Save FPS—Lower Its Refresh Rate Instead:**
    - Dropping a secondary `3440x1440` or `2560x1440` monitor to `1080p` saves `<0.2%` 2D shader load while making text blurry.
    - Instead, keep the secondary monitor at **native resolution** and drop its **Refresh Rate to `60Hz`** (or an exact integer divisor of the primary monitor, e.g., `60Hz` or `100Hz` alongside a `300Hz` primary, or `60Hz`/`120Hz` alongside a `240Hz` primary). This cuts secondary VRAM scanout bandwidth and Discord/browser repaint overhead by 60%+ while eliminating non-integer DWM VSync beat-frequency judder.
