@@ -1,0 +1,29 @@
+{
+  "objective": "Run two local dependency-aware work units and await Codex approval",
+  "tasks": [
+    {
+      "id": "research",
+      "name": "Capture scoped evidence",
+      "worker": "local",
+      "deps": [],
+      "acceptance": {
+        "content": "evidence acquired",
+        "contains": "evidence"
+      },
+      "max_attempts": 2
+    },
+    {
+      "id": "build",
+      "name": "Create deterministic artifact",
+      "worker": "local",
+      "deps": [
+        "research"
+      ],
+      "acceptance": {
+        "content": "artifact verified",
+        "contains": "verified"
+      },
+      "max_attempts": 2
+    }
+  ]
+}
