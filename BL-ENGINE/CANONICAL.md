@@ -1,8 +1,8 @@
 # BL Engine — Canonical tracker pointer
 
-**Canonical workbook:** `BL_ENGINE_CANONICAL_v2026.10.27-r5.xlsx`
+**Canonical workbook:** `BL_ENGINE_CANONICAL_v2026.10.27-r6.xlsx`
 
-**Persistent location:** ChatGPT Library → `/BL Engine/BL_ENGINE_CANONICAL_v2026.10.27-r5.xlsx`
+**Persistent location:** ChatGPT Library → `/BL Engine/BL_ENGINE_CANONICAL_v2026.10.27-r6.xlsx`
 
 **Last full historical reconciliation:** 2026-10-27
 
