@@ -5,7 +5,7 @@ def normalize_status(raw):
     if value.startswith("completed") or value in ("seen","watched","finished"):return "completed"
     if value.startswith(("watching","caught up")):return "watching"
     if value.startswith(("dropped","paused")):return "dropped"
-    if value.startswith(("no / skip","no/skip","do not recommend","skip","not interested")):return "no_skip"
+    if value.startswith(("no / skip","no/skip","no skip","do not recommend","skip","not interested")):return "no_skip"
     if value.startswith(("plan","waiting")):return "plan"
     if value.startswith(("not tonight","not now")):return "not_tonight"
     if value.startswith(("maybe","verify","undecided")):return "maybe"
