@@ -1,10 +1,10 @@
 # BL Engine — Canonical tracker pointer
 
-**Canonical workbook:** `BL_ENGINE_CANONICAL_v2026.10.26-r2.xlsx`
+**Canonical workbook:** `BL_ENGINE_CANONICAL_v2026.10.27-r3.xlsx`
 
-**Persistent location:** ChatGPT Library → `/BL Engine/BL_ENGINE_CANONICAL_v2026.10.26-r2.xlsx`
+**Persistent location:** ChatGPT Library → `/BL Engine/BL_ENGINE_CANONICAL_v2026.10.27-r3.xlsx`
 
-**Last full historical reconciliation:** 2026-10-26
+**Last full historical reconciliation:** 2026-10-27
 
 This replaces the earlier `BL_WATCH_LIST_UPDATED_10.xlsx`, `BL_WATCH_LIST_SWARM_UPDATED_2026-10-14_v2.xlsx`, and `BL_WATCH_LIST_RECONCILED_2026-10-26.xlsx` as the authoritative watch-status workbook.
 
