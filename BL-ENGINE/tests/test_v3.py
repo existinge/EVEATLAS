@@ -27,6 +27,9 @@ class Gates(unittest.TestCase):
   self.assertEqual(result["unknown_discoveries"][0]["fit_score"],10)
  def test_evidence(self):
   self.assertFalse(evidence_gate({"evidence":{"completed":{"supported":True}}})["approved"])
+ def test_official_stream_optional_for_story_gate(self):
+  facts={k:{"supported":True,"sources":["https://example.org/official"]} for k in ("completed","real_bl","romance_progression")}
+  self.assertTrue(evidence_gate({"evidence":facts})["approved"])
  def test_score(self):
   self.assertEqual(score({k:10 for k in ["romance_payoff","acting_chemistry","plot_stakes","pursuit","visual_fit","pacing"]}),100)
  def test_prior_known_block(self):
