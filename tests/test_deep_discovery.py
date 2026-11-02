@@ -25,4 +25,49 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(r["verified"],0)
     def test_unicode_titles(self):
         self.assertEqual(key("宇田川町で待っててよ。"),key("宇田川町で待っててよ"))
+    def test_broad_romance_does_not_require_niche_trope(self):
+        x=self.base();x.pop("actual_gender_confusion")
+        self.assertEqual(review(x,{})["disposition"],"verified_candidate")
+    def test_niche_requires_trope_and_specific_evidence(self):
+        x=self.base();x["discovery_profile"]="feminine_misidentification"
+        self.assertIn("trope_evidence_missing",review(x,{})["blockers"])
+        x["trope_evidence"]=["https://example.org/character"]
+        self.assertEqual(review(x,{})["disposition"],"verified_candidate")
+        x["actual_gender_confusion"]=False
+        self.assertIn("trope_unverified",review(x,{})["blockers"])
+        x["feminine_presenting_male"]=True
+        self.assertEqual(review(x,{})["disposition"],"verified_candidate")
+    def test_payload_profile_and_candidate_override(self):
+        x=self.base();x.pop("actual_gender_confusion")
+        payload=dict(discovery_profile="feminine_misidentification",candidates=[x])
+        self.assertEqual(run(payload)["verified"],0)
+        x["discovery_profile"]="broad_bl"
+        self.assertEqual(run(payload)["verified"],1)
+    def test_unknown_profile_fails_closed(self):
+        x=self.base();x["discovery_profile"]="anything"
+        self.assertIn("unknown_discovery_profile",review(x,{})["blockers"])
+    def test_declared_flags_require_json_true(self):
+        for field in ["released","central_mm_romance","healthy_consent","romantic_payoff"]:
+            for value in ["false","true",1,None]:
+                with self.subTest(field=field,value=value):
+                    x=self.base();x[field]=value
+                    self.assertEqual(review(x,{})["disposition"],"blocked")
+        for field in ["region_verified","english_subtitles_verified"]:
+            x=self.base();x["stream"][field]="false"
+            self.assertIn("stream_unverified",review(x,{})["blockers"])
+    def test_niche_string_true_is_not_evidence(self):
+        x=self.base();x["actual_gender_confusion"]="true"
+        x["trope_evidence"]=["https://example.org/character"]
+        self.assertIn("trope_unverified",review(x,{},"feminine_misidentification")["blockers"])
+    def test_all_tracked_statuses_prevent_fresh_claim(self):
+        for status in ["Unknown","MANUAL-SEEN","ALIAS-TO-CANONICAL","","Interested","Maybe"]:
+            with self.subTest(status=status):
+                self.assertEqual(review(self.base(),exclusion_index([dict(title="新作",status=status)]))["disposition"],"blocked")
+    def test_missing_title_and_invalid_url_fail_closed(self):
+        x=self.base();x["title"]=""
+        self.assertIn("identity_unverified",review(x,{})["blockers"])
+        for url in ["https://","http://example.org","https://user:password@example.org"]:
+            x=self.base();x["stream"]["official_url"]=url;x["sources"]=[url]
+            self.assertIn("stream_unverified",review(x,{})["blockers"])
+            self.assertIn("missing_evidence",review(x,{})["blockers"])
 if __name__=="__main__":unittest.main()
