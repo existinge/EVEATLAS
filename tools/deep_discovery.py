@@ -32,39 +32,61 @@ def exclusion_index(rows):
             if key(title): out[key(title)]=status or "status_unresolved"
     return out
 
+def access_metadata(candidate):
+    """Optional accessibility metadata; absence must not suppress discovery."""
+    stream=candidate.get("stream") or {}
+    url=stream.get("official_url")
+    warnings=[]
+    if not https_url(url): warnings.append("official_stream_url_unverified")
+    if stream.get("region_verified") is not True: warnings.append("region_playback_untested")
+    if stream.get("english_subtitles_verified") is not True: warnings.append("english_subtitles_unverified")
+    return {"official_url":url if https_url(url) else None,
+            "region_verified":stream.get("region_verified") is True,
+            "english_subtitles_verified":stream.get("english_subtitles_verified") is True,
+            "warnings":warnings}
+
+
 def review(candidate, exclusions, profile="broad_bl"):
-    blockers=[]
+    """Return every novel lead without mislabeling incomplete claims as verified."""
+    blocked=[]
+    pending=[]
     profile=candidate.get("discovery_profile",profile)
-    if profile not in PROFILES: blockers.append("unknown_discovery_profile")
-    if not key(candidate.get("title","")): blockers.append("identity_unverified")
+    if profile not in PROFILES: blocked.append("unknown_discovery_profile")
+    if not key(candidate.get("title","")): blocked.append("identity_unverified")
     identity=[candidate.get("title",""),*candidate.get("aliases",[])]
     matches=[exclusions[key(t)] for t in identity if key(t) in exclusions]
-    if matches: blockers.append("known_title:"+matches[0])
-    if candidate.get("released") is not True: blockers.append("release_unverified")
-    if candidate.get("central_mm_romance") is not True: blockers.append("central_romance_unverified")
-    if candidate.get("healthy_consent") is not True: blockers.append("consent_unverified")
+    if matches: blocked.append("known_title:"+matches[0])
+    if candidate.get("hard_reject") is True: blocked.append("hard_reject")
+    if candidate.get("released") is not True: pending.append("release_unverified")
+    if candidate.get("central_mm_romance") is not True: pending.append("central_romance_unverified")
+    if candidate.get("healthy_consent") is not True: pending.append("consent_unverified")
     if profile=="feminine_misidentification":
         if not (candidate.get("actual_gender_confusion") is True or
                 candidate.get("feminine_presenting_male") is True):
-            blockers.append("trope_unverified")
+            pending.append("trope_unverified")
         if not any(https_url(s) for s in candidate.get("trope_evidence",[]) or []):
-            blockers.append("trope_evidence_missing")
-    if candidate.get("romantic_payoff") is not True: blockers.append("payoff_unverified")
-    stream=candidate.get("stream") or {}
-    if not (https_url(stream.get("official_url")) and
-            stream.get("region_verified") is True and stream.get("english_subtitles_verified") is True):
-        blockers.append("stream_unverified")
+            pending.append("trope_evidence_missing")
+    if candidate.get("romantic_payoff") is not True: pending.append("payoff_unverified")
     sources=candidate.get("sources") or []
-    if not any(https_url(s) for s in sources):
-        blockers.append("missing_evidence")
+    if not any(https_url(s) for s in sources): pending.append("missing_evidence")
+    disposition=("blocked" if blocked else
+                 "research_lead" if pending else "verified_candidate")
     return {"title":candidate.get("title"),"discovery_profile":profile,
-            "disposition":"verified_candidate" if not blockers else "blocked","blockers":blockers}
+            "disposition":disposition,"blockers":blocked+pending,
+            "exclusion_reasons":blocked,"research_gaps":pending,
+            "access":access_metadata(candidate)}
+
 
 def run(payload):
     exclusions=exclusion_index(payload.get("known_titles",[]))
-    results=[review(x,exclusions,payload.get("discovery_profile","broad_bl")) for x in payload.get("candidates",[])]
-    return {"schema_version":2,"results":results,"verified":sum(x["disposition"]=="verified_candidate" for x in results),
-            "warning":"Evidence gate validates presence of research receipts, not truth of source claims. Independent source review required."}
+    results=[review(x,exclusions,payload.get("discovery_profile","broad_bl"))
+             for x in payload.get("candidates",[])]
+    return {"schema_version":3,"results":results,
+            "verified":sum(x["disposition"]=="verified_candidate" for x in results),
+            "research_leads":sum(x["disposition"]=="research_lead" for x in results),
+            "excluded":sum(x["disposition"]=="blocked" for x in results),
+            "discovered":sum(x["disposition"]!="blocked" for x in results),
+            "warning":"Verified candidate means receipt fields are complete, NOT that the URLs, consent, payoff, or streaming are independently authenticated. Region/subtitle checks never block discovery."}
 
 def main():
     p=argparse.ArgumentParser()
