@@ -1,0 +1,53 @@
+{
+  "run_id": "ATLAS-BL-DD-2026-11-01-01",
+  "date": "2026-11-01",
+  "mode": "manual ATLAS protocol; no parallel agents/DeepSeek invocation",
+  "repository": "existinge/EVEATLAS",
+  "branch": "feat/atlas-deep-discovery-gates",
+  "canonical_base": {
+    "path": "BL_ENGINE_CANONICAL_v2026.10.27-r11.xlsx",
+    "watch_data_rows": 767,
+    "manual_override_rows": 217
+  },
+  "companion": {
+    "path": "BL_ENGINE_R43_ATLAS_DISCOVERY_SPEC.xlsx",
+    "known_index_data_rows": 11,
+    "correction_rows": 138
+  },
+  "intake_count": 146,
+  "pool_counts": {
+    "D — Known / excluded": 42,
+    "B — Existing backlog": 35,
+    "C — Requires individual verification": 56,
+    "C — Quality or ending review": 4,
+    "A* — Official listing / US untested": 7,
+    "C — Parent-title conflict": 2
+  },
+  "official_listing_results": [
+    "Pretty Boys",
+    "The Star",
+    "One Day Miracle: Uncut",
+    "Our First Time",
+    "Already Know But",
+    "Slap",
+    "The Long Relationship"
+  ],
+  "us_playback_verified": false,
+  "ending_independently_verified": false,
+  "niche_exact_new_verified": 0,
+  "gate": {
+    "accepted": 0,
+    "candidate_count": 146,
+    "global_profile_incompatibility": true,
+    "warning": "Evidence gate validates presence of research receipts, not truth of source claims. Independent source review required."
+  },
+  "output_workbook": "/mnt/data/ATLAS_BL_DEEP_DISCOVERY_01.xlsx",
+  "limitations": [
+    "Website listing is not proof of US streaming entitlement",
+    "Some candidate intake entries are merely catalogue leads; not individually vetted",
+    "Not an autonomous ATLAS worker run",
+    "No full repo suite executed",
+    "No source-level independent reviewers launched",
+    "Current code gate globally requires niche trope; broad pass invalid"
+  ]
+}
