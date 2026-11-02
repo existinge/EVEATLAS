@@ -3,7 +3,7 @@
 BL Engine v3 is a **deterministic audit and triage engine**, not a live streaming/web-search service. Its JSON outputs are suitable for a separate research orchestrator.
 
 ## Critical two-feed policy
-- **Recommended Tonight:** independently identity-reviewed candidate, completed release, real BL romance, on-screen progression and an attributable official viewing source. Taste ranking applies here.
+- **Recommended Tonight:** independently identity-reviewed candidate, completed release, real BL romance, on-screen progression and attributable supporting sources. An official viewing URL and region or subtitle checks are helpful metadata, not admission gates. Taste ranking applies here.
 - **Unknown Discoveries:** **all** titles not conclusively matched to known productions, irrespective of taste score, even when sources or fit are weak. They retain reasons and identity confidence. Never fabricate approval.
 - **Known Title Exclusions:** matches against canonical titles and aliases; blocked even when the recorded status is Maybe, Plan, Watched or Skip because they are not *new discoveries*. Existing backlog can be viewed separately.
 - **Ambiguous identities** go to Unknown Discoveries but are explicitly marked ambiguous, never approved.
@@ -44,6 +44,12 @@ The URLs above are **schema examples only**, not actual BL sources. When generat
 ## Data safety
 
 The private canonical workbook stays outside public EVEATLAS. The loader parses the XML parts of XLSX using Python stdlib; it doesn't execute imported spreadsheet formulas. Reads: `WATCH`, `Alias Map`, `Viewing Reconciliation 2026`, `Oct 2026 Overrides`, plus read-only access to manual/rejection sheet parts. Only uniquely matched overrides are applied. Ambiguous and unmatched overrides are returned in diagnostics, not discarded without a trace.
+
+## Discovery priority and access policy
+- **Find titles first.** Include archival/indie/regional Asian works and hold story-incomplete or unverified works in Unknown Discoveries rather than deleting them.
+- US region playback is not mandatory: the viewer has access to VPNs and alternate online sources. Do not infer entitlement or invent links.
+- English subtitle availability is optional metadata, not a condition for entering the discovery or recommendation pool.
+- Known/watchlist records remain excluded from the *new* pool regardless of availability.
 
 ## Research telemetry
 
