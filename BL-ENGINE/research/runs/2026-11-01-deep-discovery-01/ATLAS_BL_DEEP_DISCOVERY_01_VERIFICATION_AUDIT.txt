@@ -1,0 +1,92 @@
+ATLAS × BL ENGINE — DEEP DISCOVERY 01
+INDEPENDENT EVIDENCE AUDIT / READABLE RECEIPT
+Audited: 2026-11-01 conversation follow-up
+
+VERDICT
+The previous run produced a legitimate workbook with 146 candidate-title entries and some useful distributor links, but it does NOT contain enough evidence to certify a reproducible multilingual deep-search operation or a true autonomous ATLAS worker execution.
+
+WHAT WAS INSPECTED
+1. /mnt/data/ATLAS_BL_DEEP_DISCOVERY_01_RECEIPT.json (valid JSON, 1,786 bytes)
+2. /mnt/data/ATLAS_BL_DEEP_DISCOVERY_01.xlsx
+3. GitHub exist inge/EVEATLAS (remove the space): branch feat/atlas-deep-discovery-gates, tools/deep_discovery.py, and research integration documentation
+4. The R43 source/companion workbook sheets retained inside the discovery workbook.
+
+EVIDENCE
+- 146 distinct candidate-title entries in RUN01 Candidate Intake.
+- 42 classified known/excluded; 35 existing backlog; 56 needs individual verification; 4 quality/ending review; 2 parent-title conflicts; 7 officially listed / US untested.
+- INTERNAL COUNT DISCREPANCY: receipt JSON claims 11 Known Index data rows, whereas the actual workbook has 952 populated data rows; its own execution-summary sheet also reports 952. This is an objective provenance error.
+- Original-language query log in 'Discovery Coverage Log' contains only a header row and no dated query entries.
+- 'RUN01 Coverage' describes alleged regional search families, not literal search queries, execution timestamps, or query-specific sources.
+- JSON receipt has no query list, no search transaction IDs, no original-language source log, and no executable command stdout.
+- Receipt explicitly states 'manual ATLAS protocol; no parallel agents/DeepSeek invocation'.
+- The ATLAS code is an OFFLINE evidence gate; it checks supplied booleans and URL presence and is not an autonomous browser researcher.
+- The code's 'actual_gender_confusion' requirement applies to ALL candidates and is incompatible with the intentionally broad discovery profile.
+- Receipt says 0/146 candidates admitted, but that is not evidence that all 146 are ineligible.
+- The six featured films have direct distributor page URLs; the seventh is a category catalog rather than a title-specific playable page.
+- The prior report did NOT independently verify US account playback or all romance endings.
+
+WHAT CAN BE CLAIMED
+- The GitHub codebase and specification were inspected.
+- A 146-record categorized screening workbook was produced.
+- The research surfaced unfamiliar candidate titles worth investigating, including films outside mainstream BL TV listings.
+
+WHAT CANNOT BE CLAIMED
+- That every regional lane was searched deeply or in original languages with reproducible recorded queries.
+- That DeepSeek or an independent ATLAS worker swarm performed the discovery.
+- That the offline gate independently verified source truth, stream availability, or final romance payoff.
+- That the resulting titles were novel relative to every adaptation and alternate title in the canonical user history.
+
+ORIGINAL MACHINE RECEIPT (verbatim)
+{
+  "run_id": "ATLAS-BL-DD-2026-11-01-01",
+  "date": "2026-11-01",
+  "mode": "manual ATLAS protocol; no parallel agents/DeepSeek invocation",
+  "repository": "existinge/EVEATLAS",
+  "branch": "feat/atlas-deep-discovery-gates",
+  "canonical_base": {
+    "path": "BL_ENGINE_CANONICAL_v2026.10.27-r11.xlsx",
+    "watch_data_rows": 767,
+    "manual_override_rows": 217
+  },
+  "companion": {
+    "path": "BL_ENGINE_R43_ATLAS_DISCOVERY_SPEC.xlsx",
+    "known_index_data_rows": 11,
+    "correction_rows": 138
+  },
+  "intake_count": 146,
+  "pool_counts": {
+    "D — Known / excluded": 42,
+    "B — Existing backlog": 35,
+    "C — Requires individual verification": 56,
+    "C — Quality or ending review": 4,
+    "A* — Official listing / US untested": 7,
+    "C — Parent-title conflict": 2
+  },
+  "official_listing_results": [
+    "Pretty Boys",
+    "The Star",
+    "One Day Miracle: Uncut",
+    "Our First Time",
+    "Already Know But",
+    "Slap",
+    "The Long Relationship"
+  ],
+  "us_playback_verified": false,
+  "ending_independently_verified": false,
+  "niche_exact_new_verified": 0,
+  "gate": {
+    "accepted": 0,
+    "candidate_count": 146,
+    "global_profile_incompatibility": true,
+    "warning": "Evidence gate validates presence of research receipts, not truth of source claims. Independent source review required."
+  },
+  "output_workbook": "/mnt/data/ATLAS_BL_DEEP_DISCOVERY_01.xlsx",
+  "limitations": [
+    "Website listing is not proof of US streaming entitlement",
+    "Some candidate intake entries are merely catalogue leads; not individually vetted",
+    "Not an autonomous ATLAS worker run",
+    "No full repo suite executed",
+    "No source-level independent reviewers launched",
+    "Current code gate globally requires niche trope; broad pass invalid"
+  ]
+}
