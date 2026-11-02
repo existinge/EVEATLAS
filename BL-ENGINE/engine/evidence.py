@@ -1,5 +1,5 @@
 """Evidence evaluation: approval needs attributable independent facts, not boolean assertions."""
-REQUIRED_FACTS=("completed","real_bl","romance_progression","official_stream")
+REQUIRED_FACTS=("completed","real_bl","romance_progression")
 
 def evidence_gate(candidate):
     if candidate.get("hard_reject"):
