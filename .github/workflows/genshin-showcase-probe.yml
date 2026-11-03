@@ -1,32 +1,54 @@
-name: Genshin showcase API probe
+name: Genshin showcase collector
+
 on:
   push:
     branches:
+      - main
       - feat/genshin-showcase-collector
+    paths-ignore:
+      - 'data/genshin/**'
+  schedule:
+    - cron: '10 13 * * *'
   workflow_dispatch:
 
+concurrency:
+  group: genshin-showcase-collector
+  cancel-in-progress: false
+
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Report probe target
-        run: echo 'Testing public Enka showcase for UID 654252915'
-      - name: Check collector with fixture
+      - name: Validate collector
         run: python -m unittest discover -s tests -p test_genshin_showcase.py -v
-      - name: Attempt public showcase fetch
-        run: python tools/genshin_showcase.py --uid 654252915 --output genshin-showcase.json
-      - name: Save verified result only
-        if: success()
+      - name: Fetch public showcase
+        run: python tools/genshin_showcase.py --uid 654252915 --output data/genshin/showcase.json --markdown data/genshin/showcase.md
+      - name: Show normalized roster
+        run: cat data/genshin/showcase.md
+      - name: Save run artifact
         uses: actions/upload-artifact@v4
         with:
           name: genshin-showcase
-          path: genshin-showcase.json
-          retention-days: 7
+          path: |
+            data/genshin/showcase.json
+            data/genshin/showcase.md
+          retention-days: 14
+      - name: Publish latest snapshot to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/genshin/showcase.json data/genshin/showcase.md
+          if git diff --cached --quiet; then
+            echo "No showcase changes to publish."
+          else
+            git commit -m "data(genshin): refresh showcase [skip ci]"
+            git push
+          fi
