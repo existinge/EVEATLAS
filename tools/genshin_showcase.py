@@ -26,7 +26,7 @@ import urllib.request
 
 API = "https://enka.network/api/uid/{uid}/"
 CHARACTERS_URL = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/characters.json"
-LOC_URL = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/loc.json"
+LOC_URL = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/loc.json"\nWEAPONS_URL = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/gi/weapons.json"\nRELICS_URL = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/gi/relics.json"\nGI_LOCS_URL = "https://raw.githubusercontent.com/EnkaNetwork/API-docs/master/store/gi/locs.json"
 
 USER_AGENT = "EVEATLAS-GenshinShowcaseCollector/0.2 (single public UID; github.com/existinge/EVEATLAS)"
 
@@ -58,7 +58,7 @@ def _talents(entry, character_meta):
     return out
 
 
-def _weapon(entry, localizations):
+def _weapon(entry, localizations, weapons_meta=None, gi_locs=None):
     equipment = entry.get("equipList") or []
     weapon = next(
         (e for e in equipment if isinstance(e, dict) and isinstance(e.get("weapon"), dict)),
@@ -86,7 +86,7 @@ def _weapon(entry, localizations):
     }
 
 
-def _artifact_sets(entry, localizations):
+def _artifact_sets(entry, localizations, relics_meta=None, gi_locs=None):
     counts = collections.Counter()
     for equip in entry.get("equipList") or []:
         if not isinstance(equip, dict) or "reliquary" not in equip:
@@ -98,7 +98,7 @@ def _artifact_sets(entry, localizations):
     return dict(sorted(counts.items()))
 
 
-def summarize(data, uid, characters_meta, localizations):
+def summarize(data, uid, characters_meta, localizations, weapons_meta=None, relics_meta=None, gi_locs=None):
     if not isinstance(data, dict):
         raise ValueError("Unexpected response: object required")
 
