@@ -1,0 +1,27 @@
+name: Genshin showcase API probe
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check collector with fixture
+        run: python -m unittest discover -s tests -p test_genshin_showcase.py -v
+      - name: Attempt public showcase fetch
+        run: python tools/genshin_showcase.py --uid 654252915 --output genshin-showcase.json
+      - name: Save verified result only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: genshin-showcase
+          path: genshin-showcase.json
+          retention-days: 7
