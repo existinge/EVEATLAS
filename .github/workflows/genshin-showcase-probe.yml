@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Report probe target
+        run: echo 'Testing public Enka showcase for UID 654252915'
       - name: Check collector with fixture
         run: python -m unittest discover -s tests -p test_genshin_showcase.py -v
       - name: Attempt public showcase fetch
