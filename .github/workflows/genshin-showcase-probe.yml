@@ -8,7 +8,7 @@ on:
     paths-ignore:
       - 'data/genshin/**'
   schedule:
-    - cron: '10 13 * * *'
+    - cron: '30 11 * * *'
   workflow_dispatch:
 
 concurrency:
