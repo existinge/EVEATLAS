@@ -1,8 +1,8 @@
 {
   "uid": "654252915",
-  "fetched_at_utc": "2026-11-03T00:34:55.916156+00:00",
+  "fetched_at_utc": "2026-11-03T00:36:29.453751+00:00",
   "source": "https://enka.network/api/uid/654252915/",
-  "ttl_seconds": 57,
+  "ttl_seconds": 60,
   "profile": {
     "nickname": "イブ",
     "adventure_rank": 58,
@@ -21,7 +21,7 @@
       },
       "weapon": {
         "item_id": 14514,
-        "name": null,
+        "name": "Tome of the Eternal Flow",
         "level": 90,
         "promote_level": 6,
         "refinement": 1
@@ -40,7 +40,7 @@
       },
       "weapon": {
         "item_id": 13501,
-        "name": null,
+        "name": "Staff of Homa",
         "level": 90,
         "promote_level": 6,
         "refinement": 1
@@ -81,7 +81,7 @@
       },
       "weapon": {
         "item_id": 14403,
-        "name": null,
+        "name": "Sacrificial Fragments",
         "level": 50,
         "promote_level": 2,
         "refinement": 4
@@ -100,7 +100,7 @@
       },
       "weapon": {
         "item_id": 12418,
-        "name": null,
+        "name": "Mailed Flower",
         "level": 70,
         "promote_level": 4,
         "refinement": 5
@@ -121,7 +121,7 @@
       },
       "weapon": {
         "item_id": 13415,
-        "name": null,
+        "name": "\"The Catch\"",
         "level": 90,
         "promote_level": 6,
         "refinement": 5
@@ -140,7 +140,7 @@
       },
       "weapon": {
         "item_id": 13401,
-        "name": null,
+        "name": "Dragon's Bane",
         "level": 80,
         "promote_level": 5,
         "refinement": 5
@@ -159,7 +159,7 @@
       },
       "weapon": {
         "item_id": 12431,
-        "name": null,
+        "name": "Earth Shaker",
         "level": 90,
         "promote_level": 6,
         "refinement": 2
@@ -223,7 +223,7 @@
       },
       "weapon": {
         "item_id": 11407,
-        "name": null,
+        "name": "Iron Sting",
         "level": 80,
         "promote_level": 5,
         "refinement": 3
