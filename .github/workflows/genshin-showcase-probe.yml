@@ -1,5 +1,8 @@
 name: Genshin showcase API probe
 on:
+  push:
+    branches:
+      - feat/genshin-showcase-collector
   workflow_dispatch:
 
 permissions:
