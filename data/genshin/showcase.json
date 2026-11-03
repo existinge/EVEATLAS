@@ -1,6 +1,6 @@
 {
   "uid": "654252915",
-  "fetched_at_utc": "2026-11-03T00:40:50.553108+00:00",
+  "fetched_at_utc": "2026-11-03T17:57:30.392466+00:00",
   "source": "https://enka.network/api/uid/654252915/",
   "ttl_seconds": 60,
   "profile": {
@@ -181,8 +181,8 @@
       "weapon": {
         "item_id": 11401,
         "name": "Favonius Sword",
-        "level": 80,
-        "promote_level": 5,
+        "level": 90,
+        "promote_level": 6,
         "refinement": 5
       },
       "artifact_sets": {
