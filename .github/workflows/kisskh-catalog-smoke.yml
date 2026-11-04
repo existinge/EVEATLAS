@@ -1,0 +1,21 @@
+name: KissKH catalog live smoke (metadata only)
+on:
+  pull_request:
+    paths:
+      - 'tools/kisskh_catalog.py'
+      - 'tools/kisskh_live_smoke.py'
+      - '.github/workflows/kisskh-catalog-smoke.yml'
+  workflow_dispatch:
+jobs:
+  public-catalog-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: One request each; no secrets or media URLs
+        run: python -m tools.kisskh_live_smoke
