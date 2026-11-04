@@ -1,0 +1,19 @@
+name: MyDramaList historical v1 reachability probe
+on:
+  pull_request:
+    paths:
+      - 'tools/mdl_api_probe.py'
+      - '.github/workflows/mdl-api-probe.yml'
+jobs:
+  reachability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check historical API DNS and unauthenticated HTTP (one request)
+        run: python -m tools.mdl_api_probe
