@@ -1,0 +1,24 @@
+{
+  "name": "japanese-splat-city",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A Japanese shopping-street exploration game for learning vocabulary, rendered with Three.js and Gaussian splatting.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.187.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7",
+    "vitest": "^5.1.0"
+  }
+}

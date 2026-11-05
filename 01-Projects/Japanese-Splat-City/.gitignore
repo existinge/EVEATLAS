@@ -1,0 +1,15 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+
+# Local config and logs
+*.local
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.suo
