@@ -16,6 +16,9 @@ Thumbs.db
 
 # Tooling scratch (never commit)
 .firecrawl/
+.tmp-esbuild/
+.scratch-m3-parse/
+scratch-m3.html
 
 # Local verification evidence (screenshots etc., not part of the repo)
 docs/evidence/

@@ -6,7 +6,13 @@ import {
   Viewer,
 } from '@mkkellogg/gaussian-splats-3d';
 import { SceneManager } from './SceneManager';
-import { MONUMENT, ShoppingStreet, monumentPosition } from '../world/ShoppingStreet';
+import {
+  MONUMENT,
+  STREET_PROPS,
+  ShoppingStreet,
+  monumentPosition,
+  streetPropTransform,
+} from '../world/ShoppingStreet';
 import { buildStreetWorld } from '../world/Colliders';
 import { PlayerController } from './PlayerController';
 import { InputController } from './InputController';
@@ -34,7 +40,8 @@ export class Game {
    * Gaussian-splat viewer (M2). Bound to our renderer/camera/threeScene; we
    * drive it manually via {@link Viewer.update} + {@link Viewer.render} each
    * frame because selfDrivenMode is off. Loading is non-blocking: the game
-   * starts and runs normally while the monument splat streams in.
+   * starts and runs normally while the splat scenes (M2 monument + M3 street
+   * props) stream in.
    */
   private readonly viewer: Viewer;
 
@@ -105,6 +112,21 @@ export class Game {
       rotation: [0, 0, 1, 0],
       showLoadingUI: false,
     });
+
+    // ----- M3: roadside street props --------------------------------------
+    // Fresh captures (apple, brass diya lantern, concrete-cat statue) with
+    // the same Innerscene Y-down bake. streetPropTransform grounds each
+    // prop's base slab at world y ≈ 0 and applies the unit-quaternion flip
+    // that puts the prop's face toward the street (+z).
+    for (const prop of STREET_PROPS) {
+      const t = streetPropTransform(prop);
+      this.queueSplatScene(prop.asset, {
+        position: t.position,
+        rotation: t.rotation,
+        scale: t.scale,
+        showLoadingUI: false,
+      });
+    }
 
     this.player = new PlayerController(undefined, this.colliders);
     this.player.syncCamera(this.camera);

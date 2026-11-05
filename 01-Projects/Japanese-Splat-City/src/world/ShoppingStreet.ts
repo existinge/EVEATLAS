@@ -62,7 +62,7 @@ export const BUILDING_BASES: ReadonlyArray<{
  * and the model is vertically flipped 180° — see monumentPosition's quaternion
  * in Game.ts — so the base sits on the ground and the head points up.
  * Object-space metrics below are measured from the actual splat data
- * (see .firecrawl/bounds-final.mjs).
+ * (see facedir.mjs in .scratch-m3-parse/).
  *
  * This constant is the single source of truth for both the visual transform
  * ({@link monumentPosition}) and the collision footprint
@@ -124,6 +124,114 @@ export function monumentFootprint(scale: number = MONUMENT.scale): {
     maxX: (MONUMENT.boundsMax.x - MONUMENT.center.x) * scale,
     minZ: (MONUMENT.boundsMin.z - MONUMENT.center.z) * scale,
     maxZ: (MONUMENT.boundsMax.z - MONUMENT.center.z) * scale,
+  };
+}
+
+/**
+ * Milestone M3 street props: three fresh Innerscene captures placed at the
+ * roadside (road half-width 3.5, off the monument and off the spawn corridor).
+ * They were baked exactly like the monument — "Y-down": the file's max-Y end
+ * is the BASE that must rest on the ground, the min-Y end is the TOP. So each
+ * prop is re-grounded with `y = +boundsMax.y * scale` and vertically flipped
+ * 180°.
+ *
+ * Facing (which way the prop looks toward the street): the Quaternion `flip`
+ * is a *unit* 180° rotation, chosen so its +Z face ends up pointing +z (down
+ * the road toward the player, since the player spawns at z=+8 facing -z).
+ * - Z-flip `[0,0,1,0]` (180° about Z) negates x and y, keeps z. It rights the
+ *   vertical AND preserves the +Z facing. Used when the model's face is on +z.
+ * - X-flip `[1,0,0,0]` (180° about X) negates y and z, keeps x. It rights the
+ *   vertical AND *reverses* the Z facing — used when the model's face is on
+ *   -z (the cat statue's head), turning it +z. Safe because the cat's face
+ *   plane is mirror-symmetric in x.
+ *
+ * Geometry is measured from the actual splat files (facedir.mjs,
+ * .scratch-m3-parse/) which is why these constants live next to MONUMENT.
+ */
+export type StreetPropFlip = [number, number, number, number];
+
+export interface StreetPropDef {
+  /** Stable id used in docs/tests. */
+  name: string;
+  /** Path served by Vite (public/assets/splats/m3). */
+  asset: string;
+  /** Uniform object→meters scale, tuned so the prop looks life-sized. */
+  scale: number;
+  /** Object-space bounds, measured from splat data (Y-down bake). */
+  boundsMin: { x: number; y: number; z: number };
+  boundsMax: { x: number; y: number; z: number };
+  center: { x: number; y: number; z: number };
+  /** Street placement (world x, z). Chosen clear of the monument footprint
+   *  and the player spawn corridor (see tests/street-props.test.ts). */
+  at: { x: number; z: number };
+  /** Unit 180° vertical flip (see module comment for Z- vs X-flip). */
+  flip: StreetPropFlip;
+  /** Diagnostic: which side the original model faces before the flip. */
+  faceNote: string;
+}
+
+export const STREET_PROPS: readonly StreetPropDef[] = [
+  {
+    name: 'apple',
+    asset: '/assets/splats/m3/apple.ksplat',
+    scale: 0.6,
+    boundsMin: { x: -0.286, y: -0.235, z: -0.28 },
+    boundsMax: { x: 0.285, y: 0.25, z: 0.282 },
+    center: { x: 0, y: 0.007, z: 0.001 },
+    at: { x: 2.5, z: 3.5 },
+    // Near-centrosymmetric, thin stem at min-Y (top). Z-flip keeps +Z facing.
+    flip: [0, 0, 1, 0],
+    faceNote: 'near-centrosymmetric; Z-flip preserves +Z',
+  },
+  {
+    name: 'brass-diya-lantern',
+    asset: '/assets/splats/m3/brass-diya-lantern.splat',
+    scale: 1.2,
+    boundsMin: { x: -0.055, y: -0.38, z: -0.054 },
+    boundsMax: { x: 0.065, y: 0.004, z: 0.067 },
+    center: { x: 0.005, y: -0.188, z: 0.006 },
+    at: { x: -2.5, z: 1.5 },
+    // Wide base disc at max-Y; thin finial spike at min-Y (top). Near
+    // centrosymmetric in x/z, so Z-flip is safe and keeps +Z facing.
+    flip: [0, 0, 1, 0],
+    faceNote: 'near-centrosymmetric; Z-flip preserves +Z',
+  },
+  {
+    name: 'concrete-cat-statue',
+    asset: '/assets/splats/m3/concrete-cat-statue.splat',
+    scale: 1.5,
+    boundsMin: { x: -0.078, y: -0.282, z: -0.1 },
+    boundsMax: { x: 0.074, y: 0.001, z: 0.149 },
+    center: { x: -0.002, y: -0.141, z: 0.025 },
+    at: { x: 2.6, z: -3.0 },
+    // The head faces -z (its +z reach 0.15 wide tail side, -z reach 0.085
+    // head side). X-flip rights the vertical AND swings the head to +z so the
+    // cat looks down the street at the player. Face plane is mirror-symmetric
+    // in x, so the X-flip cannot mirror the face wrongly.
+    flip: [1, 0, 0, 0],
+    faceNote: 'head faces -z; X-flip turns head to +Z',
+  },
+];
+
+/**
+ * World-space transform that puts a street prop on the ground and facing the
+ * street: base grounded at world y ≈ 0 (`+boundsMax.y * scale`, the same
+ * ground line as the M2 monument), re-centered on its street slot, vertically
+ * flipped by the unit quaternion in {@link StreetPropDef.flip}.
+ */
+export function streetPropTransform(prop: StreetPropDef): {
+  position: [number, number, number];
+  rotation: StreetPropFlip;
+  scale: [number, number, number];
+} {
+  return {
+    position: [
+      prop.at.x - prop.center.x * prop.scale,
+      prop.boundsMax.y * prop.scale,
+      prop.at.z - prop.center.z * prop.scale,
+    ],
+    rotation: prop.flip,
+    scale: [prop.scale, prop.scale, prop.scale],
   };
 }
 

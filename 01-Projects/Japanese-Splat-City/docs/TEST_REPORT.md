@@ -65,3 +65,71 @@ How each milestone gate was verified, with commands and results.
 
 > **Tooling note:** this pass was produced with system **Chrome** (`--headless=new`,
 > CDP honored on this host); Edge remains blocked by machine policy.
+
+## M2-fix — Monument transform correction + boot fix (supersedes the M2 transform claims)
+
+The M2 row above documents the original integration; the placement it claimed was
+wrong (bull floating at `y = 3.024`) and the multi-splat boot crashed. Both are fixed
+here and re-verified end-to-end:
+
+- [x] `npm run typecheck` passes — `tsc --noEmit` clean, strict
+- [x] `npm test` passes — Vitest 28/28 (new `tests/street-props.test.ts` adds 7 prop/ground
+  suites, incl. M2 grounding invariants re-asserted in unit form)
+- [x] `npm run build` passes — `dist/` emitted (JS 791.82 kB / gzip 202.39 kB)
+- [x] Ground truth transform — `rotation` on the splat scene is a **quaternion**: the
+  Innerscene bake is Y-down, so the file's `maxY` end is the base slab; the bull is
+  vertically flipped with the unit Z-flip `[0,0,1,0]` and grounded with
+  `position.y = +boundsMax.y·scale` (`worldMinY` of every splat ≈ 0). No Euler
+  `[0,0,Math.PI]` and no `−boundsMin.y·scale` anywhere.
+- [x] Boot crash fixed — four synchronous `viewer.addSplatScene()` calls collided with the
+  viewer's internal load/unload state (`Cannot add splat scene while another load or unload
+  is already in progress`); all loads now go through a promise chain (`queueSplatScene`).
+- [x] Headless-Chrome CDP verification (dev server, fresh page):
+  - `window.__splatCityGame` exists; canvas 1264×705; WebGL 2.0 context live
+  - `viewer.getSceneCount() === 4` (bull + 3 props), `isLoadingOrUnloading() === false`
+  - every scene's `position`/`quaternion`/`scale`/`splatCount` matches the expectations
+    below to ≤ 2e-3 (bull 200,000 splats)
+  - zero uncaught exceptions, zero `console.error`, zero viewer log errors, zero failed
+    splat requests; all 4 splat assets return HTTP 200
+- [x] Pixel evidence (`docs/evidence/m3-bull.png` vs `m3-bull-nosplat.png`, splats hidden
+  via `viewer.splatMesh.visible=false`): 5.26 % of frame changed, meanAbsDiff 4.495 in a
+  601×379 bbox at (238, 180) — the bull renders dead-ahead of spawn, large and upright
+  (horns-up), resting on the street ground line
+
+## M3 — Japanese street props (apple, brass-diya-lantern, concrete-cat)
+
+- [x] `npm run typecheck` passes — `tsc --noEmit` clean, strict
+- [x] `npm test` passes — Vitest 28/28; `tests/street-props.test.ts` asserts: exactly the
+  three milestone props are registered (a `wine-barrel` asset is **excluded** by name and
+  the count check fails if added); each prop's computed worldMinY ≈ 0 (M2 ground line);
+  both flip quaternions are unit length; the cat's X-flip `[1,0,0,0]` cancels its
+  file-space −Z-facing head so it faces the street (+Z) like the Z-flipped apple/lantern;
+  props sit on road strips, clearing the monument footprint and the ±1 m spawn corridor,
+  pairwise non-overlapping
+- [x] `npm run build` passes — same bundle as M2-fix row
+- [x] Headless-Chrome CDP (same harness as M2-fix): 4 scenes loaded with exact expected
+  transforms; no console errors on any pass; all three prop assets HTTP 200
+
+  | scene | position | quaternion | scale | splatCount |
+  |-------|----------|------------|-------|------------|
+  | bull (M2) | `[-0.035, 0.0301, -0.2065]` | `[0,0,1,0]` | `[7,7,7]` | 200,000 |
+  | apple | `[2.5, 0.15, 3.4994]` | `[0,0,1,0]` | `[0.6,0.6,0.6]` | 36,313 |
+  | brass-diya-lantern | `[-2.506, 0.0048, 1.4928]` | `[0,0,1,0]` | `[1.2,1.2,1.2]` | 150,000 |
+  | concrete-cat | `[2.603, 0.0015, -3.0375]` | `[1,0,0,0]` | `[1.5,1.5,1.5]` | 150,000 |
+- [x] Pixel evidence (`docs/evidence/m3-*.png`, splats-hidden baselines via
+  `splatMesh.visible=false`):
+  - **stability**: same view 1 s apart → meanAbsDiff 0, 0.00 % changed (diff noise floor)
+  - **default view coverage** vs. nosplat: meanAbsDiff 2.824, 4.96 % changed, full-frame
+    bbox — the whole street scene differs as expected
+  - **cat wide** (from spawn): 0.22 % changed in a 39×79 bbox — the cat is small at 2.5 m
+  - **cat close-up** (camera 1.7 m away): 0.59 % changed (5,260 px) in a **centered 61×126
+    bbox** (18 % of frame height — the statue's true proportions), 6,048 unique colors vs
+    777 with splats hidden; ≥ 0.00 % noise floor ⇒ rendered at the expected screen
+    position and size, facing the camera (street-facing +Z)
+- [x] Playability — player spawn `(0, 0, 8)` field of view contains bull + apple + lantern;
+  cat requires a short walk south; all props are visual-only (no collision changes), so
+  the player can walk past them; no path is blocked
+
+> **Tooling note (extends the M2 note):** headless Chrome CDP (system Chrome, Edge blocked)
+> is the visual-verification harness for M2-fix and M3; the M1 render-visual sweep remains
+> queued for M8 but the tooling it will use is proven here.
