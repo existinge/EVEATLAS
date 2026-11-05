@@ -74,7 +74,11 @@ export class PlayerController {
 
   constructor(
     private readonly config: PlayerConfig = DEFAULT_CONFIG,
-    private readonly world: StreetWorld = { buildings: [], bounds: { minX: -100, maxX: 100, minZ: -100, maxZ: 100 } },
+    private readonly world: StreetWorld = {
+      buildings: [],
+      poles: [],
+      bounds: { minX: -100, maxX: 100, minZ: -100, maxZ: 100 },
+    },
   ) {
     this.reset();
   }
@@ -155,11 +159,15 @@ export class PlayerController {
     }
 
     // --- Integrate XZ with collision resolution and bounds clamping.
-    const { buildings, bounds } = this.world;
+    // Building footprints and lamp poles (M3.1) share the same rectangular
+    // resolver; pole colliders are thin, so the result is a stop/slide exactly
+    // like any street building.
+    const { buildings, poles, bounds } = this.world;
+    const boxes = buildings.concat(poles);
     let newX = this.position.x + this.velocity.x * dt;
     let newZ = this.position.z + this.velocity.z * dt;
-    newX = this.resolveAxisX(newX, newZ, this.config.radius, buildings, bounds);
-    newZ = this.resolveAxisZ(newX, newZ, this.config.radius, buildings, bounds);
+    newX = this.resolveAxisX(newX, newZ, this.config.radius, boxes, bounds);
+    newZ = this.resolveAxisZ(newX, newZ, this.config.radius, boxes, bounds);
 
     this.position.set(newX, newY, newZ);
     this.syncCamera(camera);
@@ -169,15 +177,15 @@ export class PlayerController {
     candX: number,
     freeZ: number,
     radius: number,
-    buildings: Aabb2[],
+    boxes: Aabb2[],
     bounds: Aabb2,
   ): number {
     let x = candX;
     // The player's position BEFORE this frame's move: used to decide which
     // axis was actually crossed this frame when the candidate enters a box.
     const prevZ = this.position.z;
-    // Building push-out on the X axis.
-    for (const b of buildings) {
+    // Box push-out on the X axis.
+    for (const b of boxes) {
       if (x <= b.minX - radius || x >= b.maxX + radius) continue;
       if (freeZ <= b.minZ - radius || freeZ >= b.maxZ + radius) continue;
       // This collider's Z band was only entered by this frame's move, so the
@@ -198,14 +206,14 @@ export class PlayerController {
     resolvedX: number,
     candZ: number,
     radius: number,
-    buildings: Aabb2[],
+    boxes: Aabb2[],
     bounds: Aabb2,
   ): number {
     let z = candZ;
     // See resolveAxisX: only slide along X walls when the X span was already
     // overlapped before this frame's move.
     const prevX = this.position.x;
-    for (const b of buildings) {
+    for (const b of boxes) {
       if (z <= b.minZ - radius || z >= b.maxZ + radius) continue;
       if (resolvedX <= b.minX - radius || resolvedX >= b.maxX + radius) continue;
       if (prevX <= b.minX - radius || prevX >= b.maxX + radius) continue;

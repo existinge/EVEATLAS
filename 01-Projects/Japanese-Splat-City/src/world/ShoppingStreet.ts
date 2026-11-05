@@ -235,12 +235,64 @@ export function streetPropTransform(prop: StreetPropDef): {
   };
 }
 
+/**
+ * M3.1 colorization polish — street lamps (the deferred-M3 "lighting" item).
+ *
+ * Japanese shopping streets are lit at dusk by warm "azure/white" lamp bulbs
+ * ringing the road. The color task asked for a bulb tint in the **200–220 hue
+ * range**; this block is the authoritative in-code definition of that range
+ * (theme, docs and tests all reference these constants). The bulb look is not
+ * baked splat data — it is new procedural geometry plus a real PointLight per
+ * lamp, so it can actually glow in the Three.js scene (unlike the fixed splat
+ * colors).
+ */
+export const BULB_HUE_RANGE = { min: 200, max: 220 } as const;
+
+/** The concrete hue (within {@link BULB_HUE_RANGE}) used for all lamp bulbs. */
+export const BULB_HUE = 210;
+
+/**
+ * The lamp-bulb color: a saturated azure/cyan ("warm white") at BULB_HUE.
+ * Shared by the emissive lamp geometry, the translucent glass shade and each
+ * lamp's PointLight so the glow reads consistently everywhere.
+ */
+export function bulbColor(): THREE.Color {
+  return new THREE.Color().setHSL(BULB_HUE / 360, 0.9, 0.72);
+}
+
+/** Half-extents (meters) of a lamp pole's collision footprint. */
+export const LAMP_POLE_HALF = { x: 0.12, z: 0.35 } as const;
+
+export interface StreetLampDef {
+  /** Stable id used in docs/tests. */
+  id: string;
+  /** World x/z of the pole base. */
+  x: number;
+  z: number;
+}
+
+/**
+ * Street lamps on the sidewalk strips, one per building gap so no lamp pierces
+ * a building footprint; each is staggered along the road away from the spawn
+ * corridor (|x| ≈ 0, z ≈ 8) and far from the monument and M3 prop footprints.
+ * The arm + bulb reach inward toward the road so the glow lights the walkway.
+ */
+export const STREET_LAMPS: readonly StreetLampDef[] = [
+  { id: 'west-north', x: 4.3, z: -5 },
+  { id: 'west-mid', x: 4.3, z: 11 },
+  { id: 'west-south', x: 4.3, z: 31 },
+  { id: 'east-north', x: -4.3, z: -21 },
+  { id: 'east-mid', x: -4.3, z: 1 },
+  { id: 'east-south', x: -4.3, z: 22 },
+] as const;
+
 export class ShoppingStreet {
   readonly group = new THREE.Group();
 
   constructor() {
     this.buildGround();
     this.buildBuildings();
+    this.buildLamps();
   }
 
   private buildGround(): void {
@@ -292,6 +344,69 @@ export class ShoppingStreet {
       mesh.castShadow = true;
       mesh.receiveShadow = true;
       this.group.add(mesh);
+    }
+  }
+
+  /**
+   * Street lamps (M3.1): dark pole + arm reaching toward the road, an emissive
+   * bulb at BULB_HUE, a translucent glass shade, and a PointLight so the bulb
+   * actually throws warm azure light onto the street at night.
+   */
+  private buildLamps(): void {
+    const { groundY } = STREET;
+    const bulb = bulbColor();
+    for (const lamp of STREET_LAMPS) {
+      // Arm direction: inward, toward the road (x = 0).
+      const dir = lamp.x > 0 ? -1 : 1;
+      const bulbX = lamp.x + dir * 0.85;
+
+      const dark = new THREE.MeshStandardMaterial({
+        color: 0x2a2d33,
+        roughness: 0.55,
+        metalness: 0.7,
+      });
+
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.08, 3.4, 10), dark);
+      pole.position.set(lamp.x, groundY + 1.7, lamp.z);
+      pole.castShadow = true;
+      this.group.add(pole);
+
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.06, 0.06), dark);
+      arm.position.set(lamp.x + dir * 0.45, groundY + 3.32, lamp.z);
+      arm.castShadow = true;
+      this.group.add(arm);
+
+      // Emissive bulb core.
+      const bulbMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.09, 12, 10),
+        new THREE.MeshStandardMaterial({
+          color: bulb.clone(),
+          emissive: bulb.clone(),
+          emissiveIntensity: 2.4,
+          roughness: 0.4,
+        }),
+      );
+      bulbMesh.position.set(bulbX, groundY + 3.18, lamp.z);
+      this.group.add(bulbMesh);
+
+      // Translucent glass shade wrapping the bulb.
+      const shade = new THREE.Mesh(
+        new THREE.SphereGeometry(0.16, 12, 10),
+        new THREE.MeshStandardMaterial({
+          color: bulb.clone(),
+          emissive: bulb.clone(),
+          emissiveIntensity: 0.6,
+          transparent: true,
+          opacity: 0.4,
+        }),
+      );
+      shade.position.set(bulbX, groundY + 3.18, lamp.z);
+      this.group.add(shade);
+
+      // Real light source tinted with the same bulb color.
+      const light = new THREE.PointLight(bulb.clone(), 2.2, 10, 2);
+      light.position.set(bulbX, groundY + 3.15, lamp.z);
+      this.group.add(light);
     }
   }
 }

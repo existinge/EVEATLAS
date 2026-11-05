@@ -16,7 +16,13 @@ a commit and a build-log entry).
       street — grounded to the M2 ground line and street-facing; splat stays
       visual-only; verified in unit tests, headless-Chrome CDP and pixel diffs.
       *(Remaining M3 decor from the original bullet — signage, convenience-store /
-      café zones, vending machines, lighting — is future work.)*
+      café zones, vending machines — is future work; lighting became M3.1.)*
+- [x] **M3.1 — Street lighting / colorization**: six street lamps flanking the road
+      with azure/warm-white bulbs — `bulbColor()` = `setHSL(210, 0.9, 0.72)` within the
+      requested 200–220 hue band — shared as an emissive bulb + translucent glass shade
+      per lamp, lit by a per-lamp `PointLight`; lamp poles are **real AABB colliders**
+      (`Colliders.poles`), so the player collides with them; verified in unit tests and
+      headless-Chrome CDP (6 lamps + 6 PointLights live in the scene, zero console errors).
 - [ ] **M4 — Interactable environment**: targeting, E interactions, contextual
       UI, registration system, ≥12 interactive objects with Japanese labels.
 - [ ] **M5 — Vocabulary learning**: typed schema, N4–N3 content, discovery

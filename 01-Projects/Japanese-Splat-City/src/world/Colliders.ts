@@ -1,4 +1,11 @@
-import { BUILDING_BASES, MONUMENT, STREET, monumentFootprint } from './ShoppingStreet';
+import {
+  BUILDING_BASES,
+  LAMP_POLE_HALF,
+  MONUMENT,
+  STREET,
+  STREET_LAMPS,
+  monumentFootprint,
+} from './ShoppingStreet';
 
 /**
  * Axis-aligned rectangle collider in the XZ ground plane.
@@ -20,6 +27,8 @@ export interface Aabb2 {
  */
 export interface StreetWorld {
   buildings: Aabb2[];
+  /** Street-lamp pole footprints (M3.1), one per STREET_LAMPS entry. */
+  poles: Aabb2[];
   bounds: Aabb2;
 }
 
@@ -53,5 +62,14 @@ export function buildStreetWorld(bounds: Aabb2 = STREET.bounds): StreetWorld {
   // is its raw footprint — PlayerController pads any collider by its radius
   // at query time (see MONUMENT.playerRadius), so no padding happens here.
   buildings.push(monumentFootprint(MONUMENT.scale));
-  return { buildings, bounds };
+
+  // Street-lamp poles (M3.1), centered on each lamp from STREET_LAMPS.
+  const poles = STREET_LAMPS.map((l) => ({
+    minX: l.x - LAMP_POLE_HALF.x,
+    maxX: l.x + LAMP_POLE_HALF.x,
+    minZ: l.z - LAMP_POLE_HALF.z,
+    maxZ: l.z + LAMP_POLE_HALF.z,
+  }));
+
+  return { buildings, poles, bounds };
 }

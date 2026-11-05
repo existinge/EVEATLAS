@@ -133,3 +133,37 @@ here and re-verified end-to-end:
 > **Tooling note (extends the M2 note):** headless Chrome CDP (system Chrome, Edge blocked)
 > is the visual-verification harness for M2-fix and M3; the M1 render-visual sweep remains
 > queued for M8 but the tooling it will use is proven here.
+
+## M3.1 — Street lighting / colorization
+
+- [x] `npm run typecheck` passes — `tsc --noEmit` clean, strict
+- [x] `npm test` passes — Vitest **37/37** (4 files); new `tests/lamp-colorization.test.ts` asserts:
+  - bulb colorization: `bulbColor()` returns `setHSL` hue ∈ [209, 211], saturation > 0.8,
+    lightness > 0.6 (azure/cyan "warm white" in the requested 200–220 band)
+  - placement: all 6 `STREET_LAMPS` sit on the sidewalk strip (x = ±4.3, between
+    `sidewalkInner`/`sidewalkOuter`) and inside `STREET.bounds`
+  - clearance: lamp poles clear every building base, the monument footprint and every
+    `STREET_PROPS` footprint; the spawn corridor `(0, 8)` is pole-free
+  - colliders: `Colliders.poles` has 6 entries matching each lamp's x/z within ±
+    `LAMP_POLE_HALF`, and the poles are mutually disjoint
+  - collision: walking from `(5.8, 0, 11)` toward lamp `west-mid` (4.3, 11) is stopped
+    flush at x ∈ [4.75, 4.85] (`4.3 + LAMP_POLE_HALF.x + 0.38`), so the player cannot walk
+    through a pole; with the pole removed from the world the player reaches x < 4.3
+  - scene wiring: the `ShoppingStreet` group contains exactly 6 `PointLight`s and ≥ 6
+    emissive (`emissiveIntensity > 1`) materials whose hue ≈ `BULB_HUE` (210)
+- [x] `npm run build` passes — `dist/` emitted (JS ~793.61 kB / CSS 4.91 kB /
+  `index.html` 0.83 kB), built with the workspace-local `.tmp-esbuild` TMP override
+- [x] Headless-Chrome CDP (dev server `http://127.0.0.1:5173/`, same harness as M2-fix):
+  - app boots, `window.__splatCityGame` present, canvas 1264×705
+  - live scene traversal: **6 `PointLight`s** and **6 emissive bulbs**, every bulb at
+    **hue 210 / s 0.9 / l 0.72 / intensity 2.4** — the exact `bulbColor()` spec
+  - zero uncaught exceptions, zero `console.error`, zero log-level errors
+- [x] Pixel evidence (`docs/evidence/m31-*.png`): `street-corridor`, `lamp-closeup` and
+  `spawn-view` screenshots decode as non-blank, well-exposed frames (average 88–110,
+  10–22 % bright pixels, 27–36 % colored pixels); the close-up is cool/azure-dominant
+  (blue 108 > red 94), consistent with the azure bulbs against the `0x9ec8e8` sky
+- [x] No splat provenance change — lighting is procedural Three.js geometry; every
+  splat asset still carries CC0 attribution per `public/assets/licenses/README.md`
+- [~] Apples/props are unlit by the lamps from range (`PointLight.distance = 10` is a
+  deliberate, documented scope limit); the glow is on the lamp bulbs and shades
+  themselves rather than a full scene relight
