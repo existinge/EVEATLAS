@@ -25,6 +25,7 @@ const CONTROLS = [
   ['Space', 'Jump (ジャンプ)'],
   ['Esc', 'Pause menu (メニュー)'],
   ['R', 'Reset position (リセット)'],
+  ['E', 'Interact (調べる)'],
 ];
 
 export class MenuOverlay {

@@ -13,6 +13,7 @@ export class InputController {
   private deltaX = 0;
   private deltaY = 0;
   private jumpQueued = false;
+  private interactQueued = false;
   private locked = false;
 
   private readonly onKeyDown = (e: KeyboardEvent): void => {
@@ -22,6 +23,8 @@ export class InputController {
     if (code === 'Space') {
       e.preventDefault();
       this.jumpQueued = true;
+    } else if (code === 'KeyE') {
+      this.interactQueued = true;
     }
   };
   private readonly onKeyUp = (e: KeyboardEvent): void => {
@@ -74,6 +77,13 @@ export class InputController {
     const j = this.jumpQueued;
     this.jumpQueued = false;
     return j;
+  }
+
+  /** Consumes the edge-triggered interact (E) flag. */
+  consumeInteract(): boolean {
+    const i = this.interactQueued;
+    this.interactQueued = false;
+    return i;
   }
 
   getPlayerInput(): { forward: boolean; back: boolean; left: boolean; right: boolean; sprint: boolean } {

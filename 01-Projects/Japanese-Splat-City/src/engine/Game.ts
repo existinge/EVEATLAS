@@ -17,6 +17,9 @@ import { buildStreetWorld } from '../world/Colliders';
 import { PlayerController } from './PlayerController';
 import { InputController } from './InputController';
 import { MenuOverlay, type QualityPreset } from '../ui/MenuOverlay';
+import { InteractionHud } from '../ui/InteractionHud';
+import { InteractiveRegistry } from '../interaction/InteractiveRegistry';
+import { INTERACTABLES, INTERACTION_DISTANCE } from '../world/Interactives';
 
 /**
  * Central game composition root.
@@ -35,6 +38,18 @@ export class Game {
 
   private readonly overlay: MenuOverlay;
   private readonly colliders = buildStreetWorld();
+
+  // ----- M4: interactable environment --------------------------------------
+  // One registry + one HUD drive every hotspot (shops, monument, props). The
+  // registry is also the M5 vocabulary contract: every InteractiveDef carries
+  // the Japanese label (label) and reading (reading) that the vocab lesson
+  // system will replay from the same source of truth.
+  private readonly registry = new InteractiveRegistry(INTERACTABLES);
+  private readonly interactionHud: InteractionHud;
+  /** id -> interactions this session (drive-by M4 evidence, M7 persistence). */
+  private readonly interacted = new Map<string, number>();
+  /** Reused per-frame scratch vector for the interaction ray (no GC churn). */
+  private readonly interactionRay = new THREE.Vector3();
 
   /**
    * Gaussian-splat viewer (M2). Bound to our renderer/camera/threeScene; we
@@ -133,6 +148,8 @@ export class Game {
 
     this.input = new InputController(this.renderer.domElement);
 
+    this.interactionHud = new InteractionHud(container);
+
     this.overlay = new MenuOverlay(container, {
       onPlay: () => this.startPlaying(),
       onReset: () => this.resetPlayer(),
@@ -171,6 +188,8 @@ export class Game {
     } else {
       this.playing = false;
       this.overlay.show(true);
+      // Dismiss any prompt/message that was on screen while playing.
+      this.interactionHud.clear();
     }
   };
 
@@ -228,6 +247,7 @@ export class Game {
     window.removeEventListener('resize', this.handleResize);
     window.removeEventListener('keydown', this.onKeyDown);
     this.input.dispose();
+    this.interactionHud.dispose();
     this.overlay.hide();
     // Tear down the splat viewer (aborts the load, frees workers/buffers)
     // before disposing the renderer it renders into.
@@ -251,8 +271,9 @@ export class Game {
 
   /**
    * Frame update hook. Feeds input into the player when pointer lock is held;
-   * later milestones extend this with interaction, missions and learning
-   * systems.
+   * while playing it also casts the interaction ray every frame (M4): the
+   * nearest hotspot within reach drives the HUD prompt, and a fresh E press
+   * books an entry in the registry and flashes the action message.
    */
   protected update(dt: number): void {
     if (!this.playing) return;
@@ -270,6 +291,23 @@ export class Game {
       jump: this.input.consumeJump(),
     };
     this.player.update(dt, movement, this.camera);
+
+    // ----- M4: targeting + E interactions ----------------------------------
+    // The ray is the camera's forward axis, the same ray the reticle shows.
+    // updateMatrixWorld() keeps the camera matrix fresh on the very first
+    // frame (the render pass normally refreshes it after update).
+    this.camera.updateMatrixWorld();
+    const direction = this.interactionRay; // scratch, overwritten per frame
+    this.camera.getWorldDirection(direction);
+    const target = this.registry.target(this.camera.position, direction, INTERACTION_DISTANCE);
+    this.interactionHud.setPrompt(target);
+    if (target && this.input.consumeInteract()) {
+      const entry = this.registry.interact(target.id);
+      if (entry) {
+        this.interacted.set(entry.id, (this.interacted.get(entry.id) ?? 0) + 1);
+        this.interactionHud.showMessage(`${entry.message}`);
+      }
+    }
   }
 
   private readonly handleResize = (): void => {

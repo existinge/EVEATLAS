@@ -167,3 +167,38 @@ here and re-verified end-to-end:
 - [~] Apples/props are unlit by the lamps from range (`PointLight.distance = 10` is a
   deliberate, documented scope limit); the glow is on the lamp bulbs and shades
   themselves rather than a full scene relight
+
+## M4 — Interactable environment
+
+- [x] `npm run typecheck` passes — `tsc --noEmit` clean, strict
+- [x] `npm test` passes — Vitest **61/61** over 5 files; new `tests/interaction.test.ts`
+  (23 tests) covers three layers:
+  - `rayAabb3`: straight hit at t=4; direction-length invariance; sideways/away miss;
+    origin-inside → 0; `maxDistance` gating; parallel-outside → null
+  - `interactionTarget`: nearest hit wins regardless of list order; `maxDistance`
+    excludes farther entries; exact-boundary hit at `maxDistance`; empty list → null
+  - `InteractiveRegistry`: size/get/all; unknown id → null; per-def cooldown (second
+    interact within the cooldown → null); history cap + most-recent-first; label
+    snapshot; target delegation
+  - `INTERACTABLES` contract: exactly 12; unique ids; non-empty
+    label/reading/description/message/action; Japanese regex on label + reading;
+    8 `shop-*` + 3 `prop-*` + `monument`; the registry accepts all 12
+  - hotspot geometry vs collision solids: every hotspot clear of the 8 building
+    footprints, 6 lamp poles and the monument footprint; every hotspot inside
+    `STREET.bounds`; shop slabs flush with the facade and extending 0.2 m road-side,
+    not inside the building footprint
+- [x] `npm run build` produces a production bundle — `dist/` emitted
+  (JS 800.71 kB / gzip 205.50 kB, CSS 4.91 kB)
+- [x] Headless-Chrome CDP on the dev server (Chrome @9222, Vite @5173):
+  - page boots with zero `console.error` and zero uncaught exceptions
+  - `#hud` (商店街 — Shōtengai / E で 調べる), `#target-reticle` and
+    `#interaction-panel` (hidden) present; the menu overlay lists the
+    `E — Interact (調べる)` control
+  - clicking Play acquires pointer lock (`document.pointerLockElement` set,
+    `body.pointer-locked`)
+  - walking forward from spawn activates the reticle and shows the monument prompt
+    `牛の石像 まちのシンボルです。おまつりのときは花をそなえます。 E — 見る`
+  - pressing E shows the action message `石の牛をじっくり見ました。`
+- [~] Only the monument hotspot was exercised in the browser; the other 11 hotspots
+  are covered by the geometry/contract unit tests (all 12 defs share the same
+  targeting + registry path).

@@ -23,8 +23,12 @@ a commit and a build-log entry).
       per lamp, lit by a per-lamp `PointLight`; lamp poles are **real AABB colliders**
       (`Colliders.poles`), so the player collides with them; verified in unit tests and
       headless-Chrome CDP (6 lamps + 6 PointLights live in the scene, zero console errors).
-- [ ] **M4 — Interactable environment**: targeting, E interactions, contextual
-      UI, registration system, ≥12 interactive objects with Japanese labels.
+- [x] **M4 — Interactable environment**: pure-math ray/AABB targeting, edge-triggered
+      E interactions, contextual reticle + Japanese prompt/message UI, a registration
+      system (`InteractiveRegistry` with per-def cooldown + history) and **12**
+      interactive objects with Japanese labels (8 shopfronts, the monument, 3 street
+      props); the `InteractiveDef` label/reading/description/message fields are the
+      shared M4→M5 vocabulary contract. Verified in unit tests and headless-Chrome CDP.
 - [ ] **M5 — Vocabulary learning**: typed schema, N4–N3 content, discovery
       events, notebook, encountered-words tracking; no English→Japanese
       translation quizzes.
