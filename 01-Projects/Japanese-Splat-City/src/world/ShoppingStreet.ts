@@ -50,6 +50,77 @@ export const BUILDING_BASES: ReadonlyArray<{
   { x: -(STREET.buildingFront + 1.5), z: 32, w: 10, depth: 8, h: 9, color: 0xb3a39b },
 ];
 
+/**
+ * Street monument: a real Gaussian-splat model (carved bull head, CC0, see
+ * public/assets/licenses/README.md) standing in the middle of the road at
+ * x = 0, directly ahead of the player spawn. Milestone M2.
+ *
+ * The model's own origin is not at its feet, so the splat must be raised by
+ * `-boundsMin.y * scale`. Object-space metrics below are measured from the
+ * actual splat data (see .firecrawl/bounds-final.mjs).
+ *
+ * This constant is the single source of truth for both the visual transform
+ * ({@link monumentPosition}) and the collision footprint
+ * ({@link monumentFootprint}, consumed by {@link ./Colliders}).
+ */
+export const MONUMENT = {
+  /** Uniform scale applied to the splat model (meters per object unit). */
+  scale: 7,
+  /**
+   * Player collision radius in meters; must match
+   * PlayerController.DEFAULT_CONFIG.radius. The controller itself pads every
+   * collider by this radius at query time (resolveAxisX/Z), so footprints in
+   * this module stay raw — this field only documents that coupling.
+   */
+  playerRadius: 0.38,
+  /** Object-space min corner of the splat, measured from splat data. */
+  boundsMin: { x: -0.1475, y: -0.432, z: -0.1112 },
+  /** Object-space max corner of the splat, measured from splat data. */
+  boundsMax: { x: 0.1575, y: 0.0043, z: 0.1702 },
+  /** Object-space center offset of the splat from the model origin. */
+  center: { x: 0.005, y: -0.2138, z: 0.0295 },
+} as const;
+
+/**
+ * World-space position that places the monument centered on the road (x = 0)
+ * resting on the ground (its lowest splat point touches y = 0).
+ */
+export function monumentPosition(scale: number = MONUMENT.scale): {
+  x: number;
+  y: number;
+  z: number;
+} {
+  return {
+    x: -MONUMENT.center.x * scale,
+    y: -MONUMENT.boundsMin.y * scale,
+    z: -MONUMENT.center.z * scale,
+  };
+}
+
+/**
+ * World-space collision footprint of the monument — the raw splat rectangle,
+ * NOT padded. PlayerController inflates every collider by its radius at query
+ * time (see MONUMENT.playerRadius), exactly as it does for the building
+ * footprints from BUILDING_BASES, so keeping this raw is required for
+ * consistent block and slide behavior.
+ *
+ * Structurally a {@link ./Colliders.Aabb2}; declared inline to keep this
+ * module free of imports from Colliders (which itself imports this module).
+ */
+export function monumentFootprint(scale: number = MONUMENT.scale): {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+} {
+  return {
+    minX: (MONUMENT.boundsMin.x - MONUMENT.center.x) * scale,
+    maxX: (MONUMENT.boundsMax.x - MONUMENT.center.x) * scale,
+    minZ: (MONUMENT.boundsMin.z - MONUMENT.center.z) * scale,
+    maxZ: (MONUMENT.boundsMax.z - MONUMENT.center.z) * scale,
+  };
+}
+
 export class ShoppingStreet {
   readonly group = new THREE.Group();
 

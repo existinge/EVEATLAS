@@ -1,6 +1,12 @@
 import * as THREE from 'three';
+import {
+  LogLevel,
+  RenderMode,
+  SceneRevealMode,
+  Viewer,
+} from '@mkkellogg/gaussian-splats-3d';
 import { SceneManager } from './SceneManager';
-import { ShoppingStreet } from '../world/ShoppingStreet';
+import { MONUMENT, ShoppingStreet, monumentPosition } from '../world/ShoppingStreet';
 import { buildStreetWorld } from '../world/Colliders';
 import { PlayerController } from './PlayerController';
 import { InputController } from './InputController';
@@ -23,6 +29,14 @@ export class Game {
 
   private readonly overlay: MenuOverlay;
   private readonly colliders = buildStreetWorld();
+
+  /**
+   * Gaussian-splat viewer (M2). Bound to our renderer/camera/threeScene; we
+   * drive it manually via {@link Viewer.update} + {@link Viewer.render} each
+   * frame because selfDrivenMode is off. Loading is non-blocking: the game
+   * starts and runs normally while the monument splat streams in.
+   */
+  private readonly viewer: Viewer;
 
   private readonly clock = new THREE.Clock();
   private rafId = 0;
@@ -57,6 +71,33 @@ export class Game {
     // Japanese shopping street; the module keeps growing in place. Collision
     // uses the same footprint data via buildStreetWorld().
     this.sceneManager.add(new ShoppingStreet().group);
+
+    // ----- M2: gaussian-splat street monument ---------------------------
+    // Viewer renders our scene + the splat mesh into the same renderer. The
+    // renderer/camera/scene are external, so the viewer takes over neither
+    // clear color, size, camera movement, nor input handlers.
+    this.viewer = new Viewer({
+      renderer: this.renderer,
+      camera: this.camera,
+      threeScene: this.scene,
+      renderMode: RenderMode.Always, // re-render every frame, like the game loop
+      selfDrivenMode: false, // host drives update()/render()
+      useBuiltInControls: false, // player controls own the camera
+      sharedMemoryForWorkers: false, // M2 requirement (no SharedArrayBuffer)
+      showLoadingUI: false,
+      logLevel: LogLevel.None,
+      sceneRevealMode: SceneRevealMode.Instant,
+    });
+
+    // Kick off the load without awaiting: the game stays playable while the
+    // splat streams in. Position comes from monumentPosition() so the visual
+    // rests on the ground exactly where the AABB collider (index 8) sits.
+    const monumentPos = monumentPosition();
+    void this.viewer.addSplatScene('/assets/splats/carved-bull-head.ksplat', {
+      position: [monumentPos.x, monumentPos.y, monumentPos.z],
+      scale: [MONUMENT.scale, MONUMENT.scale, MONUMENT.scale],
+      showLoadingUI: false,
+    });
 
     this.player = new PlayerController(undefined, this.colliders);
     this.player.syncCamera(this.camera);
@@ -140,6 +181,9 @@ export class Game {
     window.removeEventListener('keydown', this.onKeyDown);
     this.input.dispose();
     this.overlay.hide();
+    // Tear down the splat viewer (aborts the load, frees workers/buffers)
+    // before disposing the renderer it renders into.
+    void this.viewer.dispose();
     this.sceneManager.dispose();
     this.renderer.dispose();
     this.renderer.domElement.remove();
@@ -150,7 +194,11 @@ export class Game {
     this.rafId = requestAnimationFrame(this.loop);
     const dt = Math.min(this.clock.getDelta(), 0.1);
     this.update(dt);
+    // Street first (clears the buffer), then the splat pass on top with
+    // autoClear disabled so the monument composites with correct depth.
     this.renderer.render(this.scene, this.camera);
+    this.viewer.update(this.renderer, this.camera);
+    this.viewer.render();
   };
 
   /**

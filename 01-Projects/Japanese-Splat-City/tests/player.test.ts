@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import * as THREE from 'three';
 import { PlayerController, type PlayerInput } from '../src/engine/PlayerController';
 import { buildStreetWorld, pointInRect, distToRect } from '../src/world/Colliders';
-import { BUILDING_BASES, STREET } from '../src/world/ShoppingStreet';
+import { BUILDING_BASES, MONUMENT, STREET, monumentFootprint } from '../src/world/ShoppingStreet';
 
 const camera = new THREE.PerspectiveCamera(75, 16 / 9, 0.05, 500);
 
@@ -20,9 +20,9 @@ function walk(p: PlayerController, seconds: number, input: PlayerInput, dt = 1 /
 }
 
 describe('street collision world', () => {
-  it('builds one collider per building, matching the visible footprints', () => {
+  it('builds one collider per building plus the street monument', () => {
     const world = buildStreetWorld();
-    expect(world.buildings).toHaveLength(BUILDING_BASES.length);
+    expect(world.buildings).toHaveLength(BUILDING_BASES.length + 1);
     for (let i = 0; i < BUILDING_BASES.length; i++) {
       const b = BUILDING_BASES[i];
       const r = world.buildings[i];
@@ -31,6 +31,16 @@ describe('street collision world', () => {
       expect(r.minZ).toBeCloseTo(b.z - b.depth / 2, 6);
       expect(r.maxZ).toBeCloseTo(b.z + b.depth / 2, 6);
     }
+    // The appended monument collider (index BUILDING_BASES.length) is the
+    // raw splat footprint; PlayerController pads it by the radius at query
+    // time, keeping visual and collision in sync through MONUMENT /
+    // monumentFootprint.
+    const m = world.buildings[BUILDING_BASES.length];
+    const f = monumentFootprint(MONUMENT.scale);
+    expect(m.minX).toBeCloseTo(f.minX, 9);
+    expect(m.maxX).toBeCloseTo(f.maxX, 9);
+    expect(m.minZ).toBeCloseTo(f.minZ, 9);
+    expect(m.maxZ).toBeCloseTo(f.maxZ, 9);
   });
 
   it('clamps the player inside the street bounds', () => {
@@ -112,7 +122,7 @@ describe('PlayerController collision', () => {
     expect(p.position.z).toBeLessThan(-32 - 0.7);
   });
 
-  it('never enters a building footprint, even when rounding a corner', () => {
+  it('never enters a building or monument footprint, even when rounding a corner', () => {
     const p = new PlayerController(undefined, world);
     p.applyMouseLook(Math.PI / 4 / 0.0022, 0);
     let t = 0;
@@ -127,9 +137,36 @@ describe('PlayerController collision', () => {
 
   it('clamps to the playable bounds at the far edge', () => {
     const p = new PlayerController(undefined, world);
+    // Lane x = 2.2: clear of the road-center monument (its padded span is
+    // x ≈ ±1.45) and of both building rows (x ≤ -4 / x ≥ 4).
+    p.position.set(2.2, 0, 8);
     walk(p, 30, { ...noInput(), forward: true });
     expect(p.position.z).toBeGreaterThanOrEqual(STREET.bounds.minZ + 0.38 - 1e-6);
     expect(p.position.z).toBeLessThanOrEqual(STREET.bounds.minZ + 0.38 + 1e-3);
+  });
+
+  it('blocks forward travel on the road at the monument', () => {
+    const p = new PlayerController(undefined, world);
+    // Spawns at (0, 0, 8) looking down -Z, straight into the monument that
+    // stands at the road center (x = 0). The controller pads the raw
+    // footprint by the player radius, so the stop face is m.maxZ + radius.
+    walk(p, 6, { ...noInput(), forward: true });
+    const m = world.buildings[BUILDING_BASES.length];
+    const stop = m.maxZ + MONUMENT.playerRadius;
+    expect(p.position.z).toBeGreaterThanOrEqual(stop - 1e-6);
+    expect(p.position.z).toBeLessThanOrEqual(stop + 0.01);
+    expect(p.position.z).toBeGreaterThan(-2); // never reached the bounds
+    // A straight-on approach must NOT snap the player sideways around the
+    // monument: the blocking axis owns the stop.
+    expect(p.position.x).toBeCloseTo(0, 6);
+  });
+
+  it('lets the player pass the monument in the clear lane beside it', () => {
+    const p = new PlayerController(undefined, world);
+    p.position.set(2.2, 0, 8); // clear lane east of the monument
+    walk(p, 6, { ...noInput(), forward: true });
+    expect(p.position.z).toBeLessThan(-3); // well past the monument zone
+    expect(p.position.x).toBe(2.2);
   });
 
   it('high-dt frames do not tunnel through a building', () => {

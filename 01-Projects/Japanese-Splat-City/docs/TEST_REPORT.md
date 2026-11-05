@@ -33,3 +33,35 @@ How each milestone gate was verified, with commands and results.
   produced. The dev server + module-serve probe confirms the app loads and compiles, and the
   simulation is covered by the 19 unit tests. A real-browser visual + console pass is queued
   for M8.
+
+## M2 — Gaussian-splat street monument
+
+- [x] `npm run typecheck` passes — `tsc --noEmit` clean, strict
+- [x] `npm test` passes — Vitest 21/21 over `tests/smoke.test.ts` + `tests/player.test.ts`
+  (new: monument footprint present in `buildStreetWorld()` as collider index 8; monument near-
+  face stops forward travel at the street; sideways slide past the monument is fixed — the
+  pre-move adjacent axis is used for snap, and a box whose band is entered only by the current
+  frame's move is skipped; far-edge clamp at `bounds.minZ + 0.38`)
+- [x] `npm run build` produces a production bundle — `dist/` emitted (JS 790.50 kB / gzip 201.91 kB)
+- [x] Playable game unaffected by splat load — `addSplatScene()` is fire-and-forget; the game
+  loop starts immediately; the viewer composites after the street pass each frame
+- [x] Splat genuinely loads and renders (headless Chrome CDP, dev server + prod preview):
+  - `window.__splatCityGame.viewer.getSceneCount() === 1`, `isLoadingOrUnloading() === false`,
+    WebGL 2.0 context live — no page errors; console shows **zero** errors/warnings on the
+    prod pass (favicon 404 removed via inline SVG data URI)
+  - Baseline pass with the `.ksplat` request aborted: `getSceneCount() === 0`, only the
+    expected `Failed to fetch` / `ERR_FAILED` noise → the captured delta is the splat, not
+    street variance (same deterministic street renders in both passes)
+  - `pngjs` pixel diff (1280×720): 9,753 px differ (1.06 % of frame) in a connected 128×186
+    bbox, centroid (637.8, 351.4) vs. screen center (640, 360) — the monument renders dead-ahead
+    of the spawn camera (yaw 0 → −Z) with its bottom edge at the street ground line;
+    **identical numbers in dev and prod runs** (`docs/evidence/m2-splat.png` vs
+    `docs/evidence/m2-baseline.png`, local only)
+- [x] Collision stays AABB — splat is visual-only; `monumentFootprint()` pushes raw
+  `(bounds − center) · scale` bounds into `buildStreetWorld()` (no double radius padding);
+  controller pads at query time
+- [x] Attribution committed — `public/assets/licenses/README.md` documents CC0 license +
+  Poly Haven "Bull Head" by Tina + Innerscene baking provenance
+
+> **Tooling note:** this pass was produced with system **Chrome** (`--headless=new`,
+> CDP honored on this host); Edge remains blocked by machine policy.

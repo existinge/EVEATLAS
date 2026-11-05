@@ -13,3 +13,9 @@ Thumbs.db
 .idea/
 .vscode/
 *.suo
+
+# Tooling scratch (never commit)
+.firecrawl/
+
+# Local verification evidence (screenshots etc., not part of the repo)
+docs/evidence/

@@ -173,10 +173,18 @@ export class PlayerController {
     bounds: Aabb2,
   ): number {
     let x = candX;
+    // The player's position BEFORE this frame's move: used to decide which
+    // axis was actually crossed this frame when the candidate enters a box.
+    const prevZ = this.position.z;
     // Building push-out on the X axis.
     for (const b of buildings) {
       if (x <= b.minX - radius || x >= b.maxX + radius) continue;
       if (freeZ <= b.minZ - radius || freeZ >= b.maxZ + radius) continue;
+      // This collider's Z band was only entered by this frame's move, so the
+      // Z axis is the one being hit (straight-on approach, e.g. the street
+      // monument); let resolveAxisZ stop the player instead of snapping
+      // sideways around the box.
+      if (prevZ <= b.minZ - radius || prevZ >= b.maxZ + radius) continue;
       // Inside the expanded rect: push to the nearest vertical face.
       const toMin = x - (b.minX - radius);
       const toMax = b.maxX + radius - x;
@@ -194,9 +202,13 @@ export class PlayerController {
     bounds: Aabb2,
   ): number {
     let z = candZ;
+    // See resolveAxisX: only slide along X walls when the X span was already
+    // overlapped before this frame's move.
+    const prevX = this.position.x;
     for (const b of buildings) {
       if (z <= b.minZ - radius || z >= b.maxZ + radius) continue;
       if (resolvedX <= b.minX - radius || resolvedX >= b.maxX + radius) continue;
+      if (prevX <= b.minX - radius || prevX >= b.maxX + radius) continue;
       const toMin = z - (b.minZ - radius);
       const toMax = b.maxZ + radius - z;
       z = toMin < toMax ? b.minZ - radius : b.maxZ + radius;
