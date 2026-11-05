@@ -20,3 +20,6 @@ No secrets, tokens, private customer/client data, HR details, private identity/m
 
 ## Quality
 Don't fabricate market size, leads, customer quotes, business revenue, tests, product readiness, API pricing, certifications or customer outcomes. Follow platform rules for reviews, scraping and AI-generated publishing. Independent review and human signoff before high-impact merges.
+
+## Selective user-context profiles
+For task-specific context, consult the [profile registry](profiles/README.md) and load only relevant references: [`bl_taste`](profiles/BL_TASTE.md) for BL discovery/media work and [`interests_projects`](profiles/INTERESTS_PROJECTS.md) for projects, research routing and cross-domain connections. The profiles are non-sensitive stable lenses; retrieve dynamic tracker state and current task evidence from their canonical sources. Merely listing a profile does not mean any runtime has loaded it.
