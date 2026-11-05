@@ -3,9 +3,9 @@
 Milestone-by-milestone plan (gates must pass in order; each milestone ends with
 a commit and a build-log entry).
 
-- [ ] **M0 — Bootstrap**: Vite + TypeScript + Three.js, engine core, placeholder
+- [x] **M0 — Bootstrap**: Vite + TypeScript + Three.js, engine core, placeholder
       street, README/AGENTS, dev server + production build verified.
-- [ ] **M1 — First-person exploration**: player controller (WASD, mouse look +
+- [x] **M1 — First-person exploration**: player controller (WASD, mouse look +
       pointer lock, sprint, jump), gravity/grounding, AABB collision, basic
       street, reset-player, graphics settings.
 - [ ] **M2 — Real Gaussian splatting**: integrate a splat renderer, load a

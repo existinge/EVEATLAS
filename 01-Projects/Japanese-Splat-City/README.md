@@ -20,8 +20,8 @@ npm run dev
 Open the printed URL (default <http://localhost:5173>).
 
 - **WASD** — walk · **Mouse** — look around (click to lock the pointer)
-- **Shift** — sprint · **Space** — jump · **E** — interact with the targeted object
-- **Tab** — toggle pointer lock · **Esc** — release pointer · **N** — vocabulary notebook
+- **Shift** — sprint · **Space** — jump · **R** — reset position · **Esc** — pause menu
+- Interactions (E), pointer-lock toggling and the notebook arrive with milestones M4/M5
 
 ## Commands
 
@@ -38,7 +38,7 @@ Open the printed URL (default <http://localhost:5173>).
 | #  | Name                               | Status |
 | -- | ---------------------------------- | ------ |
 | M0 | Bootstrap Vite + TypeScript + Three.js | ✅ |
-| M1 | First-person exploration           | ⏳ |
+| M1 | First-person exploration           | ✅ |
 | M2 | Real Gaussian splat rendering      | ⏳ |
 | M3 | Japanese shopping street           | ⏳ |
 | M4 | Interactable environment           | ⏳ |

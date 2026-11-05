@@ -24,6 +24,32 @@ export const STREET = {
   bounds: { minX: -16, maxX: 16, minZ: -46, maxZ: 46 },
 } as const;
 
+/**
+ * Building footprints (top-down, width along X, depth along Z). The same
+ * constant drives both the visible geometry (below) and the collision
+ * colliders in {@link ./Colliders} — a single source of truth so the visual
+ * scene and the collision world can never drift apart.
+ */
+export const BUILDING_BASES: ReadonlyArray<{
+  x: number;
+  z: number;
+  w: number;
+  depth: number;
+  h: number;
+  color: number;
+}> = [
+  // West side (+x), z from -38 to 38.
+  { x: STREET.buildingFront + 1.5, z: -33, w: 10, depth: 8, h: 11, color: 0xb8a98f },
+  { x: STREET.buildingFront + 1.5, z: -16, w: 12, depth: 8, h: 13, color: 0xa8a1a0 },
+  { x: STREET.buildingFront + 1.5, z: 4, w: 12, depth: 8, h: 9, color: 0xc2a498 },
+  { x: STREET.buildingFront + 1.5, z: 22, w: 10, depth: 8, h: 12, color: 0x9fb0a0 },
+  // East side (-x).
+  { x: -(STREET.buildingFront + 1.5), z: -30, w: 10, depth: 8, h: 10, color: 0xa9b0bd },
+  { x: -(STREET.buildingFront + 1.5), z: -10, w: 12, depth: 8, h: 14, color: 0xc0a892 },
+  { x: -(STREET.buildingFront + 1.5), z: 12, w: 12, depth: 8, h: 11, color: 0x9dabb0 },
+  { x: -(STREET.buildingFront + 1.5), z: 32, w: 10, depth: 8, h: 9, color: 0xb3a39b },
+];
+
 export class ShoppingStreet {
   readonly group = new THREE.Group();
 
@@ -71,22 +97,10 @@ export class ShoppingStreet {
   }
 
   private buildBuildings(): void {
-    const { buildingFront, buildingDepth, groundY } = STREET;
-    const bases: Array<{ x: number; z: number; w: number; h: number; color: number }> = [
-      // West side (+x), z from -38 to 38.
-      { x: buildingFront + buildingDepth / 2 + 1.5, z: -33, w: 10, h: 11, color: 0xb8a98f },
-      { x: buildingFront + buildingDepth / 2 + 1.5, z: -16, w: 12, h: 13, color: 0xa8a1a0 },
-      { x: buildingFront + buildingDepth / 2 + 1.5, z: 4, w: 12, h: 9, color: 0xc2a498 },
-      { x: buildingFront + buildingDepth / 2 + 1.5, z: 22, w: 10, h: 12, color: 0x9fb0a0 },
-      // East side (-x).
-      { x: -(buildingFront + buildingDepth / 2 + 1.5), z: -30, w: 10, h: 10, color: 0xa9b0bd },
-      { x: -(buildingFront + buildingDepth / 2 + 1.5), z: -10, w: 12, h: 14, color: 0xc0a892 },
-      { x: -(buildingFront + buildingDepth / 2 + 1.5), z: 12, w: 12, h: 11, color: 0x9dabb0 },
-      { x: -(buildingFront + buildingDepth / 2 + 1.5), z: 32, w: 10, h: 9, color: 0xb3a39b },
-    ];
-    for (const b of bases) {
+    const { groundY } = STREET;
+    for (const b of BUILDING_BASES) {
       const mesh = new THREE.Mesh(
-        new THREE.BoxGeometry(b.w, b.h, 8),
+        new THREE.BoxGeometry(b.w, b.h, b.depth),
         new THREE.MeshStandardMaterial({ color: b.color, roughness: 0.85 }),
       );
       mesh.position.set(b.x, groundY + b.h / 2, b.z);
