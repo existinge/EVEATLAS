@@ -55,9 +55,14 @@ export const BUILDING_BASES: ReadonlyArray<{
  * public/assets/licenses/README.md) standing in the middle of the road at
  * x = 0, directly ahead of the player spawn. Milestone M2.
  *
- * The model's own origin is not at its feet, so the splat must be raised by
- * `-boundsMin.y * scale`. Object-space metrics below are measured from the
- * actual splat data (see .firecrawl/bounds-final.mjs).
+ * Innerscene bakes splat models "Y-down": in object space the max-Y end is
+ * the BASE (the plinth/slab under the feet) and the min-Y end points up at
+ * the head/horns. So the splat is re-grounded with `y = +boundsMax.y * scale`
+ * (NOT the old `-boundsMin.y * scale`, which grounded the inverted top end)
+ * and the model is vertically flipped 180° — see monumentPosition's quaternion
+ * in Game.ts — so the base sits on the ground and the head points up.
+ * Object-space metrics below are measured from the actual splat data
+ * (see .firecrawl/bounds-final.mjs).
  *
  * This constant is the single source of truth for both the visual transform
  * ({@link monumentPosition}) and the collision footprint
@@ -83,7 +88,8 @@ export const MONUMENT = {
 
 /**
  * World-space position that places the monument centered on the road (x = 0)
- * resting on the ground (its lowest splat point touches y = 0).
+ * with its base slab resting on the ground (y = +boundsMax.y * scale). The x/z
+ * terms re-center the model on its footprint: `-center * scale`.
  */
 export function monumentPosition(scale: number = MONUMENT.scale): {
   x: number;
@@ -92,7 +98,7 @@ export function monumentPosition(scale: number = MONUMENT.scale): {
 } {
   return {
     x: -MONUMENT.center.x * scale,
-    y: -MONUMENT.boundsMin.y * scale,
+    y: MONUMENT.boundsMax.y * scale,
     z: -MONUMENT.center.z * scale,
   };
 }

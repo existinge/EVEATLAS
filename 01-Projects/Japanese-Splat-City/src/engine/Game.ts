@@ -89,13 +89,20 @@ export class Game {
       sceneRevealMode: SceneRevealMode.Instant,
     });
 
-    // Kick off the load without awaiting: the game stays playable while the
-    // splat streams in. Position comes from monumentPosition() so the visual
-    // rests on the ground exactly where the AABB collider (index 8) sits.
+    // Kick off the loads without awaiting: the game stays playable while the
+    // splats stream in. The viewer accepts only ONE scene load at a time
+    // (addSplatScene throws while another load is in progress), so scene loads
+    // go through a serialised queue instead of firing concurrently.
     const monumentPos = monumentPosition();
-    void this.viewer.addSplatScene('/assets/splats/carved-bull-head.ksplat', {
+    this.queueSplatScene('/assets/splats/carved-bull-head.ksplat', {
       position: [monumentPos.x, monumentPos.y, monumentPos.z],
       scale: [MONUMENT.scale, MONUMENT.scale, MONUMENT.scale],
+      // `rotation` is a QUATERNION, not Euler angles. The Innerscene bake
+      // ships Y-down (head/horns at min-Y, base slab at max-Y). A unit 180°
+      // Z-flip [0,0,1,0] negates x and y — putting the horns UP — while
+      // keeping the face pointing +z. (The old [0,0,Math.PI] was an
+      // unnormalised quaternion and rendered horns-down.)
+      rotation: [0, 0, 1, 0],
       showLoadingUI: false,
     });
 
@@ -114,6 +121,25 @@ export class Game {
     document.addEventListener('pointerlockchange', this.onPointerLockChange);
     window.addEventListener('resize', this.handleResize);
     window.addEventListener('keydown', this.onKeyDown);
+  }
+
+  /**
+   * Serialised splat-scene load queue. The viewer rejects any addSplatScene
+   * call while another load is still in progress, so concurrent calls (M2
+   * monument + M3 props) must be chained onto the previous load's settlement.
+   * A failed load is logged and skipped; the queue keeps going.
+   */
+  private splatLoadQueue: Promise<unknown> = Promise.resolve();
+
+  private queueSplatScene(
+    path: string,
+    options: NonNullable<Parameters<Viewer['addSplatScene']>[1]>,
+  ): void {
+    this.splatLoadQueue = this.splatLoadQueue
+      .then(() => this.viewer.addSplatScene(path, options))
+      .catch((error: unknown) => {
+        console.error(`[splat] failed to load ${path}:`, error);
+      });
   }
 
   private readonly onPointerLockChange = (): void => {
