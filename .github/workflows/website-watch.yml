@@ -1,0 +1,23 @@
+name: Website availability watch
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+permissions:
+  contents: read
+jobs:
+  website-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read-only website health check
+        run: python tools/website_watch.py --url https://telstarhq.com/ | tee website-watch-receipt.json
+      - name: Upload check receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-watch-receipt
+          path: website-watch-receipt.json
+          if-no-files-found: ignore
+          retention-days: 7
