@@ -1,0 +1,23 @@
+# Unity runtime-generated (keep local; not for version control)
+[Ll]ibrary/
+[Tt]emp/
+[Ll]ogs/
+[Bb]uild/
+[Bb]uilds/
+[Uu]serSettings/
+MemoryCaptures/
+obj/
+.DS_Store
+
+# Unity IDE-generated solution files (regenerated on open)
+[Oo]bj/
+*.csproj
+*.sln
+*.user
+*.pidb
+
+# Large/downloaded source splats stay local (provenance handled separately)
+*.ply
+*.spz
+*.splat
+*.bin
