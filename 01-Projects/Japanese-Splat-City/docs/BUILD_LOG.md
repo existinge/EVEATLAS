@@ -93,7 +93,16 @@ third-party binaries may write to the profile. We will not fabricate or bypass l
 - Ready-to-build state is committed so the moment a capable host exists, the walk milestone can start:
   1. `cd native && "<Unity.exe>" -projectPath . -batchmode -quit ...` (headless import/compile)
   2. build the Windows Mono player, run packaged with editor closed, capture the four evidence frames.
+- **One-command pipeline drafted and committed** (`native/Build.ps1`): headless import → CLI Win64
+  build via `Assets/Editor/PlayerBuilder.cs` (`-executeMethod`) → launch packaged player offline with
+  `-force-d3d12` and locate `%LOCALAPPDATA%\LocalLow\EVEATLAS\JapaneseSplatCity\Player.log`.
+  Build.ps1 verified: PowerShell parse OK on this host, fail-fast path proven (exit 1 + clear
+  message when the editor is missing). PlayerBuilder.cs is a **DRAFT — not yet compiled**, it
+  requires first editor import; it fails loudly if `Assets/Scenes/WalkMain.unity` is absent.
+- Project identity fixed: `companyName` `DefaultCompany`→`EVEATLAS`, `productName` `native`→
+  `JapaneseSplatCity` in `ProjectSettings.asset` (player-log path + exe naming follow).
 - All remaining checklist items are gated by the blocker above (implemented/shipped = false, none fabricated).
+- Awaiting the human-supplied `Unity_v5.x.ulf` (drop path `.tools/licensing/`, walkthrough in `docs/ACTIVATION.md`).
 
 ## Open questions
 
