@@ -1,0 +1,411 @@
+﻿{
+    "fontFile":  "NotoSansCJKjp-Regular.otf",
+    "fontSha256":  "68A3FC98800B2A27B371F2FB79991DAF3633BD89309D4FFAA6946FD587F375B5",
+    "familyNames":  [
+                        "Noto Sans CJK JP",
+                        "Noto Sans CJK JP"
+                    ],
+    "isNotoCjkJp":  true,
+    "charactersChecked":  48,
+    "allGlyphsPresent":  true,
+    "minFillRatio":  0.05,
+    "allSignsInked":  true,
+    "verdict":  "PASS",
+    "characters":  [
+                       {
+                           "Char":  "お",
+                           "CodePoint":  "U+304A",
+                           "GlyphId":  1469,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "き",
+                           "CodePoint":  "U+304D",
+                           "GlyphId":  1472,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "で",
+                           "CodePoint":  "U+3067",
+                           "GlyphId":  1498,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "ん",
+                           "CodePoint":  "U+3093",
+                           "GlyphId":  1542,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "コ",
+                           "CodePoint":  "U+30B3",
+                           "GlyphId":  1572,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "ニ",
+                           "CodePoint":  "U+30CB",
+                           "GlyphId":  1596,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "ビ",
+                           "CodePoint":  "U+30D3",
+                           "GlyphId":  1604,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "メ",
+                           "CodePoint":  "U+30E1",
+                           "GlyphId":  1618,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "ラ",
+                           "CodePoint":  "U+30E9",
+                           "GlyphId":  1626,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "ン",
+                           "CodePoint":  "U+30F3",
+                           "GlyphId":  1636,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "ー",
+                           "CodePoint":  "U+30FC",
+                           "GlyphId":  1645,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "乾",
+                           "CodePoint":  "U+4E7E",
+                           "GlyphId":  9647,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "交",
+                           "CodePoint":  "U+4EA4",
+                           "GlyphId":  9707,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "入",
+                           "CodePoint":  "U+5165",
+                           "GlyphId":  10892,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "処",
+                           "CodePoint":  "U+51E6",
+                           "GlyphId":  11098,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "出",
+                           "CodePoint":  "U+51FA",
+                           "GlyphId":  11123,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "口",
+                           "CodePoint":  "U+53E3",
+                           "GlyphId":  11902,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "味",
+                           "CodePoint":  "U+5473",
+                           "GlyphId":  12111,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "和",
+                           "CodePoint":  "U+548C",
+                           "GlyphId":  12144,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "商",
+                           "CodePoint":  "U+5546",
+                           "GlyphId":  12424,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "喫",
+                           "CodePoint":  "U+55AB",
+                           "GlyphId":  12586,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "子",
+                           "CodePoint":  "U+5B50",
+                           "GlyphId":  15352,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "局",
+                           "CodePoint":  "U+5C40",
+                           "GlyphId":  15808,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "居",
+                           "CodePoint":  "U+5C45",
+                           "GlyphId":  15816,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "屋",
+                           "CodePoint":  "U+5C4B",
+                           "GlyphId":  15825,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "店",
+                           "CodePoint":  "U+5E97",
+                           "GlyphId":  16920,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "服",
+                           "CodePoint":  "U+670D",
+                           "GlyphId":  20700,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "本",
+                           "CodePoint":  "U+672C",
+                           "GlyphId":  20758,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "洋",
+                           "CodePoint":  "U+6D0B",
+                           "GlyphId":  23331,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "湯",
+                           "CodePoint":  "U+6E6F",
+                           "GlyphId":  23905,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "焼",
+                           "CodePoint":  "U+713C",
+                           "GlyphId":  25231,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "物",
+                           "CodePoint":  "U+7269",
+                           "GlyphId":  25851,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "珈",
+                           "CodePoint":  "U+73C8",
+                           "GlyphId":  26403,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "琲",
+                           "CodePoint":  "U+7432",
+                           "GlyphId":  26568,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "甘",
+                           "CodePoint":  "U+7518",
+                           "GlyphId":  27028,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "番",
+                           "CodePoint":  "U+756A",
+                           "GlyphId":  27153,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "精",
+                           "CodePoint":  "U+7CBE",
+                           "GlyphId":  30655,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "肉",
+                           "CodePoint":  "U+8089",
+                           "GlyphId":  32540,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "花",
+                           "CodePoint":  "U+82B1",
+                           "GlyphId":  33738,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "茶",
+                           "CodePoint":  "U+8336",
+                           "GlyphId":  34013,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "菓",
+                           "CodePoint":  "U+83D3",
+                           "GlyphId":  34323,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "薬",
+                           "CodePoint":  "U+85AC",
+                           "GlyphId":  35441,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "街",
+                           "CodePoint":  "U+8857",
+                           "GlyphId":  36725,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "貨",
+                           "CodePoint":  "U+8CA8",
+                           "GlyphId":  38785,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "酒",
+                           "CodePoint":  "U+9152",
+                           "GlyphId":  40943,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "銭",
+                           "CodePoint":  "U+92AD",
+                           "GlyphId":  41636,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "雑",
+                           "CodePoint":  "U+96D1",
+                           "GlyphId":  43373,
+                           "Ok":  true
+                       },
+                       {
+                           "Char":  "鳥",
+                           "CodePoint":  "U+9CE5",
+                           "GlyphId":  46154,
+                           "Ok":  true
+                       }
+                   ],
+    "signs":  [
+                  {
+                      "File":  "sign-arcade-title.png",
+                      "FillRatio":  0.0732,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-deguchi.png",
+                      "FillRatio":  0.1132,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-hana.png",
+                      "FillRatio":  0.1565,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-hon.png",
+                      "FillRatio":  0.153,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-iriguchi.png",
+                      "FillRatio":  0.0922,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-izakaya.png",
+                      "FillRatio":  0.161,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-kambutsu.png",
+                      "FillRatio":  0.1644,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-kanmi.png",
+                      "FillRatio":  0.1804,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-kissaten.png",
+                      "FillRatio":  0.1436,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-kissaten2.png",
+                      "FillRatio":  0.1334,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-koban.png",
+                      "FillRatio":  0.1552,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-konbini.png",
+                      "FillRatio":  0.0854,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-kusuri.png",
+                      "FillRatio":  0.1717,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-oden.png",
+                      "FillRatio":  0.1174,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-ramen.png",
+                      "FillRatio":  0.0746,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-seiniku.png",
+                      "FillRatio":  0.1663,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-sento.png",
+                      "FillRatio":  0.1763,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-wagashi.png",
+                      "FillRatio":  0.1835,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-yakitori.png",
+                      "FillRatio":  0.1753,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-yofuku.png",
+                      "FillRatio":  0.1565,
+                      "Ok":  true
+                  },
+                  {
+                      "File":  "sign-zakka.png",
+                      "FillRatio":  0.1734,
+                      "Ok":  true
+                  }
+              ]
+}

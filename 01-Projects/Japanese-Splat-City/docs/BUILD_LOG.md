@@ -140,3 +140,24 @@ third-party binaries may write to the profile. We will not fabricate or bypass l
   (Apache-2.0, already-trained PLY; self-declared tag, re-verify in-repo LICENSE at download). Genuine
   Japanese street capture does not exist under a redistributable license; Mapillary CC-BY-SA
   self-reconstruction is the only clean path (deferred, see `docs/SPLAT_PROCUREMENT.md`).
+- **Round 6 (offline pre-stage) — Japanese signage pipeline COMPLETE and VERIFIED (no-tofu proof).**
+  - `native/Tools/rasterize-jp-text.ps1`: renders 21 UTF-8 sign texts from `sign-texts.tsv` with the
+    licensed Noto Sans CJK JP OTF → `native/Assets/Resources/Textures/Signs/` (`sign-*.png`, 32bpp ARGB,
+    AA grid-fit, width rounded to a multiple of 4) + `signs-manifest.json` (generator, generatedAtUtc,
+    OTF SHA256 `68A3FC98…75B5`, per-entry text) + proof sheet.
+  - `native/Tools/verify-font-glyphs.ps1` (**ran to VERDICT: True**): recomputes the OTF SHA256, checks
+    `GlyphTypeface` family identity ("Noto Sans CJK JP"), asserts cmap glyph id > 0 for every character
+    in the manifest (48 unique glyphs across all 21 signs — no tofu; `HashSet[int]` snapshot avoids the
+    PS 5.1 `IDictionary.Contains` overload bind trap), and measures per-PNG ink fill (7.3–18.4%,
+    ≥5% threshold). Writes `font-glyph-report.json` next to the textures (committed as evidence).
+  - `native/Assets/Scripts/Block/BlockBuilder.cs` now wires sign textures at runtime:
+    `ApplySignTexture` loads `Resources` texture `Textures/Signs/sign-{tag}` and applies it with an
+    aspect-preserving crop (flat `_matSign` fallback when assets are missing); 20 storefront
+    `SignSlates` cycle across bays, the 商店街 arcade-title banner hangs over the far-end viewport,
+    and 入口/出口 door flaps mark both connections. Entire block self-dresses on first import —
+    zero editor work, keyed to the exact texture names the offline rasterizer emits.
+  - **IL2CPP hardening:** `PlayerBuilder.cs` pins `SetScriptingBackend(Standalone, IL2CPP)` with a
+    fail-fast guard (splat package refuses Mono). Host prerequisite confirmed via `vswhere`: VS Build
+    Tools 2022 ver `17.14.37411.7` (VC x64 14.44.35207) + 2019 ver `16.11.37301.9` (VC x64 14.29.30133)
+    at `C:\Program Files (x86)\Microsoft Visual Studio\…` — an IL2CPP Windows build is feasible here
+    the moment an entitlement exists. T16 in `docs/TEST_REPORT.md`.

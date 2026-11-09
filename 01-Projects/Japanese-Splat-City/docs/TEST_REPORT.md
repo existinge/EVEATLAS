@@ -18,6 +18,17 @@ executed here. Nothing fabricated; anything not executed is recorded as not-done
 | T9 | Root discriminator (control) | `cmd.exe` child writes `%LOCALAPPDATA%\Unity` successfully | **PASS** (proves binary-identity confinement of third-party exes, not a path ACL) |
 | T10 | LicensingCclient gateway | `Unity.Licensing.Client.exe` never creates the `LicenseClient-<user>` pipe; no entitlement; no Hub/account/ULF on machine | **FAIL (no license, confined)** |
 
+## Offline pre-staging checks (executed — outside Unity, no license needed)
+
+| # | Test | Command / evidence | Result |
+|---|---|---|---|
+| T11 | Noto Sans CJK JP font license | SIL OFL 1.1 — permits bundling + offline redistribution with license copy; no ND/NC analog | **PASS** |
+| T12 | Font integrity | `NotoSansCJKjp-Regular.otf` SHA256 `68A3FC98…75B5`; OFL `6A73F954…E2BF2`; OTF hash recomputed inside verifier | **PASS** |
+| T13 | Signage rasterizer run | `native/Tools/rasterize-jp-text.ps1`: 21 UTF-8 sign texts → 21 `sign-*.png` (32bpp ARGB, AA) + `signs-manifest.json` + proof sheet into `Assets/Resources/Textures/Signs/` (zero-editor-work `Resources.Load`) | **PASS** |
+| T14 | No-tofu glyph verification | `verify-font-glyphs.ps1` VERDICT **True**: cmap glyph id > 0 for all 48 unique chars (21 signs, incl. rare `珈`), `GlyphTypeface` family "Noto Sans CJK JP", per-PNG ink fill 7.3–18.4% (≥5% threshold); `font-glyph-report.json` written | **PASS** |
+| T15 | Sign texture wiring | `BlockBuilder.ApplySignTexture` (draft, uncompiled): `Resources.Load("Textures/Signs/sign-…")` with aspect-preserving crop + flat-material fallback; 20 storefront slates cycle bays; 商店街 title banner + 入口/出口 door flaps | **DRAFT** (compile pending license) |
+| T16 | IL2CPP host prerequisite | VS Build Tools **2022** ver `17.14.37411.7` (`…\2022\BuildTools`, VC x64 14.44.35207) + **2019** ver `16.11.37301.9` (VC x64 14.29.30133) via `vswhere` | **PASS** |
+
 ## Verdict
 
 **Milestone 1: NOT ACHIEVED on this host — environment blocker, not content blocker.**
@@ -31,11 +42,14 @@ be fabricated or bypassed.
 - Pinned, reproducible Unity project committed on `feat/japanese-splat-city-native`:
   `native/ProjectSettings`, `native/Packages/manifest.json` (URP 17.3.0 family + vendored splat package),
   `.gitignore`, `docs/BUILD_LOG.md`, `docs/TEST_REPORT.md`.
+- Verified offline signage pipeline (T11–T15): licensed font, deterministic rasterizer, no-tofu proof,
+  runtime texture wiring drafted — the whole block dresses itself on first import with zero editor work.
+- IL2CPP build prerequisite confirmed present on this host (T16); build script pins the IL2CPP backend.
 - No build artifacts, player, or frames — none claimed.
 
 ## Offline-player acceptance checks (deferred — require a build)
 
-- [ ] Packaged Win64 Mono player launches with editor closed and no Unity Hub.
+- [ ] Packaged Win64 **IL2CPP** player launches with editor closed and no Unity Hub.
 - [ ] No browser / webview / localhost / DeepSeek / MCP dependency at runtime.
 - [ ] GPU, resolution, splat count, per-process fps and player-log recorded (target RTX 2080 Ti, 60 fps @ 1080p provisional).
 - [ ] Four evidence frames: spawn, junction, service bend, rejoin.

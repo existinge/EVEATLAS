@@ -33,6 +33,17 @@ namespace JapaneseSplatCity.Build
                     "author the walk scene in the editor and save it there first.");
             }
 
+            // org.nesnausk.gaussian-splatting REQUIRES IL2CPP: its native plugin
+            // loader refuses the Mono runtime. Make the backend explicit so a
+            // Mono build can never be produced by accident.
+            PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.IL2CPP);
+            if (PlayerSettings.GetScriptingBackend(BuildTargetGroup.Standalone) != ScriptingImplementation.IL2CPP)
+            {
+                throw new InvalidOperationException(
+                    "Build aborted: scripting backend is not IL2CPP for Standalone " +
+                    "(required by the Gaussian Splatting package).");
+            }
+
             string output = GetArg("-outputPath")
                 ?? Path.Combine("Build", "JapaneseSplatCity", "JapaneseSplatCity.exe");
             output = Path.GetFullPath(output);

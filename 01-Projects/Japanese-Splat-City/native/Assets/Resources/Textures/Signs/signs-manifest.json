@@ -1,0 +1,185 @@
+﻿{
+    "generator":  "rasterize-jp-text.ps1",
+    "generatedAtUtc":  "2026-11-09T00:15:37.0562585Z",
+    "fontFile":  "NotoSansCJKjp-Regular.otf",
+    "fontSha256":  "68A3FC98800B2A27B371F2FB79991DAF3633BD89309D4FFAA6946FD587F375B5",
+    "fontBytes":  16467736,
+    "signCount":  21,
+    "uniqueChars":  48,
+    "swatchSheet":  {
+                        "Sha256":  "B984286C8E124CFE89EA39D9F11687021B78F89BF8F7DD4BB702C0781A2E9C37",
+                        "File":  "proof-kanji-sheet.png",
+                        "Cols":  12,
+                        "Cells":  96
+                    },
+    "entries":  [
+                    {
+                        "Tag":  "arcade-title",
+                        "Text":  "商店街",
+                        "File":  "sign-arcade-title.png",
+                        "Sha256":  "A9E02714F345D41C16BB5797D4ED258B42CD75FBA7A32A1CB86380929118585F",
+                        "WidthPx":  1024,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "ramen",
+                        "Text":  "ラーメン",
+                        "File":  "sign-ramen.png",
+                        "Sha256":  "5E3A8825EF3017DA5A969C05175183CBDC5B243E817F5EA69405AA002F148DFD",
+                        "WidthPx":  512,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "izakaya",
+                        "Text":  "居酒屋",
+                        "File":  "sign-izakaya.png",
+                        "Sha256":  "D13DE51732642B5DC814D0FADAE88C7921DFD240EAB5628B564C624F25692454",
+                        "WidthPx":  512,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "kissaten",
+                        "Text":  "喫茶店",
+                        "File":  "sign-kissaten.png",
+                        "Sha256":  "2F2329A36DE76B51E56D2427AFE36EB6A2921CC500164A2334FA88FA52FAA69D",
+                        "WidthPx":  512,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "kissaten2",
+                        "Text":  "珈琲",
+                        "File":  "sign-kissaten2.png",
+                        "Sha256":  "3F011F7EF78AB873C2ACC646FE10EA5B5479569180B274540E38C3BB398E87EF",
+                        "WidthPx":  384,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "konbini",
+                        "Text":  "コンビニ",
+                        "File":  "sign-konbini.png",
+                        "Sha256":  "01853EAE2C4C179FE2753A05A3266F97C462AA5751B33EA2784470266EA46D2B",
+                        "WidthPx":  512,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "wagashi",
+                        "Text":  "和菓子",
+                        "File":  "sign-wagashi.png",
+                        "Sha256":  "BDA160280B73E848981AE47124688234C0B07566541D30A19230C494D0C7E966",
+                        "WidthPx":  384,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "yakitori",
+                        "Text":  "焼き鳥",
+                        "File":  "sign-yakitori.png",
+                        "Sha256":  "21281DEB1ECAB4B96A901B3044ED6EB681E640616C5349B2F2E18236707FA724",
+                        "WidthPx":  384,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "kanmi",
+                        "Text":  "甘味処",
+                        "File":  "sign-kanmi.png",
+                        "Sha256":  "5A027FC9177CE937F8417C678F2469BA494540AA9C17311652A3E824FBEBEC7A",
+                        "WidthPx":  384,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "oden",
+                        "Text":  "おでん",
+                        "File":  "sign-oden.png",
+                        "Sha256":  "66D6D9C26F3F7B5595EE538C77FC0EC2D2F8BFBE9C5AD7E2C61F7166C6901282",
+                        "WidthPx":  364,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "zakka",
+                        "Text":  "雑貨",
+                        "File":  "sign-zakka.png",
+                        "Sha256":  "1BE656B0C25094DB41EE98407B9E7677236D2D4AB7EFB963C7FD08E4C5BFB9AF",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "yofuku",
+                        "Text":  "洋服",
+                        "File":  "sign-yofuku.png",
+                        "Sha256":  "514336537CBB7587852A491E433B9E50FF17218D4C400E87ABFA477A9785E6A9",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "hana",
+                        "Text":  "花屋",
+                        "File":  "sign-hana.png",
+                        "Sha256":  "3397DE5B0D8849D5F4741A65E0A7F97C400B8051AEA29AE161C94FAE27B154A1",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "hon",
+                        "Text":  "本屋",
+                        "File":  "sign-hon.png",
+                        "Sha256":  "BB1DB218CABB6A3E906A55A9A4C111D3405E00C7E7A794C911B122BD09889EE0",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "kambutsu",
+                        "Text":  "乾物",
+                        "File":  "sign-kambutsu.png",
+                        "Sha256":  "45A99ECE37F76CE3AB767312BE317B5A5956BB5EB3AD4E0929FC0EDA96A80945",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "seiniku",
+                        "Text":  "精肉",
+                        "File":  "sign-seiniku.png",
+                        "Sha256":  "3EE742488F9D262148D9165D9E09319C489EC76CDFC516BC125C6DA5EE634326",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "kusuri",
+                        "Text":  "薬局",
+                        "File":  "sign-kusuri.png",
+                        "Sha256":  "3A6A275079765A62F407AD334455687B3DE2A123EF8B53F5BEDE969490BB55B4",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "sento",
+                        "Text":  "銭湯",
+                        "File":  "sign-sento.png",
+                        "Sha256":  "37A8183AFAD14EAC059187D1CF94EA1061D06184859141D1D69DF918AD54FBB1",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "koban",
+                        "Text":  "交番",
+                        "File":  "sign-koban.png",
+                        "Sha256":  "8D6BB1A0AE464BA9994B78A1E63F0ABAFE5B1451D99E9F580E5779D02A6E931E",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "iriguchi",
+                        "Text":  "入口",
+                        "File":  "sign-iriguchi.png",
+                        "Sha256":  "75AD14B63381B515CC6A258F18E22D7EF2B4B8D89317034D70CC94AECDEB57FC",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    },
+                    {
+                        "Tag":  "deguchi",
+                        "Text":  "出口",
+                        "File":  "sign-deguchi.png",
+                        "Sha256":  "28DE6006D67D72C93FEC013BA3EA23B0E9D330195E59510971CAAF55E697BD3A",
+                        "WidthPx":  320,
+                        "HeightPx":  128
+                    }
+                ]
+}

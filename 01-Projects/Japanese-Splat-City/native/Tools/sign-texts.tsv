@@ -1,0 +1,26 @@
+# sign-texts.tsv - Japanese signage manifest for BlockBuilder storefronts.
+# Columns: tag TAB text [TAB width_hint_px [TAB fg_RRGGBB [TAB bg_RRGGBB]]]  (UTF-8, LF)
+# Every string here is rendered from Noto Sans CJK JP (SIL OFL 1.1).
+# Rare glyph 珈 in kissaten2 intentionally exercises coverage beyond JIS level-1.
+
+arcade-title	商店街	1024	F2EFE9	12151D
+ramen	ラーメン	512	F2EFE9	12151D
+izakaya	居酒屋	512	F2EFE9	12151D
+kissaten	喫茶店	512	F2EFE9	12151D
+kissaten2	珈琲	384	F2EFE9	12151D
+konbini	コンビニ	512	F2EFE9	12151D
+wagashi	和菓子	384	F2EFE9	12151D
+yakitori	焼き鳥	384	F2EFE9	12151D
+kanmi	甘味処	384	F2EFE9	12151D
+oden	おでん	320	F2EFE9	12151D
+zakka	雑貨	320	F2EFE9	12151D
+yofuku	洋服	320	F2EFE9	12151D
+hana	花屋	320	F2EFE9	12151D
+hon	本屋	320	F2EFE9	12151D
+kambutsu	乾物	320	F2EFE9	12151D
+seiniku	精肉	320	F2EFE9	12151D
+kusuri	薬局	320	F2EFE9	12151D
+sento	銭湯	320	F2EFE9	12151D
+koban	交番	320	F2EFE9	12151D
+iriguchi	入口	320	F2EFE9	12151D
+deguchi	出口	320	F2EFE9	12151D

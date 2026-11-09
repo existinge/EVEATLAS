@@ -63,6 +63,17 @@ namespace JapaneseSplatCity.Block
         Material _matAwningRed;
         Material _matAwningWhite;
 
+        // Signage generated offline by native/Tools/rasterize-jp-text.ps1 from the
+        // licensed Noto Sans CJK JP (OFL) and verified by verify-font-glyphs.ps1.
+        // PNGs live under Assets/Resources/Textures/Signs so Resources.Load works
+        // with zero editor work on first import. Fallback = flat _matSign color.
+        static readonly string[] SignSlates = {
+            "ramen", "izakaya", "kissaten", "kissaten2", "konbini", "wagashi",
+            "yakitori", "kanmi", "oden", "zakka", "yofuku", "hana", "hon",
+            "kambutsu", "seiniku", "kusuri", "sento", "koban", "iriguchi", "deguchi"
+        };
+        int _bayCounter;
+
         // Arcade geometry anchors.
         const float ArcadeX = 2.1f;     // interior half-width
         const float AnnexX0 = 2.28f;   // lane inner edge (annex side of partition)
@@ -162,6 +173,23 @@ namespace JapaneseSplatCity.Block
 
             // ---- Storefront bays on both arcade faces --------------------------
             BuildBays(root, L);
+
+            // ---- Block signage ---------------------------------------------------
+            // Arcade title banner 商店街 on the far wall above the glazed viewport
+            // (reads as the block head; the splat sits at z = L + 4 behind the glass).
+            GameObject titlePanel = Box("SignArcadeTitle", root,
+                new Vector3(0f, (wallHeight + 3.35f) / 2f - 0.05f, zEnd - wallThickness / 2f - 0.04f),
+                new Vector3(5.6f, 0.55f, 0.06f), _matSign, collider: false);
+            ApplySignTexture(titlePanel, "arcade-title");
+            // 入口 / 出口 guidance flaps on the partition, arcade side of both doors
+            GameObject inPanel = Box("SignIriguchi", root,
+                new Vector3(ArcadeX - 0.15f, 1.9f, Door1Z0 - 0.8f),
+                new Vector3(0.06f, 0.32f, 0.5f), _matSign, collider: false);
+            ApplySignTexture(inPanel, "iriguchi");
+            GameObject outPanel = Box("SignDeguchi", root,
+                new Vector3(ArcadeX - 0.15f, 1.9f, Door2Z1 + 0.8f),
+                new Vector3(0.06f, 0.32f, 0.5f), _matSign, collider: false);
+            ApplySignTexture(outPanel, "deguchi");
 
             // ---- Rejoin dressing: awning, vending nook, café windows -----------
             BuildRejoin(root);
@@ -374,8 +402,37 @@ namespace JapaneseSplatCity.Block
             // sign rail + sign panel above the bay
             Box("SignRail", root, new Vector3(xCenter + side * (bayDepth + wallThickness) * 0.0f, 3.30f, zCenter),
                 new Vector3(bayDepth + wallThickness + 0.1f, 0.10f, bayWidth + 0.3f), _matDark, collider: false);
-            Box("SignPanel", root, new Vector3(xCenter + side * 0.05f, 3.56f, zCenter),
+            GameObject panel = Box("SignPanel", root, new Vector3(xCenter + side * 0.05f, 3.56f, zCenter),
                 new Vector3(bayDepth + wallThickness + 0.12f, 0.42f, bayWidth + 0.2f), _matSign, collider: false);
+            ApplySignTexture(panel, SignSlates[_bayCounter++ % SignSlates.Length]);
+        }
+
+        // Swaps the flat sign material for the generated signage texture, keeping
+        // the texture's aspect ratio by cropping (never squashing) it to the panel.
+        void ApplySignTexture(GameObject panel, string signTag)
+        {
+            var tex = Resources.Load<Texture2D>("Textures/Signs/sign-" + signTag);
+            if (tex == null) return; // flat-color fallback (e.g. no imported assets yet)
+            var r = panel.GetComponent<Renderer>();
+            if (r == null) return;
+            var m = new Material(_matSign);
+            m.mainTexture = tex;
+            Vector3 s = panel.transform.localScale;
+            float texAspect = tex.width / (float)tex.height;
+            float panelAspect = s.z / s.y;
+            if (texAspect >= panelAspect)
+            {
+                float sx = texAspect / panelAspect;
+                m.mainTextureScale = new Vector2(sx, 1f);
+                m.mainTextureOffset = new Vector2(-(sx - 1f) / 2f, 0f);
+            }
+            else
+            {
+                float sy = panelAspect / texAspect;
+                m.mainTextureScale = new Vector2(1f, sy);
+                m.mainTextureOffset = new Vector2(0f, -(sy - 1f) / 2f);
+            }
+            r.sharedMaterial = m;
         }
 
         // Rejoin dressing at CONNECTION 2 (arcade side of the partition, z ~= 40):
