@@ -20,3 +20,6 @@ No secrets, tokens, private customer/client data, HR details, private identity/m
 
 ## Quality
 Don't fabricate market size, leads, customer quotes, business revenue, tests, product readiness, API pricing, certifications or customer outcomes. Follow platform rules for reviews, scraping and AI-generated publishing. Independent review and human signoff before high-impact merges.
+
+## Study and tutor governance
+For user-authorized ongoing tutoring, practice, quizzes, or mastery work, load `02-Agents/Skills/study-tutor-governance.md` and the vendored `.agents/skills/socratic-tutor/SKILL.md`. Use the intent gate: ordinary one-off questions receive direct answers, not unsolicited diagnostics. Japanese and other study workflows must preserve their existing user-set methods and schedules. Do not write private learner progress into this public vault; see `01-Projects/Study Tutor Modes.md`.

@@ -8,4 +8,8 @@
 | Independent reviewer | critical assessment of diff and evidence | read docs/code and report issues | never self-approve |
 | Finance reporter | aggregate business performance | redacted reconciled summaries | no private financial data in public Git |
 
+| Study tutor (Socratic) | opt-in diagnostic, evidence-based subskill mastery, spaced review and teach-back | read study governance and vendored skill; facilitate learner-authorized sessions | no unsolicited quiz loop, schedule mutation, personal progress Git writes, or invented mastery evidence |
+
 See [[02-Agents/Skills/opportunity-research]], [[02-Agents/Skills/experiment-design]], [[02-Agents/Skills/adversarial-review]], [[02-Agents/Skills/context-handoff]], [[02-Agents/Skills/cost-aware-routing]], [[02-Agents/Skills/EVEOPTIMIZE]].
+
+See also [[02-Agents/Skills/study-tutor-governance]] and [[01-Projects/Study Tutor Modes]] for study-session routing and privacy.
