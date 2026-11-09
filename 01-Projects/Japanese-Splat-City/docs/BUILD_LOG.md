@@ -104,8 +104,11 @@ third-party binaries may write to the profile. We will not fabricate or bypass l
 - All remaining checklist items are gated by the blocker above (implemented/shipped = false, none fabricated).
 - Splat procurement research COMPLETE (`docs/SPLAT-SOURCE-REPORT.md`, primary-source license quotes):
   no redistributable Japanese-street capture exists; M1 anchor adopted = HF `Voxel51/gaussian_splatting`
-  (Apache-2.0, pre-trained street-level PLY `truck`/`train`), download gated on license-text+SHA256 record
-  (`docs/SPLAT_PROCUREMENT.md`); Japanese shotengai deferred to Mapillary CC-BY-SA self-reconstruction.
+  **`train` scene @ iteration 30000** (Apache-2.0). **Payload DOWNLOADED + SHA256-verified** against the HF
+  LFS oid (`a4c1906c…47a7a1`, 266,542,260 B) into `.tools/splat-source/`; license record, dataset-card
+  front-matter, HF API metadata, and notices committed under `LICENSE/Voxel51-gaussian_splatting/`
+  (incl. the verified caveat: no in-repo LICENSE file — tag rests on uploader's card declaration).
+  Japanese shotengai deferred to Mapillary CC-BY-SA self-reconstruction.
 - Drafted `native/Assets/Scripts/Tooling/FpsAndCapture.cs` (fps.csv + Screenshots/ capture, NOT compiled)
   and `docs/WALK_DESIGN.md` (block layout, two-connection service lane, four evidence frames).
 - Awaiting the human-supplied `Unity_v5.x.ulf` (drop path `.tools/licensing/`, walkthrough in `docs/ACTIVATION.md`).

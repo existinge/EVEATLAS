@@ -31,13 +31,24 @@ NC, stylized, single-wall, or GSV-ToS-breaching.
 
 ## Selection decision (M1 anchor)
 
-- **Adopt #1 `Voxel51/gaussian_splatting`, scene `truck` or `train`, as the
+- **Adopt #1 `Voxel51/gaussian_splatting`, scene `train` @ iteration 30000, as the
   Milestone-1 renderer anchor** (proves splat-in-URP/DX12; content is not Japanese
   and not an arcade — acceptable for M1 renderer-proof, documented as such).
-- Before the PLY enters any build: download to `.tools/` (outside repo), record
-  SHA256 + the in-repo LICENSE file under `LICENSE/` + capture URL in
-  `docs/ASSET_PROVENANCE.md`. Verify the Apache-2.0 tag in the dataset's own
-  LICENSE file (self-declared by uploader; report §3 caveat (a)).
+- **DONE 2026-11-08:** payload downloaded to `.tools/splat-source/`
+  (`Voxel51-gaussian_splatting-train-iteration30000.ply`, 266,542,260 B) and
+  SHA256-verified **exactly against the HF LFS oid**
+  (`a4c1906ce0256f5cb2255aa078d18b468dc01d8604f6eda1aaf22b235147a7a1`) — byte-for-byte
+  match with what Hugging Face serves. License record committed under
+  `LICENSE/Voxel51-gaussian_splatting/` (canonical Apache-2.0 text, dataset card
+  front-matter, HF API metadata, NOTICE with caveats + obligations).
+- **Verified caveat (report §3 (a), now resolved as documented):** the dataset repo
+  contains **no in-repo LICENSE file**; the Apache-2.0 tag rests on the uploader's
+  card front-matter + HF API `cardData.license`, captured as evidence in the LICENSE
+  folder. Kept as M1 anchor (declaration is primary-source-verifiable; Apache-2.0
+  has no NC restriction). `truck` (510 MB) retained as the heavier alternative.
+- **Next gate:** the PLY enters the scene only after the Unity license resolves
+  (deploy + import into `Assets/GaussianSplats/` under StreamingAssets, notice
+  mirrored beside the payload per NOTICE.md obligations).
 - Japanese shotengai content is deferred and gated on the Mapillary CC-BY-SA
   self-reconstruction path (ShareAlike acceptance) or a commissioned capture.
 - Attribution/notice obligations for whichever item ships are preserved in an
