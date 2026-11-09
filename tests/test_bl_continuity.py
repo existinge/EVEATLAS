@@ -22,6 +22,13 @@ class ContinuityTests(unittest.TestCase):
         i=build_index(self.base)
         for title in ("Rose Story","The Rose Chapter","Hidden Garden","Summer Neon"):
             self.assertEqual(check_candidate({"title":title},i)["gate"],"KNOWN_TRACKED")
+    def test_research_record_does_not_shadow_watch(self):
+        state={**self.base,"r77_research_only":[*self.base["r77_research_only"],
+               {"title":"The Rose Chapter","region":"Japan"}]}
+        result=check_candidate({"title":"The Rose Chapter"},build_index(state))
+        self.assertEqual(result["gate"],"KNOWN_TRACKED")
+        self.assertEqual(result["status"],"Completed")
+
     def test_homonyms_require_disambiguation(self):
         self.assertEqual(check_candidate({"title":"The Star"},build_index(self.base))["gate"],
                          "IDENTITY_UNRESOLVED")
