@@ -102,10 +102,19 @@ third-party binaries may write to the profile. We will not fabricate or bypass l
 - Project identity fixed: `companyName` `DefaultCompany`→`EVEATLAS`, `productName` `native`→
   `JapaneseSplatCity` in `ProjectSettings.asset` (player-log path + exe naming follow).
 - All remaining checklist items are gated by the blocker above (implemented/shipped = false, none fabricated).
+- Splat procurement research COMPLETE (`docs/SPLAT-SOURCE-REPORT.md`, primary-source license quotes):
+  no redistributable Japanese-street capture exists; M1 anchor adopted = HF `Voxel51/gaussian_splatting`
+  (Apache-2.0, pre-trained street-level PLY `truck`/`train`), download gated on license-text+SHA256 record
+  (`docs/SPLAT_PROCUREMENT.md`); Japanese shotengai deferred to Mapillary CC-BY-SA self-reconstruction.
+- Drafted `native/Assets/Scripts/Tooling/FpsAndCapture.cs` (fps.csv + Screenshots/ capture, NOT compiled)
+  and `docs/WALK_DESIGN.md` (block layout, two-connection service lane, four evidence frames).
 - Awaiting the human-supplied `Unity_v5.x.ulf` (drop path `.tools/licensing/`, walkthrough in `docs/ACTIVATION.md`).
 
 ## Open questions
 
 - Exact URP 17.3.0 acceptance with `org.nesnausk.gaussian-splatting` v2.0.0 (targets 2022.3/URP 17.0; may need feature `renderPassEvent` compatibility path on 17.3) — to confirm on first editor open.
 - Direct3D 12 default in ProjectSettings + standalone `-force-d3d12` fallback.
-- Licensed street-correct PLY source (provenance record needed before the walk scene uses any real street splat).
+- Licensed street-correct PLY source — RESOLVED for M1: Voxel51 HF `gaussian_splatting` `truck`/`train`
+  (Apache-2.0, already-trained PLY; self-declared tag, re-verify in-repo LICENSE at download). Genuine
+  Japanese street capture does not exist under a redistributable license; Mapillary CC-BY-SA
+  self-reconstruction is the only clean path (deferred, see `docs/SPLAT_PROCUREMENT.md`).

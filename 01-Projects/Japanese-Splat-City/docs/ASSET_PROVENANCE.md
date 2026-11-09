@@ -8,7 +8,8 @@ contract; licensing caution for street splats).
 
 | Asset | Status | License | Source / URL | Proven (file hash) |
 |---|---|---|---|---|
-| (empty — no assets shipped yet) | | | | |
+| M1 splat anchor (`truck` or `train` scene, Voxel51 HF dataset) | PENDING download (do not ship until license text + hash recorded) | Apache-2.0 (self-declared; re-verify in-repo LICENSE) | https://huggingface.co/datasets/Voxel51/gaussian_splatting | — |
+| Japanese shotengai capture | DEFERRED (no redistributable capture exists; Mapillary CC-BY-SA self-reconstruction or commission) | — | see docs/SPLAT_PROCUREMENT.md | — |
 
 ## Rules
 
