@@ -111,6 +111,25 @@ third-party binaries may write to the profile. We will not fabricate or bypass l
   Japanese shotengai deferred to Mapillary CC-BY-SA self-reconstruction.
 - Drafted `native/Assets/Scripts/Tooling/FpsAndCapture.cs` (fps.csv + Screenshots/ capture, NOT compiled)
   and `docs/WALK_DESIGN.md` (block layout, two-connection service lane, four evidence frames).
+- **Round 5 (offline pre-stage):** Japanese signage font procured and recorded.
+  - `NotoSansCJKjp-Regular.otf` + `OFL-1.1.txt` DOWNLOADED to `.tools/font-source/` (workspace root)
+    and SHA256-verified (OTF `68A3FC98…75B5`, OFL `6A73F954…E2BF2`); OFL + NOTICE committed under
+    `LICENSE/NotoSansJP/`; status row added to `docs/ASSET_PROVENANCE.md`. SIL OFL 1.1 permits
+    bundling in the offline game; the packaged player must ship the OTF + OFL + NOTICE and name the
+    Noto CJK project in credits.
+  - Block-building scripts drafted (NOT compiled, self-contained, ready for first import):
+    - `native/Assets/Scripts/Player/FpsController.cs` — WASD + mouse-look + gravity, CharacterController,
+      Esc-lock cursor, `cam` wiring; spawn faces the first lit storefront with the splat anchor ahead.
+    - `native/Assets/Scripts/Block/BlockBuilder.cs` — runtime-constructs the whole enclosed block from
+      primitives: 4.0 m arcade (length 68 m walkable, room to land in the 60–90 m window), storefront
+      bay alternation (lit window / shutter + sign rail + sign panel), far-end glazed street viewport
+      for the Gaussian-splat anchor, 2.2 m service lane ring with exactly two connections
+      (CONNECTION 1 near start, CONNECTION 2 = rejoin with striped awning + vending nook + café
+      windows), canopy + lighting poles, collisions + trigger gates.
+    - `native/Assets/Scripts/Block/WaypointGate.cs` / `EvidenceDriver.cs` — trigger frames feed
+      FpsAndCapture tags junction / servicebend / rejoin + startup spawn frame.
+  - Scene `WalkMain.unity` still requires the first editor import (BlockBuilder + EvidenceDriver +
+    SplatAnchor one-off composition); `PlayerBuilder.cs` stays gated on it.
 - Awaiting the human-supplied `Unity_v5.x.ulf` (drop path `.tools/licensing/`, walkthrough in `docs/ACTIVATION.md`).
 
 ## Open questions
