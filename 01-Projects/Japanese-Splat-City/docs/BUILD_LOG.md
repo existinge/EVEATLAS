@@ -13,6 +13,10 @@ Chronological record of milestone work, evidence, and fixes.
 | 2026-11-05 | M3 | Street props on the walking strips: **apple** (`m3/apple.ksplat`), **brass-diya-lantern** (`m3/brass-diya-lantern.splat`), **concrete-cat-statue** (`m3/concrete-cat-statue.splat`) via `STREET_PROPS` registry + `streetPropTransform()` in `ShoppingStreet.ts`, wired through the serialized loader in `Game.ts`; every prop shares the M2 ground line (`y = +boundsMax.y·scale`) and faces the street (+Z): Z-flip `[0,0,1,0]` for apple + lantern, X-flip `[1,0,0,0]` for the cat (its head faces −Z in file space); `wine-barrel.ksplat` deliberately **not** part of M3 | `npm run typecheck` OK; `npm test` 28/28 passed — exact-3-props (barrel excluded), per-prop worldMinY≈0 grounding, unit-flip quaternions, cat faces +Z via X-flip, props clear of monument footprint + spawn corridor and non-overlapping; `npm run build` OK; headless-Chrome CDP: 4 scenes with exact expected transforms (pos/quat/scale/splatCount 36,313 / 150,000 / 150,000), zero console errors, all assets 200; pixel evidence — frame stable 1 s apart (0.00 % changed), splat coverage 4.96 % (default view), cat close-up 0.59 % of frame / 6,048 unique colors in a centered 61×126 bbox (evidence `docs/evidence/m3-*.png`) |
 | 2026-11-05 | M4 | Interactable environment: pure-math targeting in `src/interaction/Interaction.ts` (`rayAabb3` slab ray/AABB + `interactionTarget` nearest-hit), `InteractiveRegistry` (registration, per-def 1.2 s cooldown, 12-entry history), **12** `InteractiveDef`s in `src/world/Interactives.ts` — 8 shopfront trigger slabs derived from `BUILDING_BASES` (so they can never drift from the visible/collidable world) + the monument + the 3 M3 props — `InteractionHud` (reticle + contextual Japanese prompt + 3.2 s action message, reusing the existing `#target-reticle`/`#interaction-panel` CSS), `Game` wiring (camera-forward ray each frame while playing, nearest target within 4.6 m, edge-triggered E via `InputController.consumeInteract()`), and an `E — Interact (調べる)` entry in the menu overlay; the `InteractiveDef` `label`/`reading`/`description`/`message` fields are the shared M4→M5 vocabulary contract (M5 consumes these exact entries, no second registry) | `npm run typecheck` OK; `npm test` 61/61 passed (5 files; new `tests/interaction.test.ts` 23 tests: ray math incl. direction-length invariance / `maxDistance` gating / parallel miss, registry cooldown + history + target delegation, 12-def contract — unique ids, non-empty Japanese label/reading/description/message/action, 8 `shop-*` + 3 `prop-*` + `monument`, and every hotspot clear of all collision solids (8 building footprints, 6 lamp poles, monument footprint) and inside `STREET.bounds`); `npm run build` OK (800.71 kB js / 205.50 kB gzip, 4.91 kB css); headless-Chrome CDP on the dev server: page boots with zero console errors/exceptions, `#hud`/`#target-reticle`/`#interaction-panel` present, Play click acquires pointer lock (`body.pointer-locked`), walking forward activates the reticle and shows the monument prompt `牛の石像 … E — 見る`, pressing E shows `石の牛をじっくり見ました。` |
 
+| 2026-11-05 | M5 | Vocabulary learning, built on the M4 registry rather than beside it: typed content in `src/content/vocabulary.ts` (`VocabularyEntry` = `id`/`word`/`reading`/`meaning`/`level`/`pos`/`example`/`exampleMeaning`/`interactableId`, `JlptLevel = 'N4' \| 'N3'`, `PartOfSpeech`), **24 words — 17 N4 + 7 N3 — two per interactable, every one of the 12 M4 ids covered**; DOM-free `src/systems/LearningSystem.ts` (encounter counts, `recordEncounter(interactableId)` returning only *fresh* words, `subscribe()` discovery events, `discoveredEntries()`/`undiscoveredEntries()` in content order, `progress`, and `snapshot()`/`restore()` with a versioned schema that M7 will persist — no `localStorage` here); `src/ui/VocabularyNotebook.ts` overlay (N toggles, per-level sections, discovered words show word/reading/meaning/example, undiscovered are masked `？？？` and only name the teaching interactable); `InteractionHud.showDiscovery()` adds a 3.2 s `#discovery-toast` (`新しい単語 +2 — 像・祭り`); `Game` wiring — the existing E path calls `learning.recordEncounter(entry.id)` on the same `InteractiveDef` it already resolved, so there is exactly one interaction+data hook; opening the notebook releases pointer lock and suppresses the pause menu, closing restores it; `N — Notebook (単語帳)` in the menu overlay and `E で 調べる / N で 単語帳` in the HUD sub-line. **No English→Japanese translation quizzes**: the schema has no prompt/choices/answer-key fields and the notebook is reference-only | `npm run typecheck` OK; `npm test` 77/77 passed (6 files; new `tests/learning.test.ts` 16 tests: content contract — ≥20 words, unique ids, only N4/N3 with N4 the bulk, non-empty Japanese word/reading/example, exact 9-key schema so no quiz fields can creep in, every `INTERACTABLES` id teaches ≥1 word and every `interactableId` exists, unknown id → `[]`; `LearningSystem` — fresh-vs-repeat encounters, unknown ids ignored, content-order discovery, one event per fresh word + unsubscribe, snapshot/restore round-trip with sorted keys, malformed snapshots rejected (null, wrong version, unknown ids, NaN `at`, `encounters` clamped to ≥1), `reset()` keeps listeners, injected content set); `npm run build` OK (812.42 kB js / 208.89 kB gzip, 6.53 kB css / 1.94 kB gzip, 21 modules); headless-Chrome CDP on the dev server: zero console errors/exceptions, `#discovery-toast` + `#vocabulary-notebook` present and hidden at boot, menu lists `N — Notebook (単語帳)`, Play click acquires pointer lock, walking to the monument + E shows `石の牛をじっくり見ました。` **and** the toast `新しい単語 +2 — 像・祭り` with `learning.discoveredCount === 2` of 24, N opens the notebook (`2 / 24 words discovered — 見つけた単語`, sections `N4 1 / 17` + `N3 1 / 7`, 24 entries of which 22 locked, discovered `祭り`/`まつり` and `像`/`ぞう`, first locked row `？？？ N4 ラーメン屋 で 見つける`, no quiz UI text) while pointer lock is released and the pause menu stays hidden, N again closes it and restores `Paused — ポーズ`, and reopening + Escape closes it the same way |
+
+| 2026-11-09 | Docs | Planning/staging centralization audit + fix (read-audit then doc-only changes; no code touched): statuses centralized in new `docs/PLAN.md` (ledger, staging flow `staged→current→verified-done`, cross-codebase register web↔Unity-native, audit notes F1–F10); README milestone table replaced by a link to PLAN.md and the stale "arrive with M4/M5" controls line corrected; `ARCHITECTURE.md` rewritten to the real `src/` tree with aspirational modules moved to PLAN staging; `ROADMAP.md` deleted (merged into PLAN.md); missing TEST_REPORT M5 section added (build-log evidence + 2026-11-09 re-run); ASSETS.md gains the `wine-barrel.ksplat` decision row (S6); AGENTS.md gains the one-status-home rule; vault-root `.gitignore` now covers `/.firecrawl/` (was untracked and uncovered at repo root) | 2026-11-09 re-run: `npm run typecheck` exit 0; `npm test` 6 files / 77/77 exit 0; `npm run build` (`.tmp-esbuild` TMP override) exit 0, 812.42 kB js; `git check-ignore` on all project-root scratch artifacts; `Get-FileHash` SHA256 of the native M1 anchor PLY matches `native/Build.ps1` pin |
+
 > **M2 browser note (supersedes the M1 note's tools):** system Chrome at
 > `C:\Program Files\Google\Chrome\Application\chrome.exe` **does** honor CDP on this
 > host (`--headless=new --remote-debugging-port`), so visual browser evidence is
@@ -41,3 +45,38 @@ registry and must not introduce a second one. Each entry also carries a Japanese
 | `prop-apple` | りんご | りんご | 手に取る |
 | `prop-brass-diya-lantern` | ランタン | ランタン | 見る |
 | `prop-concrete-cat-statue` | 猫の石像 | ねこのせきぞう | なでる |
+
+## M5 vocabulary content (24 words, N4–N3)
+
+`src/content/vocabulary.ts` is pure data — no DOM, no renderer, no second
+registry. Every entry names the M4 `interactableId` that teaches it, and all 12
+M4 interactables teach at least one word (two each). Glosses are reference-only:
+the schema has no quiz prompt, choices or answer key, so the notebook cannot turn
+into an English→Japanese translation quiz.
+
+| interactable | word | reading | level | pos | meaning |
+| --- | --- | --- | --- | --- | --- |
+| `shop-ramen-ya` | 注文 | ちゅうもん | N4 | noun | order (a meal, goods) |
+| `shop-ramen-ya` | 味 | あじ | N4 | noun | taste, flavour |
+| `shop-hon-ya` | 本棚 | ほんだな | N4 | noun | bookshelf |
+| `shop-hon-ya` | 表紙 | ひょうし | N3 | noun | cover (of a book) |
+| `shop-wagashi` | 甘い | あまい | N4 | i-adj | sweet |
+| `shop-wagashi` | 季節 | きせつ | N4 | noun | season |
+| `shop-kissaten` | 苦い | にがい | N4 | i-adj | bitter |
+| `shop-kissaten` | 静か | しずか | N4 | na-adj | quiet, calm |
+| `shop-konbini` | 便利 | べんり | N4 | na-adj | convenient, handy |
+| `shop-konbini` | 品物 | しなもの | N3 | noun | goods, items |
+| `shop-hana-ya` | 花びら | はなびら | N3 | noun | petal |
+| `shop-hana-ya` | 香り | かおり | N3 | noun | scent, fragrance |
+| `shop-zakka-ten` | 選ぶ | えらぶ | N4 | verb | to choose, to pick |
+| `shop-zakka-ten` | 風鈴 | ふうりん | N3 | noun | wind chime |
+| `shop-sento` | 湯 | ゆ | N4 | noun | hot water |
+| `shop-sento` | 気持ち | きもち | N4 | noun | feeling |
+| `monument` | 像 | ぞう | N3 | noun | statue |
+| `monument` | 祭り | まつり | N4 | noun | festival |
+| `prop-apple` | 赤い | あかい | N4 | i-adj | red |
+| `prop-apple` | 果物 | くだもの | N4 | noun | fruit |
+| `prop-brass-diya-lantern` | 明るい | あかるい | N4 | i-adj | bright |
+| `prop-brass-diya-lantern` | 灯 | あかり | N3 | noun | light, lamplight |
+| `prop-concrete-cat-statue` | 石 | いし | N4 | noun | stone |
+| `prop-concrete-cat-statue` | 触る | さわる | N4 | verb | to touch |

@@ -3,60 +3,77 @@
 Japanese Splat City is a browser game built with **Vite + TypeScript + Three.js**.
 It runs a first-person explore-and-learn loop: the player walks a Japanese
 shopping street, targets objects (E key), receives Japanese vocabulary, and
-completes small missions.
+opens the notebook (N key). Milestone status and future work live in
+[PLAN.md](PLAN.md); this file describes only what exists in `src/` today.
 
-## Module layout
+## Module layout (as built, 2026-11-09)
 
 ```
 src/
-  main.ts                 Bootstrap: creates Game, wires HUD, fatal-error overlay
+  main.ts                 Bootstrap: creates Game, wires fatal-error overlay
   engine/
-    Game.ts               Composition root: renderer, scene, camera, main loop
+    Game.ts               Composition root: renderer, scene, camera, main loop,
+                          splat viewer wiring (queueSplatScene), interaction +
+                          learning wiring, pause/pointer-lock orchestration
     SceneManager.ts       Scene graph, sky, fog, lights, disposal
-    AssetManager.ts       Texture / splat / audio loading with cache
-    InputManager.ts       Keyboard + mouse state, pointer lock, event feed
-    PlayerController.ts   WASD movement, mouse look, sprint, jump, gravity
-    CollisionManager.ts   AABB colliders, ground/gravity resolution, bounds
-  rendering/
-    SplatRenderer.ts      Gaussian splat viewer (visual layer only)
-    Environment.ts        Street lighting, ambient mood, sky dome
-    GraphicsSettings.ts   Quality settings (pixel ratio, shadows, splat detail)
-  world/
-    ShoppingStreet.ts     Street layout: road, sidewalks, buildings, fences
-    ConvenienceStore.ts   Convenience-store storefront and interior props
-    Cafe.ts               Café storefront and seating
-    InteractableObjects.ts Registry of props (vending machines, signs, ...)
+    InputController.ts    Keyboard + mouse state, pointer lock, E edge-trigger,
+                          consumeInteract()
+    PlayerController.ts   WASD movement, mouse look, sprint, jump, gravity,
+                          axis-separated AABB collision resolution
+  interaction/
+    Interaction.ts        Pure math: rayAabb3 slab ray/AABB, interactionTarget()
+    InteractiveRegistry.ts Registration, per-def 1.2 s cooldown, 12-entry history
   systems/
-    InteractionSystem.ts  Raycast targeting, E interaction, contextual UI
-    MissionSystem.ts      Mission state machines (3 missions)
-    LearningSystem.ts     Vocabulary discovery, notebook state
-    ProgressSystem.ts     localStorage persistence + reset
-    AudioSystem.ts        Speech synthesis and UI sounds
+    LearningSystem.ts     Vocabulary discovery: encounter counts, fresh-word
+                          events, snapshot/restore (versioned schema); no DOM,
+                          no localStorage (M7 owns persistence)
+  world/
+    ShoppingStreet.ts     Street layout: road, sidewalks, 8 building boxes,
+                          STREET_LAMPS registry + buildLamps() lighting,
+                          STREET_PROPS + monument/prop transforms
+    Colliders.ts          buildStreetWorld(): building + monument AABBs,
+                          Colliders.poles (lamp poles, real colliders)
+    Interactives.ts       12 InteractiveDefs (8 shopfront slabs from
+                          BUILDING_BASES + monument + 3 props) — the shared
+                          M4→M5 vocabulary contract
   content/
-    vocabulary.ts         Vocabulary schema + N4/N3 entries
-    missions.ts           Mission definitions and dialogues
-    dialogue.ts          Store/café NPC dialogue trees
+    vocabulary.ts         VocabularyEntry schema + 24 N4/N3 words, two per
+                          interactable; pure data
   ui/
-    HUD.ts               Reticle, hints, top bar, mission tracker
-    InteractionPanel.ts  Targeted-object panel (Japanese first)
-    MissionTracker.ts    Active mission HUD block
-    VocabularyNotebook.ts Modal notebook (discovered words, readings)
-    SettingsMenu.ts      Pause/settings modal
+    MenuOverlay.ts        Play/pause + quality presets + control list
+    InteractionHud.ts     Reticle, contextual Japanese prompt/message,
+                          discovery toast
+    VocabularyNotebook.ts Notebook overlay: N4/N3 sections, masked ？？？ rows
   types/
-    game.ts              Shared types (vocabulary, mission, progress, ...)
-tests/                    Vitest suites: missions, interactions, progress, smoke
+    gaussian-splats-3d.d.ts Ambient typing for the splat viewer
+  styles/main.css         HUD, overlays, notebook styling
+tests/                    Vitest suites: smoke, player, street-props,
+                          lamp-colorization, interaction, learning
 ```
 
 ## Key invariants
 
 - **Visual vs. collision separation**: Gaussian splat content and street props
-  are visual-only; movement collision comes exclusively from
-  `CollisionManager` AABBs and ground height, never from splat data.
-- **Milestones compose**: M1 movement, M2 splats, M3 environment, M4
-  interaction, M5 learning, M6 missions, M7 persistence all plug into
-  `Game`; each milestone keeps earlier gates working.
-- **Content is data**: vocabulary, missions and dialogues live in `src/content`
-  as typed data so they can be validated by tests and extended without engine
-  changes.
-- **Progress is local**: all persistence uses `localStorage` under a single
-  namespaced key with a schema version and a reset-progress option.
+  are visual-only; movement collision comes exclusively from AABBs built by
+  `world/Colliders.ts` (buildings, monument footprint, lamp poles) resolved in
+  `PlayerController`, never from splat data.
+- **Milestones compose**: M1 movement, M2 splats, M3 props, M3.1 lighting, M4
+  interaction, M5 learning all plug into `Game`; each milestone keeps earlier
+  gates working. M6 missions and M7 persistence are staged in
+  [PLAN.md](PLAN.md), not yet present in `src/`.
+- **Content is data**: vocabulary lives in `src/content/vocabulary.ts` as typed
+  data so it can be validated by tests and extended without engine changes;
+  `world/Interactives.ts` is the single interaction registry (no second one).
+- **One interaction + data hook**: the E path resolves the same `InteractiveDef`
+  it shows, and `recordEncounter()` consumes its id — no parallel registries.
+- **Persistence is deferred**: `LearningSystem` snapshot/restore is versioned
+  and schema-checked, but nothing writes `localStorage` yet; M7 owns that.
+
+## Planned modules (not in the tree — see PLAN.md staging)
+
+`systems/MissionSystem.ts`, `systems/ProgressSystem.ts`,
+`systems/AudioSystem.ts`, `content/missions.ts`, `content/dialogue.ts`,
+`ui/MissionTracker.ts`, plus possible `world/ConvenienceStore.ts` / `Cafe.ts`
+zone work. These names come from the original pre-M0 architecture sketch and
+are subject to the as-built shapes (e.g. collision stayed in
+`PlayerController`, the splat viewer stayed wired in `Game.ts`).

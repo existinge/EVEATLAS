@@ -12,6 +12,7 @@ in a public repository.
 | `splats/m3/apple.ksplat` | DX.GL multi-view datasets (splats trained from Poly Haven CC0 models); converted by Innerscene | CC0 | ✅ (M3) |
 | `splats/m3/brass-diya-lantern.splat` | Poly Haven, "Brass Diya Lantern" by Bhargav Kubal; baked by Innerscene | CC0 | ✅ (M3) |
 | `splats/m3/concrete-cat-statue.splat` | Poly Haven, "Concrete Cat Statue" by Rico Cilliers, Riley Queen; baked by Innerscene | CC0 | ✅ (M3) |
+| `splats/m3/wine-barrel.ksplat` | DX.GL multi-view datasets (same provenance family as `apple.ksplat`) | CC0 (verify alongside source before any ship) | ⏸ **decision pending** — on disk, untracked, deliberately excluded from M3 (BUILD_LOG M3 row); tracked as staging item S6 in [PLAN.md](PLAN.md) |
 
 ## Textures, audio, fonts
 

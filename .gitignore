@@ -10,3 +10,6 @@ secrets/
 *.key
 *.pem
 .DS_Store
+
+# Agent harness scratch at the vault root (browser verification scripts etc.)
+/.firecrawl/

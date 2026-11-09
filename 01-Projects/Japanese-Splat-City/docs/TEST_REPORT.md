@@ -202,3 +202,39 @@ here and re-verified end-to-end:
 - [~] Only the monument hotspot was exercised in the browser; the other 11 hotspots
   are covered by the geometry/contract unit tests (all 12 defs share the same
   targeting + registry path).
+
+## M5 — Vocabulary learning
+
+Gate evidence per the BUILD_LOG M5 row (2026-11-05), re-verified 2026-11-09 by
+the audit pass:
+
+- [x] `npm run typecheck` passes — `tsc --noEmit` clean, strict *(re-run
+  2026-11-09, exit 0)*
+- [x] `npm test` passes — Vitest **77/77** over 6 files; new
+  `tests/learning.test.ts` (16 tests) covers three layers *(re-run 2026-11-09:
+  6 files, 77/77, exit 0)*:
+  - content contract: ≥ 20 words, unique ids, only N4/N3 (N4 the bulk),
+    non-empty Japanese word/reading/example, exact 9-key schema so no quiz
+    prompt/choices/answer-key fields can creep in, every `INTERACTABLES` id
+    teaches ≥ 1 word and every `interactableId` exists, unknown id → `[]`
+  - `LearningSystem`: fresh-vs-repeat encounters, unknown ids ignored,
+    content-order discovery, one event per fresh word + unsubscribe,
+    snapshot/restore round-trip with sorted keys, malformed snapshots rejected
+    (null, wrong version, unknown ids, NaN `at`, `encounters` clamped to ≥ 1),
+    `reset()` keeps listeners, injected content set
+- [x] `npm run build` produces a production bundle — `dist/` emitted
+  (JS 812.42 kB / gzip 208.89 kB, CSS 6.53 kB / gzip 1.94 kB, 21 modules)
+  *(re-run 2026-11-09 with the `.tmp-esbuild` TMP override, exit 0)*
+- [x] Headless-Chrome CDP on the dev server (per the BUILD_LOG M5 row,
+  2026-11-05 — local-only evidence, `docs/evidence/` is gitignored):
+  zero console errors/exceptions; `#discovery-toast` + `#vocabulary-notebook`
+  hidden at boot; menu lists `N — Notebook (単語帳)`; walking to the monument +
+  E shows `石の牛をじっくり見ました。` **and** the toast `新しい単語 +2 — 像・祭り`
+  with `learning.discoveredCount === 2` of 24; N opens the notebook
+  (`2 / 24 words discovered — 見つけた単語`, sections `N4 1 / 17` + `N3 1 / 7`,
+  22 locked rows shown as `？？？`) while pointer lock is released and the pause
+  menu stays hidden; N again closes it and restores the pause state
+- [x] No quiz UI: the schema has no prompt/choices/answer-key fields and the
+  notebook is reference-only (asserted by the content-contract tests)
+- [~] The M5 milestone is **uncommitted** as of 2026-11-09 (working tree only);
+  commit tracked as staging item S0 in `docs/PLAN.md`

@@ -22,6 +22,11 @@ Project-level operating notes for agents (and humans) working inside
   `main` without human approval.
 - No secrets, credentials, private data or large build artifacts in commits
   (this repository is public).
+- Milestone status lives **only** in `docs/PLAN.md` (ledger + staging). A status
+  change must land in the same change as its `BUILD_LOG.md` row and
+  `TEST_REPORT.md` section. README and ARCHITECTURE link to the plan; ARCHITECTURE
+  describes only files that exist in `src/` — planned modules go to the staging
+  table, never into the module tree.
 
 ## Verification commands
 

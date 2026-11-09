@@ -21,7 +21,7 @@ Open the printed URL (default <http://localhost:5173>).
 
 - **WASD** — walk · **Mouse** — look around (click to lock the pointer)
 - **Shift** — sprint · **Space** — jump · **R** — reset position · **Esc** — pause menu
-- Interactions (E), pointer-lock toggling and the notebook arrive with milestones M4/M5
+- **E** — interact (調べる) · **N** — vocabulary notebook (単語帳)
 
 ## Commands
 
@@ -33,19 +33,13 @@ Open the printed URL (default <http://localhost:5173>).
 | `npm run preview`  | Serve the production build locally       |
 | `npm test`         | Run the automated test suite (Vitest)    |
 
-## Milestones
+## Status & milestones
 
-| #  | Name                               | Status |
-| -- | ---------------------------------- | ------ |
-| M0 | Bootstrap Vite + TypeScript + Three.js | ✅ |
-| M1 | First-person exploration           | ✅ |
-| M2 | Real Gaussian splat rendering      | ⏳ |
-| M3 | Japanese shopping street           | ⏳ |
-| M4 | Interactable environment           | ⏳ |
-| M5 | Vocabulary learning                | ⏳ |
-| M6 | Missions                           | ⏳ |
-| M7 | Persistence & quality of life      | ⏳ |
-| M8 | Verification & polish              | ⏳ |
+M0–M5 are done and verified (M3.1 lighting included); M6–M8 and the staging
+backlog live in the plan. Status is tracked in **one** place:
+
+- **[Plan & staging](docs/PLAN.md)** — milestone ledger, staging area, and the
+  two-codebase register (web canonical / Unity side-track).
 
 ## Documentation
 
@@ -53,7 +47,7 @@ Open the printed URL (default <http://localhost:5173>).
 - [Asset sources & licenses](docs/ASSETS.md)
 - [Build log](docs/BUILD_LOG.md)
 - [Test report](docs/TEST_REPORT.md)
-- [Roadmap](docs/ROADMAP.md)
+- [Plan & staging](docs/PLAN.md)
 
 ## Troubleshooting
 
