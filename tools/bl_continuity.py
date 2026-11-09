@@ -50,9 +50,12 @@ def build_index(state):
         for key in [title,*(d.get("aliases") or [])]:
             if norm(key):keys[norm(key)].add(ident)
     for r in state.get("r77_research_only") or []:
-        add(str(r.get("title") or ""),"KNOWN_RESEARCH_NO_USER_REACTION",
-            r.get("region"),r.get("year"),r.get("aliases") or [],
-            "Research intake")
+        title=str(r.get("title") or "")
+        alternatives=[title,*(r.get("aliases") or [])]
+        # A research entry must not shadow an existing WATCH identity.
+        if any(norm(key) in keys for key in alternatives):continue
+        add(title,"KNOWN_RESEARCH_NO_USER_REACTION",r.get("region"),
+            r.get("year"),r.get("aliases") or [],"Research intake")
     return {"records":records,"keys":{k:sorted(v) for k,v in keys.items()}}
 
 def check_candidate(candidate,index,threshold=0.89):
