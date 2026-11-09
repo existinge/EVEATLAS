@@ -176,6 +176,20 @@ third-party binaries may write to the profile. We will not fabricate or bypass l
     evidence lands in this log. First-import compile risks (URP 17.3 API drift, renderer-feature
     reflection, global-settings injection, fog component assembly) are tracked in
     `docs/URP_SCENE_IMPORT.md`.
+- **Round 8 (offline pre-stage) — final offline evidence folded in; blocker formalized.**
+  - `docs/TEST_REPORT.md` extended with T17–T19: URP/scene authoring route (ProjectAuthor, DRAFT
+    pending compile), Build.ps1 4-step firmware (DRAFT pending run), first-licensed-run procedure
+    (PASS documented). Verdict unchanged: Milestone 1 NOT ACHIEVED on this host — environment
+    blocker (no license), not a content blocker.
+  - Re-verified `.tools/licensing/` is still empty (0 items) and the staged splat payload
+    `Voxel51-gaussian_splatting-train-iteration30000.ply` (266,542,260 B) is still present.
+  - `InstallerShell4.cs` (in-scene Noto text shell from an earlier draft plan) was never persisted
+    on disk (grep across worktree: no match) and is **dropped**: nothing references it, and the
+    acceptance-tracked Japanese signage is delivered by the verified rasterized-texture pipeline
+    (T13–T15). Recorded here so no future round re-invents it.
+  - All offline pre-stage work is now finished and committed (`64d4cec` → `799d3ff` → this). Next
+    action is human-supplied: drop `Unity_v5.x.ulf` into `.tools/licensing/` (`docs/ACTIVATION.md`),
+    then Build.ps1 [1/4]→[4/4] runs project authoring → IL2CPP build → packaged offline evidence.
 
 ## Open questions
 
