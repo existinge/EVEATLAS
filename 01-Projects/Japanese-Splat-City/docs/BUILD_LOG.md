@@ -131,15 +131,6 @@ third-party binaries may write to the profile. We will not fabricate or bypass l
   - Scene `WalkMain.unity` still requires the first editor import (BlockBuilder + EvidenceDriver +
     SplatAnchor one-off composition); `PlayerBuilder.cs` stays gated on it.
 - Awaiting the human-supplied `Unity_v5.x.ulf` (drop path `.tools/licensing/`, walkthrough in `docs/ACTIVATION.md`).
-
-## Open questions
-
-- Exact URP 17.3.0 acceptance with `org.nesnausk.gaussian-splatting` v2.0.0 (targets 2022.3/URP 17.0; may need feature `renderPassEvent` compatibility path on 17.3) — to confirm on first editor open.
-- Direct3D 12 default in ProjectSettings + standalone `-force-d3d12` fallback.
-- Licensed street-correct PLY source — RESOLVED for M1: Voxel51 HF `gaussian_splatting` `truck`/`train`
-  (Apache-2.0, already-trained PLY; self-declared tag, re-verify in-repo LICENSE at download). Genuine
-  Japanese street capture does not exist under a redistributable license; Mapillary CC-BY-SA
-  self-reconstruction is the only clean path (deferred, see `docs/SPLAT_PROCUREMENT.md`).
 - **Round 6 (offline pre-stage) — Japanese signage pipeline COMPLETE and VERIFIED (no-tofu proof).**
   - `native/Tools/rasterize-jp-text.ps1`: renders 21 UTF-8 sign texts from `sign-texts.tsv` with the
     licensed Noto Sans CJK JP OTF → `native/Assets/Resources/Textures/Signs/` (`sign-*.png`, 32bpp ARGB,
@@ -161,3 +152,36 @@ third-party binaries may write to the profile. We will not fabricate or bypass l
     Tools 2022 ver `17.14.37411.7` (VC x64 14.44.35207) + 2019 ver `16.11.37301.9` (VC x64 14.29.30133)
     at `C:\Program Files (x86)\Microsoft Visual Studio\…` — an IL2CPP Windows build is feasible here
     the moment an entitlement exists. T16 in `docs/TEST_REPORT.md`.
+- **Round 7 (offline pre-stage) — first-import authoring is now fully code-driven.**
+  - `native/Assets/Editor/ProjectAuthor.cs` **added** (~340 lines, self-contained, uncompiled-on-commit):
+    idempotently authors the URP pipeline (`UniversalRendererData` + `UniversalRenderPipelineAsset`
+    with depth texture on), injects the vendored splat package's `internal` `GaussianSplatURPFeature`
+    into the renderer via reflection (fails loudly if absent), sets
+    `GraphicsSettings.defaultRenderPipeline` + URP global-settings registration (reflection,
+    best-effort, logged), creates the Fog global volume (version-tolerant), composes
+    `Assets/Scenes/WalkMain.unity` (BlockBuilder + EvidenceDriver + SplatAnchor carrying
+    `GaussianSplatRenderer` with `m_SourcePath="M1Anchor_train.ply"` + Fog Volume) and registers
+    the scene in `EditorBuildSettings.scenes`. See `docs/URP_SCENE_IMPORT.md`.
+  - `native/Assets/Editor/PlayerBuilder.cs` now calls `ProjectAuthor.Run()` before its scene gate
+    (self-healing on fresh imports); IL2CPP enforcement and fail-fast behavior unchanged.
+  - `native/Build.ps1` upgraded to **4 steps**: [1/4] stage the SHA256-verified splat into
+    `Assets/StreamingAssets/M1Anchor_train.ply` (266,542,260 B; `*.ply` gitignored, never committed),
+    [2/4] headless import (ProjectAuthor runs here), [3/4] IL2CPP Win64 build, [4/4] packaged offline
+    run with `-force-d3d12` + Player.log archived to `logs\player-*.log`. Re-parse-checked OK on this
+    host (PS 5.1 parser).
+  - Splat payload re-verified on disk: SHA256 `A4C1906C…47A7A1` (266,542,260 B) at
+    `.tools/splat-source/Voxel51-gaussian_splatting-train-iteration30000.ply` — the file the
+    runtime path loads from `StreamingAssets` on a licensed machine.
+  - No URP acceptance, rendered frame, or compiled IL2CPP payload is claimed before first-run
+    evidence lands in this log. First-import compile risks (URP 17.3 API drift, renderer-feature
+    reflection, global-settings injection, fog component assembly) are tracked in
+    `docs/URP_SCENE_IMPORT.md`.
+
+## Open questions
+
+- Exact URP 17.3.0 acceptance with `org.nesnausk.gaussian-splatting` v2.0.0 (targets 2022.3/URP 17.0; may need feature `renderPassEvent` compatibility path on 17.3) — to confirm on first editor open.
+- Direct3D 12 default in ProjectSettings + standalone `-force-d3d12` fallback.
+- Licensed street-correct PLY source — RESOLVED for M1: Voxel51 HF `gaussian_splatting` `truck`/`train`
+  (Apache-2.0, already-trained PLY; self-declared tag, re-verify in-repo LICENSE at download). Genuine
+  Japanese street capture does not exist under a redistributable license; Mapillary CC-BY-SA
+  self-reconstruction is the only clean path (deferred, see `docs/SPLAT_PROCUREMENT.md`).

@@ -10,10 +10,13 @@
 //     -executeMethod JapaneseSplatCity.Build.PlayerBuilder.Build \
 //     -outputPath <out>\JapaneseSplatCity.exe
 //
-// Fails loudly (non-zero batchmode exit) if the walk scene is missing, which
-// enforces the "author scene in the editor first" ordering.
+// Runs JapaneseSplatCity.Editor.ProjectAuthor.Run() first (idempotent authoring
+// of the URP pipeline, the WalkMain scene and the EditorBuildSettings entry),
+// then fails loudly (non-zero batchmode exit) if the walk scene still does not
+// exist or the player build does not succeed.
 using System;
 using System.IO;
+using JapaneseSplatCity.Editor;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
@@ -26,11 +29,16 @@ namespace JapaneseSplatCity.Build
 
         public static void Build()
         {
+            // Idempotent offline authoring: URP pipeline assets + global-settings
+            // registration, WalkMain.unity, build-scene entry (see ProjectAuthor.cs).
+            ProjectAuthor.Run();
+
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath) == null)
             {
                 throw new InvalidOperationException(
-                    "Build aborted: scene not found at " + ScenePath + " — " +
-                    "author the walk scene in the editor and save it there first.");
+                    "Build aborted: scene not found at " + ScenePath +
+                    " AFTER ProjectAuthor.Run() — check Console for authoring errors " +
+                    "(URP package import state) and retry.");
             }
 
             // org.nesnausk.gaussian-splatting REQUIRES IL2CPP: its native plugin
