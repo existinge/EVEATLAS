@@ -12,6 +12,8 @@
  *   Japanese label, description and E-hint.
  * - After an E interaction, the panel swaps to the action message for a few
  *   seconds, then returns to the live prompt.
+ * - M5 adds a small `#discovery-toast` above the reticle that announces the
+ *   words a first-time interaction just added to the notebook.
  */
 
 import type { InteractiveDef } from '../interaction/Interaction';
@@ -23,11 +25,13 @@ export class InteractionHud {
   private readonly hud: HTMLDivElement;
   private readonly reticle: HTMLDivElement;
   private readonly panel: HTMLDivElement;
+  private readonly toast: HTMLDivElement;
   private readonly word: HTMLSpanElement;
   private readonly desc: HTMLParagraphElement;
   private readonly hint: HTMLParagraphElement;
   private current: InteractiveDef | null = null;
   private messageTimer: number | null = null;
+  private toastTimer: number | null = null;
 
   constructor(container: HTMLElement) {
     this.hud = document.createElement('div');
@@ -35,7 +39,7 @@ export class InteractionHud {
     this.hud.innerHTML = `
       <div class="panel">
         <div class="hud-title">商店街 — Shōtengai</div>
-        <div class="hud-sub">E で 調べる / press E to interact</div>
+        <div class="hud-sub">E で 調べる / N で 単語帳</div>
       </div>
     `;
     container.appendChild(this.hud);
@@ -65,6 +69,11 @@ export class InteractionHud {
     this.word = word;
     this.desc = desc;
     this.hint = hint;
+
+    this.toast = document.createElement('div');
+    this.toast.id = 'discovery-toast';
+    this.toast.className = 'hidden';
+    container.appendChild(this.toast);
   }
 
   /**
@@ -91,10 +100,28 @@ export class InteractionHud {
     this.hint.textContent = '';
   }
 
+  /**
+   * Announces newly discovered words (M5). No-op for an empty list, so the
+   * caller can pass the result of `LearningSystem.recordEncounter` directly.
+   */
+  showDiscovery(words: readonly string[]): void {
+    if (words.length === 0) return;
+    if (this.toastTimer !== null) window.clearTimeout(this.toastTimer);
+    this.toastTimer = window.setTimeout(() => {
+      this.toastTimer = null;
+      this.toast.classList.add('hidden');
+    }, INTERACTION_MESSAGE_MS);
+    this.toast.textContent = `新しい単語 +${words.length} — ${words.join('・')}`;
+    this.toast.classList.remove('hidden');
+  }
+
   /** Dismisses everything immediately (used when pointer lock is released). */
   clear(): void {
     if (this.messageTimer !== null) window.clearTimeout(this.messageTimer);
     this.messageTimer = null;
+    if (this.toastTimer !== null) window.clearTimeout(this.toastTimer);
+    this.toastTimer = null;
+    this.toast.classList.add('hidden');
     this.current = null;
     this.reticle.classList.remove('active');
     this.panel.classList.add('hidden');
@@ -103,9 +130,12 @@ export class InteractionHud {
   dispose(): void {
     if (this.messageTimer !== null) window.clearTimeout(this.messageTimer);
     this.messageTimer = null;
+    if (this.toastTimer !== null) window.clearTimeout(this.toastTimer);
+    this.toastTimer = null;
     this.hud.remove();
     this.reticle.remove();
     this.panel.remove();
+    this.toast.remove();
   }
 
   private renderPrompt(): void {

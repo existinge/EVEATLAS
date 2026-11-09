@@ -221,6 +221,28 @@ body:not(.pointer-locked) #target-reticle {
   opacity: 0.65;
 }
 
+/* M5 discovery toast (above the reticle). */
+#discovery-toast {
+  position: fixed;
+  left: 50%;
+  top: 96px;
+  transform: translateX(-50%);
+  background: var(--panel-bg);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  pointer-events: none;
+  z-index: 75;
+  transition: opacity 0.2s ease;
+}
+
+#discovery-toast.hidden {
+  opacity: 0;
+}
+
 /* Generic dialog / modal styles. */
 .modal {
   position: fixed;
@@ -394,3 +416,109 @@ body:not(.pointer-locked) #target-reticle {
     grid-template-columns: 1fr;
   }
 }
+
+/* M5 vocabulary notebook. */
+.notebook .modal-card {
+  width: min(720px, 92vw);
+  max-height: 84vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.notebook .notebook-progress {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.notebook .vocab-level {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  padding-bottom: 4px;
+  margin: 18px 0 8px;
+}
+
+.notebook .vocab-level span {
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  opacity: 0.7;
+}
+
+.notebook .vocab-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.notebook .vocab-entry {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.notebook .vocab-entry.locked {
+  opacity: 0.45;
+}
+
+.notebook .vocab-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.notebook .vocab-word {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.notebook .vocab-reading {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.notebook .vocab-badge {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
+.notebook .vocab-meaning {
+  font-size: 13px;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+.notebook .vocab-example {
+  font-size: 12px;
+  margin: 6px 0 0;
+  opacity: 0.8;
+}
+
+.notebook .vocab-example-meaning {
+  display: block;
+  font-size: 11px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.notebook .action-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.notebook .action-row button {
+  margin: 0;
+  min-width: 130px;
+}
+

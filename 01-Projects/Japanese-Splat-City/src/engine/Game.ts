@@ -18,8 +18,10 @@ import { PlayerController } from './PlayerController';
 import { InputController } from './InputController';
 import { MenuOverlay, type QualityPreset } from '../ui/MenuOverlay';
 import { InteractionHud } from '../ui/InteractionHud';
+import { VocabularyNotebook } from '../ui/VocabularyNotebook';
 import { InteractiveRegistry } from '../interaction/InteractiveRegistry';
 import { INTERACTABLES, INTERACTION_DISTANCE } from '../world/Interactives';
+import { LearningSystem } from '../systems/LearningSystem';
 
 /**
  * Central game composition root.
@@ -50,6 +52,15 @@ export class Game {
   private readonly interacted = new Map<string, number>();
   /** Reused per-frame scratch vector for the interaction ray (no GC churn). */
   private readonly interactionRay = new THREE.Vector3();
+
+  // ----- M5: vocabulary learning -------------------------------------------
+  // The learning system is fed by the M4 registry (one interaction path, no
+  // second registry) and read by the notebook overlay. It is DOM-free so the
+  // tests drive it directly; M7 will persist `learning.snapshot()`.
+  private readonly learning = new LearningSystem();
+  private readonly notebook: VocabularyNotebook;
+  /** True while the notebook overlay owns the screen (pointer lock released). */
+  private notebookOpen = false;
 
   /**
    * Gaussian-splat viewer (M2). Bound to our renderer/camera/threeScene; we
@@ -150,6 +161,10 @@ export class Game {
 
     this.interactionHud = new InteractionHud(container);
 
+    this.notebook = new VocabularyNotebook(container, this.learning, {
+      onClose: () => this.closeNotebook(),
+    });
+
     this.overlay = new MenuOverlay(container, {
       onPlay: () => this.startPlaying(),
       onReset: () => this.resetPlayer(),
@@ -187,7 +202,9 @@ export class Game {
       this.overlay.hide();
     } else {
       this.playing = false;
-      this.overlay.show(true);
+      // The notebook releases pointer lock on purpose; keep the pause menu out
+      // of the way while it is open (closing it restores the menu).
+      if (!this.notebookOpen) this.overlay.show(true);
       // Dismiss any prompt/message that was on screen while playing.
       this.interactionHud.clear();
     }
@@ -197,6 +214,16 @@ export class Game {
     if (e.code === 'KeyR') {
       // Reset works both in-game and from the paused menu.
       this.resetPlayer();
+      return;
+    }
+    if (e.code === 'KeyN') {
+      // The notebook is reachable while playing and from the pause menu.
+      e.preventDefault();
+      this.toggleNotebook();
+      return;
+    }
+    if (e.code === 'Escape' && this.notebookOpen) {
+      this.closeNotebook();
     }
   };
 
@@ -204,6 +231,29 @@ export class Game {
     this.input.requestLock();
     // If the browser enforces its post-Esc pointer-lock cooldown, the lock
     // silently fails and the overlay stays until the user clicks again.
+  }
+
+  /** Opens the vocabulary notebook and releases the mouse so it can be read. */
+  private openNotebook(): void {
+    if (this.notebookOpen) return;
+    this.notebookOpen = true;
+    this.interactionHud.clear();
+    this.overlay.hide();
+    this.notebook.open();
+    if (this.input.isLocked()) this.input.exitLock();
+  }
+
+  private closeNotebook(): void {
+    if (!this.notebookOpen) return;
+    this.notebookOpen = false;
+    this.notebook.close();
+    // Pointer lock is gone, so fall back to the pause menu.
+    if (!this.playing) this.overlay.show(true);
+  }
+
+  private toggleNotebook(): void {
+    if (this.notebookOpen) this.closeNotebook();
+    else this.openNotebook();
   }
 
   /** Teleports the player back to the spawn point. */
@@ -248,6 +298,7 @@ export class Game {
     window.removeEventListener('keydown', this.onKeyDown);
     this.input.dispose();
     this.interactionHud.dispose();
+    this.notebook.dispose();
     this.overlay.hide();
     // Tear down the splat viewer (aborts the load, frees workers/buffers)
     // before disposing the renderer it renders into.
@@ -306,6 +357,12 @@ export class Game {
       if (entry) {
         this.interacted.set(entry.id, (this.interacted.get(entry.id) ?? 0) + 1);
         this.interactionHud.showMessage(`${entry.message}`);
+        // ----- M5: the same interaction teaches its words ------------------
+        // One path, one registry: the M4 def id is the vocabulary key, so a
+        // successful interaction is also the discovery event. First-time words
+        // are announced; repeats only bump the encounter counter.
+        const fresh = this.learning.recordEncounter(entry.id);
+        this.interactionHud.showDiscovery(fresh.map((word) => word.word));
       }
     }
   }
