@@ -30,3 +30,11 @@ Recheck trigger: new commit | CI result | next scheduled poll
 
 ## Guardrails
 A timer must not encourage empty commits or fabricated progress. Prefer one actionable note every 20–30 minutes unless a true new failure. Do not reward verbosity. A working game beats an elaborate agent dashboard.
+
+## Product alignment tests (2026-11-10 revision)
+- The target is NOT the founder's Japanese level; verify both novice and proficient modes are testable independently.
+- Reject milestones if exploration only exists as a camera-flashcard collection with no contextual action or agency. Shashingo is inspiration, not a clone.
+- Reject generic quiz-menu gameplay masquerading as a 3D world; verify meaningful environment-mediated choice and recoverable feedback.
+- Preserve configurable hints and Japanese typography; avoid hard-coded forced romaji or forced furigana.
+- Check actual game evidence: controls, physics, observation, journal, optional help, contextual quest, persistence.
+- Distinguish product ambition from achieved functionality. Do not claim adaptation until tested.
