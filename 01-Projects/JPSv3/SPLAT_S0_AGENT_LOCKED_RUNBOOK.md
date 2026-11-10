@@ -40,7 +40,7 @@ authority: human-approved scope only
 
 ### Suggested JPSv3 repository structure (adapt after inspection; do not create blindly)
 
-\`\`\`text
+```text
 docs/jpsv3/s0/
   RUN_LOG.md               # dated commands, outputs, blockers, metrics
   ASSET_PROVENANCE.md      # creator, license, URL, download date, SHA256, restrictions
@@ -49,7 +49,7 @@ docs/jpsv3/s0/
   captures/               # screenshots as permitted by repo size/privacy policy
 src/world/SplatWorld.ts     # isolated viewer adapter
 public/assets/splats/      # only redistributed assets if license permits
-\`\`\`
+```
 
 **Git policy:** Do not commit downloaded research-only images, restricted training captures, huge PLYs, checkpoints, credentials, or private local paths. Prefer a manifest and a hash. Use Git LFS or object storage only after owner approval.
 
@@ -79,7 +79,7 @@ public/assets/splats/      # only redistributed assets if license permits
 ### A1. Preflight — read-only
 
 Execute in JPSv3 root, recording outputs in RUN_LOG:
-\`\`\`powershell
+```powershell
 git status --short
 git rev-parse --show-toplevel
 git rev-parse --short HEAD
@@ -88,51 +88,51 @@ npm --version
 Get-ChildItem package.json, src, public -ErrorAction SilentlyContinue
 npm ls three @mkkellogg/gaussian-splats-3d @dimforge/rapier3d-compat --depth=0
 nvidia-smi
-\`\`\`
+```
 If a command is missing, log it. If project is dirty, do not reset, stash or discard another agent's edits without authorization. Confirm existing bundler, current camera, renderer, resize loop, pointer-lock and PlayerController lifecycle before proposing integration edits.
 
 ### A2. Fetch sample with audit; do not imply redistribution rights
 
-\`\`\`powershell
+```powershell
 New-Item -ItemType Directory -Force .\local-assets\s0 | Out-Null
 Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/willeastcott/assets/main/biker.ply' -OutFile '.\local-assets\s0\biker.ply'
 Get-Item '.\local-assets\s0\biker.ply' | Select-Object Name,Length
 Get-FileHash '.\local-assets\s0\biker.ply' -Algorithm SHA256
-\`\`\`
+```
 - If 404, zero bytes, HTML instead of valid splat PLY, or source rights uncertain, stop this acquisition path; choose a demonstrably permitted local test asset, and document its license.
 - The biker is a **renderer proof only** (not Japanese street, nor final game's art).
-- Keep local-assets untracked unless explicitly licensed and approved. Verify \`git status --short\`.
+- Keep local-assets untracked unless explicitly licensed and approved. Verify `git status --short`.
 
 ### A3. **Prove it in SuperSplat first** (no game code changed)
 
 1. Open https://superspl.at/editor in a WebGPU-capable current Chrome or Edge.
-2. File → Import → choose the local \`biker.ply\` (or authorized alternate).
+2. File → Import → choose the local `biker.ply` (or authorized alternate).
 3. Orbit, zoom, check that depth and parallax exist. Save one screenshot and note exact source and hash.
 4. If the sample is bad or invalid, STOP. Do not start coding to compensate for an invalid source.
 5. File → Export → **SOG** (for PlayCanvas runtime route) and/or PLY for cross-renderer interchange. Keep the original separately; do not assume SOG is supported by mkkellogg.
 6. Record source format, output format, size, SH bands, and SHA256; check an exported file by re-importing it.
 
 **Optional deterministic converter:**
-\`\`\`powershell
+```powershell
 npm install -g @playcanvas/splat-transform
 splat-transform --version
 splat-transform '.\local-assets\s0\biker.ply' '.\local-assets\s0\biker.sog'
-\`\`\`
-SOG is a **PlayCanvas** route, not by itself a guaranteed Three.js/mkkellogg input format. For the existing Three.js path, retain \`.ply\` or convert to a viewer-supported \`.splat\`/ \`.ksplat\` only after API verification. Do not fabricate conversion success.
+```
+SOG is a **PlayCanvas** route, not by itself a guaranteed Three.js/mkkellogg input format. For the existing Three.js path, retain `.ply` or convert to a viewer-supported `.splat`/ `.ksplat` only after API verification. Do not fabricate conversion success.
 
 ### A4. Pick ONE runtime; do not mix
 
-**Default:** existing JPSv3 Three.js renderer. Inspect current package and @mkkellogg/gaussian-splats-3d package API before writing. Use a \`DropInViewer\`-style mounted component **only if verified for installed version**. Avoid a second independent WebGL renderer if scene-graph integration is supported; check how viewer is updated/disposed and how render order is affected.
+**Default:** existing JPSv3 Three.js renderer. Inspect current package and @mkkellogg/gaussian-splats-3d package API before writing. Use a `DropInViewer`-style mounted component **only if verified for installed version**. Avoid a second independent WebGL renderer if scene-graph integration is supported; check how viewer is updated/disposed and how render order is affected.
 
-Install only after \`npm view @mkkellogg/gaussian-splats-3d version\` and documentation review:
-\`\`\`powershell
+Install only after `npm view @mkkellogg/gaussian-splats-3d version` and documentation review:
+```powershell
 npm install @mkkellogg/gaussian-splats-3d
-\`\`\`
+```
 **Alternative, only with human approval:** PlayCanvas native SOG renderer if switching engines is justified. SuperSplat may edit assets regardless of engine.
 
-**Required \`SplatWorld.ts\` contract (adapt to actual installed API):**
-- \`mount(scene, assetUrl, {position, rotation, scale})\` returns promise; resolves only after genuine splat load, not merely scene attachment.
-- Resolve asset under local \`public/assets/splats\` only after license approved; otherwise use a local untracked/dev-only static-serving route.
+**Required `SplatWorld.ts` contract (adapt to actual installed API):**
+- `mount(scene, assetUrl, {position, rotation, scale})` returns promise; resolves only after genuine splat load, not merely scene attachment.
+- Resolve asset under local `public/assets/splats` only after license approved; otherwise use a local untracked/dev-only static-serving route.
 - Validate response/error paths, loading state, progress, camera coordinate convention, dispose/unmount of viewer/resources, and hot reload without duplicates.
 - Log asset URL, declared format, GPU timing and render count where available.
 - Do **not** create BoxGeometry, PlaneGeometry for visual ground, fake shop signs, canvas scene textures, or fallback mesh scenery.
@@ -149,18 +149,18 @@ npm install @mkkellogg/gaussian-splats-3d
 
 Only start once S0-A PASS. Do not modify PlayerController until reading existing public methods. Required integration:
 1. Confirm world up axis Y, camera/player eye height and splat local transform; align visual foot contact to Y=0. Do not assert asset's original ground is at 0.
-2. Add static fixed body and **cuboid collider** of an appropriately measured walkable area in \`PhysicsWorld\` using Rapier's existing patterns. The visual plane remains absent. A simple invisible floor is permitted; building collision is deferred.
+2. Add static fixed body and **cuboid collider** of an appropriately measured walkable area in `PhysicsWorld` using Rapier's existing patterns. The visual plane remains absent. A simple invisible floor is permitted; building collision is deferred.
 3. Confirm capsule feet rest above the collider (not camera origin at Y=0); spawn on a documented flat region.
 4. Reconnect existing WASD, mouse look, pointer lock and no-clip prevention without replacing the controller.
 5. If asset is a small stationary object (biker), restrict this to a collision smoke-test, NOT a claim that player walks a Japanese street.
-6. Keep \`src/quest\`, \`src/journal\`, \`src/inspectables\`, \`src/settings\`, \`src/save\` intact. Run existing Vitest + Playwright if present.
+6. Keep `src/quest`, `src/journal`, `src/inspectables`, `src/settings`, `src/save` intact. Run existing Vitest + Playwright if present.
 
 **Tests (do not hallucinate passing):**
-\`\`\`powershell
+```powershell
 npm run build
 npm test -- --run
 npx playwright test
-\`\`\`
+```
 Run only scripts actually present and supported; if absent, document exactly. Test player stable idle, movement four directions, wall not yet enforced, no fall-through, pointer lock relock, resume after reload, no duplicate physics bodies.
 
 ## 5. Phase C: Japanese street capture/reconstruction (separate gate S0-C)
@@ -177,7 +177,7 @@ Preferred: many overlapping street-level views with geometry-aware camera positi
 
 1. Visit the Tohoku page above and read its license statement.
 2. Download zip **only if internal research use is permitted in this context**; record file size, hash, date. Do not put in public ATLAS repository.
-3. Inspect Kamaishi/Takata, choose \`t0\` **or** \`t1\` for one spatially contiguous segment (don't fuse months-apart sequences).
+3. Inspect Kamaishi/Takata, choose `t0` **or** `t1` for one spatially contiguous segment (don't fuse months-apart sequences).
 4. Dataset describes 5000x2500 cylindrical panoramic views plus 640x480 perspective derivatives, with pose files and intrinsics. Because Nerfstudio's 360 support expects equirectangular data, **do not label cylindrical panoramas equirectangular** or feed them to the 360 command uncorrected.
 5. First try calibrated perspective images and provided extrinsics (convert coordinate systems with a verified transformation, not guessed axes), or separately reproject cylindrical images to calibrated perspective cameras. Check image-to-pose indexing, units, right/left side, orientation, exposure shifts, and repeatable scene overlap.
 6. Reproject to multiple perspective views only with accurate camera matrices; scene must have actual camera translation and overlap. A panorama split into views at one position gives no extra translation.
@@ -186,7 +186,7 @@ Preferred: many overlapping street-level views with geometry-aware camera positi
 ### C3. Train only after pose gate and license gate
 
 Use official Nerfstudio instructions and capture installed versions. Prefer an isolated Linux/WSL2 GPU environment if dependencies on Windows prove difficult; do not wipe the existing project environment:
-\`\`\`bash
+```bash
 nvidia-smi
 python --version
 # Follow https://docs.nerf.studio/quickstart/installation.html
@@ -194,31 +194,31 @@ python --version
 pip install nerfstudio
 ns-train --help
 ns-train splatfacto --help
-\`\`\`
+```
 
 **For ordinary perspective JPG input where no external poses are imported yet**, the official generic preprocessing route is:
-\`\`\`bash
+```bash
 ns-process-data images --data /DATA/street/images --output-dir /DATA/street/processed
-\`\`\`
+```
 This invokes an SfM pipeline; it can fail on low-parallax or moving imagery. **If preserving imported calibrated poses**, create valid Nerfstudio-compatible transforms from source calibration through a documented conversion instead; do not rerun image SfM and claim original poses were used.
 
 After dataset passes pose and framing checks:
-\`\`\`bash
+```bash
 ns-train splatfacto --data /DATA/street/processed
 # Use the exact config.yml emitted by the training run:
 ns-export gaussian-splat --load-config /PATH/TO/config.yml --output-dir /DATA/street/export
-\`\`\`
-The \`config.yml\` location is generated at runtime; never invent its path or claim the command ran.
+```
+The `config.yml` location is generated at runtime; never invent its path or claim the command ran.
 
-**GPU guard:** 2080 Ti has 11 GB VRAM. Start with standard splatfacto (docs report ~6 GB typical) and a small segment, not \`splatfacto-big\` (~12 GB typical). Record peak VRAM, dataset resolution, iterations, training time, CUDA versions, checkpoint hash, output Gaussian count. Training FPS is not gameplay FPS.
+**GPU guard:** 2080 Ti has 11 GB VRAM. Start with standard splatfacto (docs report ~6 GB typical) and a small segment, not `splatfacto-big` (~12 GB typical). Record peak VRAM, dataset resolution, iterations, training time, CUDA versions, checkpoint hash, output Gaussian count. Training FPS is not gameplay FPS.
 
 ### C4. Clean and export
 
 - Import exported **Gaussian** PLY into SuperSplat; ordinary point cloud PLY is not sufficient.
 - Orbit near street ground, check sign/window sharpness, holes, floaters, horizon, motion ghosting, street corners; do not use bloom/sharpening to hide defects.
-- Save editable \`.ssproj\` locally, align transforms so chosen walkable ground equals runtime Y=0, export PLY for existing Three.js viewer or SOG for PlayCanvas lane. Preserve original.
+- Save editable `.ssproj` locally, align transforms so chosen walkable ground equals runtime Y=0, export PLY for existing Three.js viewer or SOG for PlayCanvas lane. Preserve original.
 - Compare from fixed eye-height camera views (1–3 m proximity) with Ceramic Studio reference; record what fails, not only what looks good.
-- Only place redistributable derivatives in \`public/assets/splats/\` after explicit rights check and size approval.
+- Only place redistributable derivatives in `public/assets/splats/` after explicit rights check and size approval.
 
 ## 6. Performance + visual acceptance tests
 
@@ -262,7 +262,7 @@ After **two failed attempts on the same cause**, stop and escalate. No autonomou
 
 Every run ends by updating **only** project-scoped files and linking exact real artifacts:
 
-\`\`\`markdown
+```markdown
 # S0 Run Log — UTC date/time
 Repo/branch/commit:
 Owner / agent / tool:
@@ -279,13 +279,13 @@ Files changed:
 Risks and unresolved facts:
 Next *single* action:
 Reviewer signoff: PENDING / APPROVED / REJECTED
-\`\`\`
+```
 
 No success claims from markdown alone. Independent review + user approval before merge/deployment/publication.
 
 ## 9. Copy-paste boot prompt: constrain DeepSeek
 
-\`\`\`text
+```text
 You are DeepSeek, the S0 implementation worker for Japanese Splat City v3.
 Your ONLY authority is this runbook, the verified current JPSv3 source tree, and an explicit one-gate task issued by ATLAS. You are not the architect.
 
@@ -297,9 +297,9 @@ RESPONSE FORMAT:
 GATE / STATUS / COMMIT / ASSET / COMMANDS+EXIT / FILES CHANGED / EVIDENCE / RISKS / NEXT SINGLE ACTION.
 If blocked, report blocker; do not improvise. If two same-class failures occur, STOP.
 No progress without evidence. No success claims for unexecuted commands. No self-approval.
-\`\`\`
+```
 
-When ATLAS approves the next gate, change ONLY \`OBJECTIVE THIS TURN\` to the next gate and provide previous handoff log. Never send 'build the whole beautiful Japanese city' as the implementation assignment.
+When ATLAS approves the next gate, change ONLY `OBJECTIVE THIS TURN` to the next gate and provide previous handoff log. Never send 'build the whole beautiful Japanese city' as the implementation assignment.
 
 ### OpenCode relay rules
 
