@@ -10,3 +10,6 @@ secrets/
 *.key
 *.pem
 .DS_Store
+
+# Game implementation lives in its own repository (see 01-Projects/Japanese-Splat-City-v3/.git)
+01-Projects/Japanese-Splat-City-v3/
