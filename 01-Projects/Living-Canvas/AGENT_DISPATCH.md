@@ -6,7 +6,7 @@ Feature branch: feat/living-canvas-project-pack
 
 Entry point: [START_HERE.md](START_HERE.md)
 
-Review [T00 evidence](worklogs/T00.md) and check the tracked GitHub handoff for P0 acceptance before coding. If acceptance is absent, record the review outcome or blocker and leave T01 pending.
+Review [T00 evidence](worklogs/T00.md) and check [GitHub issue #9](https://github.com/existinge/EVEATLAS/issues/9) for P0 acceptance before coding. If acceptance is absent, record the review outcome or blocker and leave T01 pending.
 
 After P0 acceptance, fetch the feature branch and work on its current tip. Read root AGENTS.md, [the protocol](PROTOCOL.md), [the gates](GATES.md), [fixture expectations](fixtures/README.md) and [T01](tickets/T01-SHARED-SPACE.md). Before editing, record the branch and commit, intended files, acceptance test and stop condition.
 

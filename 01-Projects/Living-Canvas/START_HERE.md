@@ -16,7 +16,7 @@ Build a low-cost, open-source, provider-pluggable real-time visual companion to 
 
 ## Current dispatch
 
-[T00 evidence](worklogs/T00.md) is available for review. After P0 acceptance is recorded in the tracked handoff, execute [T01](tickets/T01-SHARED-SPACE.md) only. Use local TypeScript and fixtures with zero inference cost. Stop at P1 and return test evidence. See [AGENT_DISPATCH.md](AGENT_DISPATCH.md).
+[T00 evidence](worklogs/T00.md) is available for review. After P0 acceptance is recorded in [GitHub issue #9](https://github.com/existinge/EVEATLAS/issues/9), execute [T01](tickets/T01-SHARED-SPACE.md) only. Use local TypeScript and fixtures with zero inference cost. Stop at P1 and return test evidence. See [AGENT_DISPATCH.md](AGENT_DISPATCH.md).
 
 T02 through T07 remain individually gated. T03 uses a minimal programmable tldraw Editor integration. Keep the [tldraw Editor API example](https://tldraw.dev/examples/api) as a reference for that ticket.
 
