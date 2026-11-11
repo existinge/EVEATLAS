@@ -43,6 +43,10 @@
 
 **Renderer** receives restricted, validated scene actions. tldraw renders shapes and persistent objects; procedural SVG/Motion makes position/opacity/shape transitions smooth. Graphics can run at display refresh speed regardless of how frequently either model proposes actions.
 
+## Provider policy
+
+The planner, duplex adapter and local decider are independent of one another and outside the renderer's critical path. Prefer a supported existing frontier subscription for reasoning and a verified free developer tier for duplex. The offline core runs without provider credentials. OpenRouter is opt-in, and exhaustion of a free tier or subscription quota falls back to local or fixture behavior. See [provider policy](VOICE_AND_MODELS.md#provider-policy).
+
 ## Authority ladder
 1. Human actions and explicit correction supersede model speculation.
 2. Confirmed conversation transcript/context and planner-issued semantic snapshots establish what concepts mean.

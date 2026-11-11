@@ -1,17 +1,15 @@
-# Agent dispatch — reusable single-ticket instruction
+# Agent dispatch — T01 after P0 review
 
-Use this **short dispatch** with your coding agent. Do not paste the whole pack into every turn.
-
-~~~text
 Repository: https://github.com/existinge/EVEATLAS
-Project: 01-Projects/Living-Canvas
-Entry: 01-Projects/Living-Canvas/START_HERE.md
 
-Read root AGENTS.md and the project's START_HERE, ARCHITECTURE, PROTOCOL, GATES, and tickets/INDEX. Then select ONLY the next uncompleted ticket. First ticket is T00-PREFLIGHT. Keep all changes on a scoped feature branch and do not merge or deploy.
+Feature branch: feat/living-canvas-project-pack
 
-You must preserve the shared-space architecture, provider portability, deterministic coordinator, replaceable decider, and non-blocking living canvas. Do not convert this into a chat-turn drawing app, a computer-use click demo, or a canned lesson. No extra agents/services without a measured need.
+Entry point: [START_HERE.md](START_HERE.md)
 
-Before coding, write one-paragraph understanding, exact files to change, acceptance test and stop condition. Execute the ticket, run real tests, attach evidence, then STOP with an Atlas handoff: branch/commit, changed files, pass/fail, actual vs simulated, known latency, blockers, next cursor.
-~~~
+Review [T00 evidence](worklogs/T00.md) and check the tracked GitHub handoff for P0 acceptance before coding. If acceptance is absent, record the review outcome or blocker and leave T01 pending.
 
-When continuing an incomplete ticket, ask the agent to inspect the last handoff and current Git diff before modifying files. Treat the Git repo as authority over chat recollection.
+After P0 acceptance, fetch the feature branch and work on its current tip. Read root AGENTS.md, [the protocol](PROTOCOL.md), [the gates](GATES.md), [fixture expectations](fixtures/README.md) and [T01](tickets/T01-SHARED-SPACE.md). Before editing, record the branch and commit, intended files, acceptance test and stop condition.
+
+Implement T01 only. Use TypeScript and lightweight local test tooling. Record proposals separately from committed scene state. Keep renderer scaffolding, provider SDKs, credentials, network inference and coordinator validation outside T01. See [provider policy](VOICE_AND_MODELS.md#provider-policy) for later tickets.
+
+Run real tests and return the branch and commit, changed files, commands and pass/fail output, actual vs simulated behavior, unresolved issues and next cursor. Stop at P1 for review. No merge or deployment.

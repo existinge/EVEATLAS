@@ -1,12 +1,12 @@
 # Acceptance gates and evidence
 
-Gate status on pack creation: ALL NOT RUN. No runtime is claimed.
+T00 evidence and review status are recorded in [the preflight worklog](worklogs/T00.md). P1–P7 have not run.
 
 ## Gate P0 — repository safety
-Inspect existing Atlas AGENTS.md / branch, do not overwrite unrelated docs, establish reproducible install, run existing Atlas tests, no secrets committed. Deliver screenshot or logs of actual commands.
+Inspect existing Atlas AGENTS.md / branch, do not overwrite unrelated docs, verify tooling and record the intended runtime location, run existing Atlas tests, no secrets committed. Deliver screenshot or logs of actual commands.
 
 ## Gate P1 — deterministic replay
-Fixture events applied twice produce identical canonical snapshots and commit IDs; duplicated events don't double-apply; order changes are either correctly buffered or rejected with diagnostics. Snapshot and event log share correlation IDs.
+Two independent replays of the same fixture produce identical canonical snapshots and any commit IDs; duplicated events don't double-apply; order changes are either correctly buffered or rejected with diagnostics. Snapshot and event log share correlation IDs.
 
 ## Gate P2 — guarded coordinator
 Reject stale epoch, revoked branch, wrong object, wrong semantics and expired proposal. Allow one valid visual emphasis without LLM latency. Interrupt cancels pending provisional changes and leaves stable scene intact.

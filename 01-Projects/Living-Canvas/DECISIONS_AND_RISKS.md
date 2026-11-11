@@ -12,6 +12,8 @@ D08: Multilingual by design, use concept IDs and tagged language representations
 D09: Human correction overrides speculative model output. No semantic invention on low confidence.
 D10: Test a complete interaction, not disconnected demos. Each code ticket is independently gated.
 
+D11: Reasoning is subscription-first within supported workflows. Duplex evaluates a verified free developer tier first. OpenRouter is optional and paid fallback requires explicit opt-in and a cap.
+
 ## Hypotheses requiring measurement
 H01: Small decision models can handle action selection within <150 ms after eligible observations on target machine.
 H02: Rolling frontier permits most meaningful in-context transitions without waiting for a planner call.
@@ -34,7 +36,7 @@ R11 Fast but meaningless screen updates → measure semantic correctness and hum
 
 ## Deferred decisions
 - Exact duplex provider, ASR strategy, decider candidate and hardware benchmarking.
-- tldraw starter vs minimal React/tldraw editor integration (choose by preflight).
+- T00 selected minimal React/tldraw Editor integration for T03. Production licensing remains open.
 - Planner model, low-level image generation/asset-generation, Rive, backend persistence, distributed runtime.
 - License/distribution of independent runtime; open-source project intent does not override upstream licenses.
 

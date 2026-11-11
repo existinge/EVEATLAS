@@ -3,9 +3,9 @@
 Timebox: 25–40 minutes. Status: NOT STARTED. Depends on: T02/P2.
 
 ## Build
-Create a browser screen with a tldraw editor and a runtime adapter subscribing ONLY to coordinator-committed scene actions. Implement persistent IDs and at least: show, emphasize, move, connect, revealHint, setParameter and reversible preview. Demonstrate one procedural relationship: isolated node/tree → grouped cluster or tree-to-forest-esque visual change, with pre-authored vector recipe. Avoid claiming newly generated semantic illustration.
+Create a local browser screen using React, Vite and the minimal programmable tldraw Editor API and a runtime adapter subscribing ONLY to coordinator-committed scene actions. Implement persistent IDs and at least: show, emphasize, move, connect, revealHint, setParameter and reversible preview. Demonstrate one procedural relationship: isolated node/tree → grouped cluster or tree-to-forest-esque visual change, with pre-authored vector recipe. Avoid claiming newly generated semantic illustration.
 
-Use minimal CSS/SVG transition to start; install Motion if its interpolation is actually needed. Keep a compact debug inspector: topicEpoch, semanticRevision, current branch, latest observation, proposal reason, commit time and render acknowledgement.
+Use offline fixtures with zero inference. Use minimal CSS/SVG transition to start; install Motion if its interpolation is actually needed. Keep a compact debug inspector: topicEpoch, semanticRevision, current branch, latest observation, proposal reason, commit time and render acknowledgement.
 
 ## Test gate P3
 - Renderer updates existing object IDs rather than deleting/recreating entire canvas per event.

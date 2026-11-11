@@ -1,7 +1,7 @@
 # Agent execution ticket index — one at a time
 
 Read [[../START_HERE]] and repository-root AGENTS.md before any ticket.
-State on pack publication: NOT STARTED / no model integration, no canvas runtime, no performance evidence.
+Current state: T00 complete, P0 acceptance pending. Dispatch T01 only after review. See [NEXT_ACTION.md](../NEXT_ACTION.md).
 
 | Ticket | Output | Gate | Rule |
 |---|---|---|---|
@@ -18,4 +18,4 @@ State on pack publication: NOT STARTED / no model integration, no canvas runtime
 Use one active ticket. Before implementation, record current branch, build commands, existing tests and expected files. Each ticket produces runnable evidence and handoff (see ../ATLAS_HANDOFF.md). If blocked, stop and state exact failure and next action; do not solve by silently changing the product vision. A test that passes with injected scripted events must be identified as SIMULATED, not a full end-to-end voice result.
 
 ## Temporary stub rule
-Stubs must share the same versioned protocol and be deliberately replaced later; no throwaway scaffold architecture. The first 60 minutes should establish a backbone, not install every model framework.
+Stubs must share the same versioned protocol and be deliberately replaced later; no throwaway scaffold architecture. T01–T03 run without model frameworks, credentials or inference. Each ticket stops at its own gate.

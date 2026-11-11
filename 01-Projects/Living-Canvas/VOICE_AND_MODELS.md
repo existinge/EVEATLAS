@@ -1,5 +1,15 @@
 # Model/provider adapters — plug-and-play without magical capabilities
 
+## Provider policy
+
+- **Offline core (T01–T03).** Default to local fixtures and deterministic behavior. Core build, tests and replay require zero inference spend, model credentials or provider SDKs.
+- **Planner (T05).** Prefer existing frontier subscriptions through officially supported, signed-in workflows for the intended use. Claude Code and Codex can support development within their plan terms. Verify the supported auth, account limits and intended integration before using a subscription-backed planner. Treat ChatGPT app access, Claude Agent SDK access and developer API billing as distinct entitlements. Use a local or fixture planner if authorized no-incremental-cost access is unavailable.
+- **Duplex (T06).** Evaluate the native Gemini Live API free tier first. Google lists a free tier for Gemini Live models. Select a current model at test time and verify account/region availability, quotas, billing behavior and data handling. Actual session capabilities require a live test.
+- **Optional providers.** Keep OpenRouter disabled by default and outside the dependency path. Its documented audio endpoints do not establish a persistent, interruptible bidirectional session. Evaluate it for duplex only if supported session documentation and a capability test establish that fit. LiveKit remains optional transport.
+- **Cost boundary.** Stop when free quota or included usage is exhausted. Keep the local/fixture path available and label simulated behavior. Disable automatic paid fallback and overages. Paid experiments require explicit user opt-in and an agreed cap before activation. Never repurpose consumer credentials or automate consumer voice interfaces as developer APIs.
+
+See [primary sources](SOURCES.md#provider-access-and-billing) for documentation. No provider has passed a Living Canvas capability test.
+
 ## Duplex provider is LIVE
 The voice provider is the live conversational participant, not the coordinator. It must be replaceable. The product goal requires live spoken dialogue with interruption handling; do not train a custom duplex system.
 
@@ -33,7 +43,7 @@ Use language-independent concept IDs plus tagged surface forms (ja-JP/th-TH/en-U
 ## Adapter matrix to complete during preflight
 | Provider/model | Live audio | Partial transcript | Interrupt event | Context injection | Local? | Actual tested? |
 |---|---|---|---|---|---|---|
-| Candidate duplex provider | TBD | TBD | TBD | TBD | TBD | NO |
+| Gemini Live free tier (first candidate) | Documented | TBD in harness | Documented | TBD in harness | NO | NO |
 | Candidate fast decider | N/A | N/A | N/A | N/A | TBD | NO |
 | Deterministic stub | N/A | Input fixtures | Simulated | State snapshots | YES | NOT YET |
 

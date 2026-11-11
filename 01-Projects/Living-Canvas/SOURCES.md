@@ -9,6 +9,14 @@ Research snapshot: 2026-11-11. Links are starting points, not proof the combined
 6. LiveKit Agents voice examples: https://github.com/livekit/agents/tree/main/examples/voice_agents — find current provider capabilities, includes examples of realtime/duplex providers; verify against live docs.
 7. tldraw licensing: https://tldraw.dev/ — review for current production terms; do not rely only on open GitHub source.
 
+## Provider access and billing
+
+- [Claude Agent SDK](https://code.claude.com/docs/en/agent-sdk/overview) documents supported authentication and restrictions on third-party use of claude.ai login.
+- [ChatGPT and API billing](https://help.openai.com/en/articles/9039756-managing-billing-for-chatgpt-and-the-api-platform) documents separate billing and eligibility-dependent API credits.
+- [Gemini Live](https://aistudio.google.com/docs/live-api) documents continuous input, audio output, interruption and transcription. [Google's pricing page](https://ai.google.dev/gemini-api/docs/pricing/) lists free tiers and data-use terms. Check exact model and account eligibility at T06.
+- [OpenRouter audio](https://openrouter.ai/docs/guides/overview/multimodal/audio) documents audio request and response modes. A persistent interruptible session remains unverified.
+- [tldraw 5.6.0 license](https://github.com/tldraw/tldraw/blob/v5.6.0/LICENSE.md) specifies internal development terms and separate terms for production.
+
 ## Research tasks (not assumed facts)
 - Identify which actual duplex developer APIs emit partial transcript/timestamps and interruption notifications, and which permit context injection while speaking.
 - Benchmark Jev, Holo and other small structured-output deciders against the same multilingual action-selection fixture; no winner preselected.

@@ -1,14 +1,14 @@
 # T00 — Environment, source and architecture preflight
 
-Timebox: 10–15 minutes. Status: NOT STARTED. Depends on: none.
+Timebox: 10–15 minutes. Status: COMPLETE, [evidence](../worklogs/T00.md) available for P0 review. Depends on: none.
 
 ## Agent assignment
-Audit EVEATLAS without changing its authority rules. Check Node/npm availability, browser build tooling, current test baseline, and whether a suitable tldraw Agent Starter Kit or minimal editor integration is faster to use in this environment. Confirm current tldraw terms for the intended distribution. Identify likely duplex adapter candidates by *documented observable events*, not marketing claims. Choose only a provisional approach; provider connection comes later.
+Audit EVEATLAS without changing its authority rules. Check Node/npm availability, browser build tooling, current test baseline, and whether a suitable tldraw Agent Starter Kit or minimal editor integration is faster to use in this environment. Confirm current tldraw terms for the intended distribution. Identify likely duplex adapter candidates by *documented observable events*, not marketing claims. Document candidates using the [provider policy](../VOICE_AND_MODELS.md#provider-policy). Provider connection belongs to T06.
 
 ## Required outputs
 - Brief report at 01-Projects/Living-Canvas/worklogs/T00.md or equivalent Atlas-compliant handoff; no secrets.
 - A recommendation: minimal tldraw editor vs Agent Starter Kit, with source references.
-- Expected code path and exact setup commands for next ticket.
+- Expected offline TypeScript code path for T01. Renderer tooling belongs to T03.
 - Existing test results with exit codes; no invented pass.
 - Explicit note of whether public repository permission covers the intended implementation.
 

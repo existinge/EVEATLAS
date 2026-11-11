@@ -1,22 +1,23 @@
 # ATLAS handoff packet — Living Canvas
 
 Project: [[PROJECT]]
-Canonical branch at creation: feat/living-canvas-project-pack
-Status: specification-only; no software built or provider connected
-Review: pending human/independent reviewer; not merged into main
+Feature branch: feat/living-canvas-project-pack
+Status: T00 complete, P0 acceptance pending, implementation unstarted
+Review: see the T00 evidence and the tracked GitHub handoff for P0 acceptance
 Last updated: 2026-11-11
-Budget: $0 assumed for offline first stages; paid provider calls require opt-in/cost cap.
-Dependencies: Node.js/TypeScript/browser tooling (to verify on agent machine), existing Atlas tests, verified canvas APIs.
+Budget: $0 incremental inference by default. T01–T03 run offline. Use supported subscription workflows first for reasoning and a verified free developer tier first for duplex. OpenRouter is optional and disabled by default. Any paid experiment requires explicit opt-in and a cost cap.
+Dependencies: Node/npm and the existing Atlas tests were verified. TypeScript tooling belongs to T01, and the browser renderer belongs to T03.
 Agent execution authority: follow repository AGENTS.md; no autonomous extra agent manager, production deployment, purchases, public outreach, or major architecture deviation.
 
 ## Deliverable inventory
 [[START_HERE]], [[PROJECT]], [[ARCHITECTURE]], [[PROTOCOL]], [[VISUAL_RUNTIME]], [[VOICE_AND_MODELS]], [[GATES]], [[DECISIONS_AND_RISKS]], [[SOURCES]], [[tickets/INDEX]], fixtures.
 
 ## Current factual state
-This pack captures discussion, contracts, fixtures and runnable *instructions*. It is not a claim of functioning code or benchmarks. No evidence of executing live tests has been supplied with this pack.
+[T00 evidence](worklogs/T00.md) records the original local commit, clean-branch audit and 17 passing Atlas tests. The renderer and provider behavior remain untested. The tldraw production-license decision is open.
 
 ## Next action
-T00: audit current Atlas repo, choose smallest canvas implementation route, verify current dependencies/license and test harness. Then T01: event reducer + replay. Return exact branch/commit, files, commands, logs, failure and next cursor.
+
+After P0 acceptance, dispatch [T01 only](AGENT_DISPATCH.md). Build and test the offline reducer and replay harness, then stop at P1. Follow the [provider policy](VOICE_AND_MODELS.md#provider-policy) for later tickets.
 
 ## Agent handoff template
 - Outcome:
