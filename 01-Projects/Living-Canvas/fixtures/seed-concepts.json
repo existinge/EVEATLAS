@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "0.1",
+  "sessionId": "s-demo",
+  "topicEpoch": 1,
+  "semanticRevision": 1,
+  "concepts": {
+    "nature.tree": {
+      "labelByLanguage": {"en-US":"tree","ja-JP":"木","th-TH":"ต้นไม้"},
+      "relationships": [{"type":"related-to","target":"nature.forest"}],
+      "visualRecipeId": "recipe.tree",
+      "allowedActions": ["show","emphasize","move","setParameter","transitionRecipe"],
+      "status": "active",
+      "planRevision": 1,
+      "expiresAtSessionMs": 600000
+    },
+    "nature.forest": {
+      "labelByLanguage": {"en-US":"forest","ja-JP":"森","th-TH":"ป่า"},
+      "relationships": [{"type":"composed-of","target":"nature.tree"}],
+      "visualRecipeId": "recipe.forest",
+      "allowedActions": ["show","emphasize","transitionRecipe"],
+      "status": "prepared",
+      "planRevision": 1,
+      "expiresAtSessionMs": 600000
+    }
+  },
+  "frontier": ["nature.tree","nature.forest"],
+  "visualObjects": {
+    "obj-tree-1":{"conceptId":"nature.tree","recipeId":"recipe.tree","position":{"x":120,"y":140},"attention":0}
+  }
+}
