@@ -1,0 +1,12 @@
+# Analysis/report dependencies for the Note9-SD845 bootchain pipeline.
+#
+# Local tools (not pip-installable) used by the runbooks:
+#   - Ghidra  (analyzeHeadless)  →  set $env:GHIDRA_HOME
+#   - JDK 11/17 for Ghidra
+#   - BinDiff (optional cross-check aligner)
+
+# Python-side aligner is stdlib-only (scripts/diff/diff_functions.py).
+# If you want richer structural matching later, add one of:
+# ratelimit==...
+# lief==0.14.1            # ELF/MBN parsing without external tools
+# capstone==5.0.1         # light disassembly for noise-filter experiments

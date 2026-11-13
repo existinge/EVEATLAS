@@ -10,3 +10,4 @@ Other tracked concepts: Shift Tally, shopper/outreach agents, chat-bot marketpla
 
 ## Technical R&D (independent, non-revenue projects)
 - [[01-Projects/Living-Canvas/START_HERE|Living Canvas]] — real-time, duplex-aligned visual learning workspace; project pack/specification only, implementation not yet verified.
+- [[01-Projects/Note9-SD845-Bootchain/START_HERE|Note9-SD845 Bootchain]] — binary diffing the Note 9 (SDM845) rev7 vs rev9 bootloader trust chain; framework scaffold + pipeline scripts, no firmware committed, no findings claimed yet.

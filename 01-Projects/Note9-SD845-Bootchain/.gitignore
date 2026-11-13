@@ -1,0 +1,25 @@
+# Note9-SD845-Bootchain — local ignore rules
+# Binary/proprietary payloads and derived analysis artifacts stay local.
+# Only methodology, scripts, manifests (digests), and symbol/offset claims are public.
+
+# Firmware payloads (Odin/MD5, AP tar, raw/extracted components) — NEVER commit
+firmware/
+*.tar
+*.tar.md5
+*.md5
+*.bin
+*.mbn
+*.elf
+*.img
+
+# Ghidra project files / analysis artifacts
+*.gpr
+*.rep
+*.prp
+analysis/export/*.json
+analysis/modules/*.md
+!analysis/export/.gitkeep
+!analysis/modules/.gitkeep
+
+# Findings/triage scratch
+findings/
