@@ -1,0 +1,13 @@
+{
+  "root": "firmware/raw/r7",
+  "entries": [
+    {
+      "rel": "r7_N960U1UES7FUA1_drive.zip",
+      "sha256": "5abbae681cb8add1254599899a1680c1afdacb098f48a76ac3b2960314270a6b",
+      "sha1": "1754c429f27cba5831d7dfd4606ec219dff9608e",
+      "size": 4609995206,
+      "mtime": 1614146058
+    }
+  ],
+  "count": 1
+}

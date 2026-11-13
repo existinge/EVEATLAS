@@ -1,0 +1,1524 @@
+{
+  "rev": "r7",
+  "modules": [
+    {
+      "name": "NON-HLOS.bin",
+      "size": 59322880,
+      "magic": "eb3c904d",
+      "sha256": "98c90b45da115225fd3559a6f5e994b45677d73879e8b194c49bebcf78e44767",
+      "kind": "RAW",
+      "head16": "eb3c904d53444f53352e300010040100"
+    },
+    {
+      "name": "abl.elf",
+      "size": 2109952,
+      "magic": "7f454c46",
+      "sha256": "f1556e47e9ac704498df9fdc5d0f3c72ac0f5fb18c07b8b7841c5413d68c86fd",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0x28",
+      "entry": "0x9fa00000",
+      "phoff": 52,
+      "phnum": 3,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 148,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x9fc00000",
+          "paddr": "0x9fc00000",
+          "filesz": 6536,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x9fa00000",
+          "paddr": "0x9fa00000",
+          "filesz": 2097152,
+          "memsz": 2097152,
+          "flags": 7,
+          "offset": 12288
+        }
+      ]
+    },
+    {
+      "name": "aop.mbn",
+      "size": 184868,
+      "magic": "7f454c46",
+      "sha256": "4189769a96528bac64f59b52b1e264ce79ccfd63a4d1852ff96ffb88aca61d9f",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0x28",
+      "entry": "0xb000009",
+      "phoff": 52,
+      "phnum": 6,
+      "flags": "0x5000000",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 244,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x85fd1000",
+          "paddr": "0x85fd1000",
+          "filesz": 6632,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0xb000000",
+          "paddr": "0xb000000",
+          "filesz": 88244,
+          "memsz": 88244,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0xb0e0000",
+          "paddr": "0xb0e0000",
+          "filesz": 26488,
+          "memsz": 26488,
+          "flags": 7,
+          "offset": 100544
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85fc0000",
+          "paddr": "0x85fc0000",
+          "filesz": 54060,
+          "memsz": 54060,
+          "flags": 6,
+          "offset": 127032
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85fd0000",
+          "paddr": "0x85fd0000",
+          "filesz": 3264,
+          "memsz": 3264,
+          "flags": 6,
+          "offset": 181092
+        }
+      ]
+    },
+    {
+      "name": "apdp.mbn",
+      "size": 13892,
+      "magic": "7f454c46",
+      "sha256": "bda05b43bd3e9df41c9dfa634fd26293334a45ce7366dfb4220374f6d85eeffc",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 0,
+      "machine": "0x28",
+      "entry": "0x1c1ff000",
+      "phoff": 52,
+      "phnum": 3,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 148,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x1c200000",
+          "paddr": "0x1c200000",
+          "filesz": 6536,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c1ff000",
+          "paddr": "0x1c1ff000",
+          "filesz": 1092,
+          "memsz": 1092,
+          "flags": 0,
+          "offset": 12288
+        }
+      ]
+    },
+    {
+      "name": "bksecapp.mbn",
+      "size": 162259,
+      "magic": "7f454c46",
+      "sha256": "e6d9a906c5953fb92a35243e47794f4588e3e1fca965a5fb29bdafeca875128e",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 3,
+      "machine": "0x28",
+      "entry": "0x0",
+      "phoff": 52,
+      "phnum": 8,
+      "flags": "0x5000000",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 308,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x26000",
+          "paddr": "0x26000",
+          "filesz": 6696,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 54048,
+          "memsz": 54048,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0xe000",
+          "paddr": "0xe000",
+          "filesz": 111,
+          "memsz": 111,
+          "flags": 67108870,
+          "offset": 66336
+        },
+        {
+          "type": 1,
+          "vaddr": "0xf000",
+          "paddr": "0xf000",
+          "filesz": 84332,
+          "memsz": 84332,
+          "flags": 6,
+          "offset": 66448
+        },
+        {
+          "type": 1,
+          "vaddr": "0x24000",
+          "paddr": "0x24000",
+          "filesz": 348,
+          "memsz": 348,
+          "flags": 6,
+          "offset": 150780
+        },
+        {
+          "type": 2,
+          "vaddr": "0x25000",
+          "paddr": "0x25000",
+          "filesz": 152,
+          "memsz": 152,
+          "flags": 6,
+          "offset": 151128
+        },
+        {
+          "type": 1,
+          "vaddr": "0x25000",
+          "paddr": "0x25000",
+          "filesz": 10619,
+          "memsz": 10619,
+          "flags": 6,
+          "offset": 151128
+        }
+      ]
+    },
+    {
+      "name": "cmnlib.mbn",
+      "size": 376780,
+      "magic": "7f454c46",
+      "sha256": "21f39660e48d4fca521ef144bcafbd802693c1166a510ec49c1e859345d3fb36",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 3,
+      "machine": "0x28",
+      "entry": "0x698f",
+      "phoff": 52,
+      "phnum": 6,
+      "flags": "0x5000000",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 244,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x56000",
+          "paddr": "0x56000",
+          "filesz": 6632,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 340052,
+          "memsz": 340052,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x54000",
+          "paddr": "0x54000",
+          "filesz": 2464,
+          "memsz": 2464,
+          "flags": 6,
+          "offset": 352344
+        },
+        {
+          "type": 2,
+          "vaddr": "0x55000",
+          "paddr": "0x55000",
+          "filesz": 120,
+          "memsz": 120,
+          "flags": 6,
+          "offset": 354808
+        },
+        {
+          "type": 1,
+          "vaddr": "0x55000",
+          "paddr": "0x55000",
+          "filesz": 21460,
+          "memsz": 21460,
+          "flags": 6,
+          "offset": 354808
+        }
+      ]
+    },
+    {
+      "name": "cmnlib64.mbn",
+      "size": 496918,
+      "magic": "7f454c46",
+      "sha256": "8333fbfdb67a17562ca4da14c43ac5317f6016bab20608d6515dcf245517f63c",
+      "kind": "ELF",
+      "class": "ELF64",
+      "endian": "LE",
+      "e_type": 3,
+      "machine": "0xb7",
+      "entry": "0x93c4",
+      "phoff": 64,
+      "phnum": 6,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 400,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x70000",
+          "paddr": "0x70000",
+          "filesz": 6632,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 445440,
+          "memsz": 445440,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x6d000",
+          "paddr": "0x6d000",
+          "filesz": 4240,
+          "memsz": 4240,
+          "flags": 6,
+          "offset": 458752
+        },
+        {
+          "type": 2,
+          "vaddr": "0x6f000",
+          "paddr": "0x6f000",
+          "filesz": 240,
+          "memsz": 240,
+          "flags": 6,
+          "offset": 466944
+        },
+        {
+          "type": 1,
+          "vaddr": "0x6f000",
+          "paddr": "0x6f000",
+          "filesz": 29462,
+          "memsz": 29462,
+          "flags": 6,
+          "offset": 466944
+        }
+      ]
+    },
+    {
+      "name": "devcfg.mbn",
+      "size": 39112,
+      "magic": "7f454c46",
+      "sha256": "4453c7938c431f7b75e469f6581351583f42dfd269d0789252baec5eea477bdf",
+      "kind": "ELF",
+      "class": "ELF64",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0xb7",
+      "entry": "0x1c1e8000",
+      "phoff": 64,
+      "phnum": 4,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 288,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x85cfe000",
+          "paddr": "0x85cfe000",
+          "filesz": 6568,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c1e8000",
+          "paddr": "0x1c1e8000",
+          "filesz": 23888,
+          "memsz": 23888,
+          "flags": 6,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85cfd000",
+          "paddr": "0x85cfd000",
+          "filesz": 1736,
+          "memsz": 1736,
+          "flags": 6,
+          "offset": 36864
+        }
+      ]
+    },
+    {
+      "name": "engmode.mbn",
+      "size": 942540,
+      "magic": "7f454c46",
+      "sha256": "13f68a29780d63ad549db73a28f640b69da6853c353f925764fe9c0a15a61222",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 3,
+      "machine": "0x28",
+      "entry": "0x0",
+      "phoff": 52,
+      "phnum": 8,
+      "flags": "0x5000000",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 308,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0xc8000",
+          "paddr": "0xc8000",
+          "filesz": 6696,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 760424,
+          "memsz": 760424,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0xba000",
+          "paddr": "0xba000",
+          "filesz": 116,
+          "memsz": 116,
+          "flags": 67108870,
+          "offset": 772712
+        },
+        {
+          "type": 1,
+          "vaddr": "0xbb000",
+          "paddr": "0xbb000",
+          "filesz": 44480,
+          "memsz": 44480,
+          "flags": 6,
+          "offset": 772832
+        },
+        {
+          "type": 1,
+          "vaddr": "0xc6000",
+          "paddr": "0xc6000",
+          "filesz": 800,
+          "memsz": 800,
+          "flags": 6,
+          "offset": 817312
+        },
+        {
+          "type": 2,
+          "vaddr": "0xc7000",
+          "paddr": "0xc7000",
+          "filesz": 152,
+          "memsz": 152,
+          "flags": 6,
+          "offset": 818112
+        },
+        {
+          "type": 1,
+          "vaddr": "0xc7000",
+          "paddr": "0xc7000",
+          "filesz": 123916,
+          "memsz": 123916,
+          "flags": 6,
+          "offset": 818112
+        }
+      ]
+    },
+    {
+      "name": "hyp.mbn",
+      "size": 427856,
+      "magic": "7f454c46",
+      "sha256": "4787f0eadc243b9ef0a9f88eb3862f96af59be91c6434789ff788290f1dc269d",
+      "kind": "ELF",
+      "class": "ELF64",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0xb7",
+      "entry": "0x85710000",
+      "phoff": 64,
+      "phnum": 6,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 400,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x8593e000",
+          "paddr": "0x8593e000",
+          "filesz": 6632,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85700000",
+          "paddr": "0x85700000",
+          "filesz": 60152,
+          "memsz": 61008,
+          "flags": 7,
+          "offset": 12288
+        },
+        {
+          "type": 1685382481,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 0,
+          "memsz": 0,
+          "flags": 6,
+          "offset": 72448
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 0,
+          "memsz": 0,
+          "flags": 0,
+          "offset": 72448
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85710000",
+          "paddr": "0x85710000",
+          "filesz": 354896,
+          "memsz": 2285568,
+          "flags": 7,
+          "offset": 72448
+        }
+      ]
+    },
+    {
+      "name": "keymaster64.mbn",
+      "size": 233394,
+      "magic": "7f454c46",
+      "sha256": "ebac2ba250909ef3f0701d8f5ec8d14df0c3e27cce9eac1e5b883853ff6181f8",
+      "kind": "ELF",
+      "class": "ELF64",
+      "endian": "LE",
+      "e_type": 3,
+      "machine": "0xb7",
+      "entry": "0x0",
+      "phoff": 64,
+      "phnum": 8,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 512,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x34000",
+          "paddr": "0x34000",
+          "filesz": 6696,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 189361,
+          "memsz": 189361,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x2f000",
+          "paddr": "0x2f000",
+          "filesz": 162,
+          "memsz": 162,
+          "flags": 67108870,
+          "offset": 204800
+        },
+        {
+          "type": 1,
+          "vaddr": "0x30000",
+          "paddr": "0x30000",
+          "filesz": 5832,
+          "memsz": 5832,
+          "flags": 6,
+          "offset": 208896
+        },
+        {
+          "type": 1,
+          "vaddr": "0x32000",
+          "paddr": "0x32000",
+          "filesz": 920,
+          "memsz": 920,
+          "flags": 6,
+          "offset": 217088
+        },
+        {
+          "type": 2,
+          "vaddr": "0x33000",
+          "paddr": "0x33000",
+          "filesz": 304,
+          "memsz": 304,
+          "flags": 6,
+          "offset": 221184
+        },
+        {
+          "type": 1,
+          "vaddr": "0x33000",
+          "paddr": "0x33000",
+          "filesz": 11698,
+          "memsz": 11698,
+          "flags": 6,
+          "offset": 221184
+        }
+      ]
+    },
+    {
+      "name": "msadp.mbn",
+      "size": 13892,
+      "magic": "7f454c46",
+      "sha256": "83a61f35c925405a1318e44952fcc6763ee4a81d5e1f3becf01fc143bf628744",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 0,
+      "machine": "0x28",
+      "entry": "0x1c1ff000",
+      "phoff": 52,
+      "phnum": 3,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 148,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x1c200000",
+          "paddr": "0x1c200000",
+          "filesz": 6536,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c1ff000",
+          "paddr": "0x1c1ff000",
+          "filesz": 1092,
+          "memsz": 1092,
+          "flags": 0,
+          "offset": 12288
+        }
+      ]
+    },
+    {
+      "name": "pmic.elf",
+      "size": 45080,
+      "magic": "7f454c46",
+      "sha256": "5603d93719ea471e4b26807f4742ab2660e84300d3be64ae2499daa2a509a88d",
+      "kind": "ELF",
+      "class": "ELF64",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0xb7",
+      "entry": "0x0",
+      "phoff": 64,
+      "phnum": 3,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 232,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x148e3000",
+          "paddr": "0x148e3000",
+          "filesz": 6536,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x148da800",
+          "paddr": "0x148da800",
+          "filesz": 32280,
+          "memsz": 32280,
+          "flags": 7,
+          "offset": 12288
+        }
+      ]
+    },
+    {
+      "name": "qupv3fw.elf",
+      "size": 65535,
+      "magic": "7f454c46",
+      "sha256": "01b56434922234db5a571527595424f134fbe0f397b2435b57b9c0371f5774bc",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0xa4",
+      "entry": "0x0",
+      "phoff": 52,
+      "phnum": 12,
+      "flags": "0x3",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 436,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0xb000",
+          "paddr": "0xb000",
+          "filesz": 19832,
+          "memsz": 20480,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1000",
+          "paddr": "0x1000",
+          "filesz": 11008,
+          "memsz": 11008,
+          "flags": 134217735,
+          "offset": 24576
+        },
+        {
+          "type": 1,
+          "vaddr": "0x3b00",
+          "paddr": "0x3b00",
+          "filesz": 1574,
+          "memsz": 1574,
+          "flags": 134217735,
+          "offset": 35584
+        },
+        {
+          "type": 1,
+          "vaddr": "0x4128",
+          "paddr": "0x4128",
+          "filesz": 4414,
+          "memsz": 4414,
+          "flags": 134217735,
+          "offset": 37160
+        },
+        {
+          "type": 1,
+          "vaddr": "0x5268",
+          "paddr": "0x5268",
+          "filesz": 1574,
+          "memsz": 1574,
+          "flags": 134217735,
+          "offset": 41576
+        },
+        {
+          "type": 1,
+          "vaddr": "0x5890",
+          "paddr": "0x5890",
+          "filesz": 1818,
+          "memsz": 1818,
+          "flags": 134217735,
+          "offset": 43152
+        },
+        {
+          "type": 1,
+          "vaddr": "0x5fac",
+          "paddr": "0x5fac",
+          "filesz": 11008,
+          "memsz": 11008,
+          "flags": 134217735,
+          "offset": 44972
+        },
+        {
+          "type": 1,
+          "vaddr": "0x8aac",
+          "paddr": "0x8aac",
+          "filesz": 1575,
+          "memsz": 1575,
+          "flags": 134217735,
+          "offset": 55980
+        },
+        {
+          "type": 1,
+          "vaddr": "0x90d4",
+          "paddr": "0x90d4",
+          "filesz": 4411,
+          "memsz": 4411,
+          "flags": 134217735,
+          "offset": 57556
+        },
+        {
+          "type": 1,
+          "vaddr": "0xa210",
+          "paddr": "0xa210",
+          "filesz": 1575,
+          "memsz": 1575,
+          "flags": 134217735,
+          "offset": 61968
+        },
+        {
+          "type": 1,
+          "vaddr": "0xa838",
+          "paddr": "0xa838",
+          "filesz": 1479,
+          "memsz": 1479,
+          "flags": 134217735,
+          "offset": 63544
+        }
+      ]
+    },
+    {
+      "name": "sec.dat",
+      "size": 948,
+      "magic": "ca51723b",
+      "sha256": "c8c87fca09bb7c6d8ed2da4b1ecec085f6cd44b86567a1bfa5708095e78e507a",
+      "kind": "RAW",
+      "head16": "ca51723b296f122a020000007c010000"
+    },
+    {
+      "name": "storsec.mbn",
+      "size": 21289,
+      "magic": "7f454c46",
+      "sha256": "34c4aca98568c0eb4dcc295c09d254d26f5770635e2c7182a9b7d3b5ac5dfce4",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 3,
+      "machine": "0x28",
+      "entry": "0x0",
+      "phoff": 52,
+      "phnum": 8,
+      "flags": "0x5000000",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 308,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x6000",
+          "paddr": "0x6000",
+          "filesz": 6696,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 5356,
+          "memsz": 5356,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x2000",
+          "paddr": "0x2000",
+          "filesz": 128,
+          "memsz": 128,
+          "flags": 67108870,
+          "offset": 17644
+        },
+        {
+          "type": 1,
+          "vaddr": "0x3000",
+          "paddr": "0x3000",
+          "filesz": 804,
+          "memsz": 804,
+          "flags": 6,
+          "offset": 17772
+        },
+        {
+          "type": 1,
+          "vaddr": "0x4000",
+          "paddr": "0x4000",
+          "filesz": 144,
+          "memsz": 144,
+          "flags": 6,
+          "offset": 18576
+        },
+        {
+          "type": 2,
+          "vaddr": "0x5000",
+          "paddr": "0x5000",
+          "filesz": 152,
+          "memsz": 152,
+          "flags": 6,
+          "offset": 18720
+        },
+        {
+          "type": 1,
+          "vaddr": "0x5000",
+          "paddr": "0x5000",
+          "filesz": 2057,
+          "memsz": 2057,
+          "flags": 6,
+          "offset": 18720
+        }
+      ]
+    },
+    {
+      "name": "tz.mbn",
+      "size": 2032128,
+      "magic": "7f454c46",
+      "sha256": "41787bcb600f57b3242211e9e8c80e90314db770a0be7a7cc253e06ba98500ae",
+      "kind": "ELF",
+      "class": "ELF64",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0xb7",
+      "entry": "0x14680000",
+      "phoff": 64,
+      "phnum": 17,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 1016,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x1c1e8000",
+          "paddr": "0x1c1e8000",
+          "filesz": 19992,
+          "memsz": 20480,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 0,
+          "memsz": 0,
+          "flags": 0,
+          "offset": 24576
+        },
+        {
+          "type": 1,
+          "vaddr": "0x14680000",
+          "paddr": "0x14680000",
+          "filesz": 35800,
+          "memsz": 35800,
+          "flags": 5,
+          "offset": 24576
+        },
+        {
+          "type": 1,
+          "vaddr": "0x14689000",
+          "paddr": "0x14689000",
+          "filesz": 13576,
+          "memsz": 13576,
+          "flags": 6,
+          "offset": 61440
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1468e000",
+          "paddr": "0x1468e000",
+          "filesz": 4040,
+          "memsz": 4040,
+          "flags": 7,
+          "offset": 77824
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1468f000",
+          "paddr": "0x1468f000",
+          "filesz": 11248,
+          "memsz": 11248,
+          "flags": 6,
+          "offset": 81920
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c000000",
+          "paddr": "0x1c000000",
+          "filesz": 2432,
+          "memsz": 2432,
+          "flags": 5,
+          "offset": 94208
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c001000",
+          "paddr": "0x1c001000",
+          "filesz": 28880,
+          "memsz": 28880,
+          "flags": 6,
+          "offset": 98304
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c009000",
+          "paddr": "0x1c009000",
+          "filesz": 45056,
+          "memsz": 45056,
+          "flags": 6,
+          "offset": 131072
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c017000",
+          "paddr": "0x1c017000",
+          "filesz": 770040,
+          "memsz": 770040,
+          "flags": 5,
+          "offset": 176128
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c0d3000",
+          "paddr": "0x1c0d3000",
+          "filesz": 133856,
+          "memsz": 133856,
+          "flags": 6,
+          "offset": 946176
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c0f4000",
+          "paddr": "0x1c0f4000",
+          "filesz": 701264,
+          "memsz": 701264,
+          "flags": 6,
+          "offset": 1081344
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c1aa000",
+          "paddr": "0x1c1aa000",
+          "filesz": 114688,
+          "memsz": 114688,
+          "flags": 6,
+          "offset": 1785856
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c1c6000",
+          "paddr": "0x1c1c6000",
+          "filesz": 65536,
+          "memsz": 65536,
+          "flags": 6,
+          "offset": 1900544
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c1d6000",
+          "paddr": "0x1c1d6000",
+          "filesz": 65536,
+          "memsz": 65536,
+          "flags": 6,
+          "offset": 1966080
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1c1e6000",
+          "paddr": "0x1c1e6000",
+          "filesz": 0,
+          "memsz": 8192,
+          "flags": 6,
+          "offset": 2031616
+        }
+      ]
+    },
+    {
+      "name": "vaultkeeper.mbn",
+      "size": 1163281,
+      "magic": "7f454c46",
+      "sha256": "293d2e7a4ddb99640d5ab40550fe1ff66f8cef9ff56ed4f30a82abc07f1cbb4a",
+      "kind": "ELF",
+      "class": "ELF32",
+      "endian": "LE",
+      "e_type": 3,
+      "machine": "0x28",
+      "entry": "0x0",
+      "phoff": 52,
+      "phnum": 8,
+      "flags": "0x5000000",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 308,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0xfe000",
+          "paddr": "0xfe000",
+          "filesz": 6696,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 977912,
+          "memsz": 977912,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0xef000",
+          "paddr": "0xef000",
+          "filesz": 130,
+          "memsz": 130,
+          "flags": 67108870,
+          "offset": 990200
+        },
+        {
+          "type": 1,
+          "vaddr": "0xf0000",
+          "paddr": "0xf0000",
+          "filesz": 45728,
+          "memsz": 45728,
+          "flags": 6,
+          "offset": 990336
+        },
+        {
+          "type": 1,
+          "vaddr": "0xfc000",
+          "paddr": "0xfc000",
+          "filesz": 1080,
+          "memsz": 1080,
+          "flags": 6,
+          "offset": 1036064
+        },
+        {
+          "type": 2,
+          "vaddr": "0xfd000",
+          "paddr": "0xfd000",
+          "filesz": 152,
+          "memsz": 152,
+          "flags": 6,
+          "offset": 1037144
+        },
+        {
+          "type": 1,
+          "vaddr": "0xfd000",
+          "paddr": "0xfd000",
+          "filesz": 125625,
+          "memsz": 125625,
+          "flags": 6,
+          "offset": 1037144
+        }
+      ]
+    },
+    {
+      "name": "xbl.elf",
+      "size": 3124728,
+      "magic": "7f454c46",
+      "sha256": "9b3d898a640765138a95b058dc9ed799f7a24749b24883e936bef665f39e5943",
+      "kind": "ELF",
+      "class": "ELF64",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0xb7",
+      "entry": "0x148496d0",
+      "phoff": 64,
+      "phnum": 16,
+      "flags": "0x0",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 960,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x9fde0000",
+          "paddr": "0x9fde0000",
+          "filesz": 6952,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1483f000",
+          "paddr": "0x1483f000",
+          "filesz": 312124,
+          "memsz": 312124,
+          "flags": 5,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1488c800",
+          "paddr": "0x1488c800",
+          "filesz": 0,
+          "memsz": 12288,
+          "flags": 6,
+          "offset": 324416
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1488f800",
+          "paddr": "0x1488f800",
+          "filesz": 49872,
+          "memsz": 49872,
+          "flags": 6,
+          "offset": 324416
+        },
+        {
+          "type": 1,
+          "vaddr": "0x1489c000",
+          "paddr": "0x1489c000",
+          "filesz": 0,
+          "memsz": 103424,
+          "flags": 6,
+          "offset": 374288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85e00000",
+          "paddr": "0x85e00000",
+          "filesz": 0,
+          "memsz": 162720,
+          "flags": 6,
+          "offset": 374288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x146ae000",
+          "paddr": "0x146ae000",
+          "filesz": 4992,
+          "memsz": 4992,
+          "flags": 5,
+          "offset": 374288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x146b1000",
+          "paddr": "0x146b1000",
+          "filesz": 2116,
+          "memsz": 2116,
+          "flags": 6,
+          "offset": 379280
+        },
+        {
+          "type": 1,
+          "vaddr": "0x148b5800",
+          "paddr": "0x148b5800",
+          "filesz": 141504,
+          "memsz": 141504,
+          "flags": 7,
+          "offset": 381408
+        },
+        {
+          "type": 1,
+          "vaddr": "0x146b2000",
+          "paddr": "0x146b2000",
+          "filesz": 0,
+          "memsz": 11700,
+          "flags": 6,
+          "offset": 522912
+        },
+        {
+          "type": 1,
+          "vaddr": "0x9fc00000",
+          "paddr": "0x9fc00000",
+          "filesz": 1966080,
+          "memsz": 1966080,
+          "flags": 7,
+          "offset": 522912
+        },
+        {
+          "type": 1,
+          "vaddr": "0x14699000",
+          "paddr": "0x14699000",
+          "filesz": 79640,
+          "memsz": 79640,
+          "flags": 83886085,
+          "offset": 2488992
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85e35000",
+          "paddr": "0x85e35000",
+          "filesz": 416304,
+          "memsz": 416304,
+          "flags": 5,
+          "offset": 2568640
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85eb7000",
+          "paddr": "0x85eb7000",
+          "filesz": 139272,
+          "memsz": 139276,
+          "flags": 6,
+          "offset": 2984944
+        },
+        {
+          "type": 1,
+          "vaddr": "0x85ea7000",
+          "paddr": "0x85ea7000",
+          "filesz": 0,
+          "memsz": 7632,
+          "flags": 6,
+          "offset": 3124224
+        }
+      ]
+    },
+    {
+      "name": "xbl_config.elf",
+      "size": 98556,
+      "magic": "7f454c46",
+      "sha256": "767b0f28f59569e4b54119c410c5d4fccbe4be82fe76ff3b5969de21f897f034",
+      "kind": "ELF",
+      "class": "ELF64",
+      "endian": "LE",
+      "e_type": 2,
+      "machine": "0x28",
+      "entry": "0x148d0000",
+      "phoff": 64,
+      "phnum": 8,
+      "flags": "0x5",
+      "phdrs": [
+        {
+          "type": 0,
+          "vaddr": "0x0",
+          "paddr": "0x0",
+          "filesz": 512,
+          "memsz": 0,
+          "flags": 117440512,
+          "offset": 0
+        },
+        {
+          "type": 0,
+          "vaddr": "0x148e5000",
+          "paddr": "0x148e5000",
+          "filesz": 6696,
+          "memsz": 8192,
+          "flags": 35651584,
+          "offset": 4096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x148d0000",
+          "paddr": "0x148d0000",
+          "filesz": 212,
+          "memsz": 212,
+          "flags": 16777223,
+          "offset": 12288
+        },
+        {
+          "type": 1,
+          "vaddr": "0x148d00d4",
+          "paddr": "0x148d00d4",
+          "filesz": 32280,
+          "memsz": 32280,
+          "flags": 16777223,
+          "offset": 12500
+        },
+        {
+          "type": 1,
+          "vaddr": "0x148d7eec",
+          "paddr": "0x148d7eec",
+          "filesz": 13316,
+          "memsz": 13316,
+          "flags": 16777223,
+          "offset": 44780
+        },
+        {
+          "type": 1,
+          "vaddr": "0x148db2f0",
+          "paddr": "0x148db2f0",
+          "filesz": 13316,
+          "memsz": 13316,
+          "flags": 16777223,
+          "offset": 58096
+        },
+        {
+          "type": 1,
+          "vaddr": "0x148de6f4",
+          "paddr": "0x148de6f4",
+          "filesz": 13316,
+          "memsz": 13316,
+          "flags": 16777223,
+          "offset": 71412
+        },
+        {
+          "type": 1,
+          "vaddr": "0x148e1af8",
+          "paddr": "0x148e1af8",
+          "filesz": 13316,
+          "memsz": 13316,
+          "flags": 16777223,
+          "offset": 84728
+        }
+      ]
+    }
+  ]
+}

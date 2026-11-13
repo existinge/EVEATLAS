@@ -14,21 +14,23 @@ clean, provenance-tracked, per-component workspace:
 ```
 firmware/                       # GIT-IGNORED, local only (top README explains layout)
 ├── raw/
-│   ├── r7/   N960U...<rev7>.tar.md5
-│   └── r9/   N960U...<rev9>.tar.md5
-├── extracted/
-│   ├── r7/
-│   │   ├── xbl.elf            # SDM845 primary bootloader (SBL2-class / UEFI)
-│   │   ├── abl.elf            # Little-Kernel aboot (Android Boot Loader)
-│   │   ├── tz.mbn             # TrustZone OS (secure monitor/world)
-│   │   ├── hyp.elf, rpm.mbn, pmic.elf
-│   │   └── ...
-│   └── r9/   (mirror)
+│   ├── r7/   r7_N960U1UES7FUA1_drive.zip   # FUS decrypt (single Odin zip per rev)
+│   └── r9/   SM-N960U_2_20220723013851_n60buczjuw_fac.zip
+├── extracted/                  # per-rev extracted Odin components
+│   ├── r7/   BL/  BL_*.tar.md5 + 20 .lz4 modules + 20 decompressed images
+│   └── r9/   BL/  BL_*.tar.md5 + 21 .lz4 modules + 20 decompressed images + meta-data/
 └── README.md                  # what/why/how-to-reproduce (local only)
 
-analysis/manifest/              # COMMITTED: sha256 + metadata per build (provenance.py)
-├── r7-manifest.json
-└── r9-manifest.json
+analysis/manifest/              # COMMITTED: sha256+sha1+size+mtime per build (provenance.py)
+├── r7-manifest-raw.json        # zip digests, before extraction
+├── r9-manifest-raw.json
+├── r7-manifest-extracted.json  # per-component digests (both .lz4 and decompressed)
+└── r9-manifest-extracted.json
+
+analysis/01-source/             # COMMITTED: listings + derived digests only (no binaries)
+├── r7/bl-modules.json          # per-module type/size/magic/sha256 + ELF headers
+├── r9/bl-modules.json
+└── bl-r7-vs-r9-diff.json       # per-module r7↔r9 size/digest comparison
 ```
 
 `firmware/` (raw + extracted) is **git-ignored**; only the digest manifests under
@@ -47,26 +49,62 @@ committed to the public repo.
 ## 3. Extraction steps
 
 1. Verify `.tar.md5` checksum (embedded MD5) — confirms transport integrity.
-2. Un-tar to `firmware/raw/<rev>/`. Expect `BL_*`, `AP_*`, `CP_*`, `CSC_*` blocks;
-   the BL (bootloader) block contains `xbl.elf`, `abl.elf`, `tz.mbn`, and friends.
-3. For each ELF payload record: image type, entry point, program headers, and the
-   **target load address** (from the ELF or the loader table). Addresses later are
-   reported as image-relative + image-base-relative deltas (see instructions §6).
-4. For MBN payloads (`tz.mbn`, `rpm.mbn`): note MBN magic/header (Qualcomm secure
-   MBN / standard MBN), document format before disassembly.
-5. Write `analysis/manifest/<rev>-manifest.json` (via `scripts/provenance.py`) with
-   every digest + the fields above.
+   (`samloader verify-md5 <file>` returns exit 0 for both revs; verified 2026-11-13.)
+2. Un-tar to `firmware/raw/<rev>/`. Expect a FUS zip first; unzip to `BL_*`,
+   `AP_*`, `CP_*`, `CSC_*` blocks. **Only `BL_*` is retained for this scope.**
+3. The BL block stores every image as **LZ4 frame-compressed** (`.lz4`). Decompress
+   with `lz4.frame` from the project `.venv` (python-lz4) into co-located images.
+   Original `.lz4` bytes are kept alongside for provenance (both hashed).
+4. Classify each decompressed image: `xbl.elf`, `abl.elf`, `pmic.elf` are ELF;
+   `tz.mbn`, `hyp.mbn`, `aop.mbn`, etc. are MBNs that are themselves ELF
+   (mix of ELF32/ELF64 — the loader's "mbn" type refers to the Qualcomm
+   wrapping/container used for Secure World images, independent of ELF class).
+   For each ELF payload record: class, image type, entry point, program headers,
+   and the **target load address** (first program header / load-base table).
+   Addresses later are reported as image-relative + image-base-relative deltas
+   (see instructions §6).
+5. `scripts/bl_modules.py` writes per-module records (kind, size, magic, sha256 of
+   decompressed AND of the `.lz4` bytes, plus ELF headers) to
+   `analysis/01-source/<rev>/bl-modules.json`.
+6. `scripts/bl_diff.py` compares the two BL trees and writes
+   `analysis/01-source/bl-r7-vs-r9-diff.json` (identical vs differing modules).
+7. `scripts/provenance.py hash-dir` records sha256+sha1+size+mtime manifests
+   (raw zips and extracted trees) into `analysis/manifest/`.
+
+**Observed BL inventory (both revs, 20 decompressed modules):** the in-scope set
+is present as `xbl.elf`, `abl.elf`, `tz.mbn` and `pmic.elf`; the hypervisor is
+carried as **`hyp.mbn`** (not `hyp.elf` in this build family), and **no `rpm.mbn`
+exists** in the BL block for SM-N960U (SDM845 routing/sleep controller firmware is
+not shipped as a standalone BL member here). Presence/absence per `bl-modules.json`.
+
+Note: `NON-HLOS.bin` (modem/modem-wifi firmware, RAW, ~59 MB) is also inside the
+BL tar but is out of scope for bootchain analysis.
 
 ## 4. Reproducible runbook
 
 ```powershell
-# 1. record raw digests
-python scripts/provenance.py hash-dir firmware/raw/r7 --out analysis/manifest/r7-manifest.json
-python scripts/provenance.py hash-dir firmware/raw/r9 --out analysis/manifest/r9-manifest.json
+$py = (Resolve-Path '.venv\Scripts\python.exe').Path
+Push-Location <project-root>
 
-# 2. extract (during setup only; binaries stay git-ignored)
-#    (extraction helper documented here once finalized)
+# 1. record raw (zip) digests, before any manipulation
+& $py scripts/provenance.py hash-dir firmware/raw/r7 --out analysis/manifest/r7-manifest-raw.json
+& $py scripts/provenance.py hash-dir firmware/raw/r9 --out analysis/manifest/r9-manifest-raw.json
 
-# 3. confirm per-component tree parity
-python scripts/provenance.py tree-compare firmware/extracted/r7 firmware/extracted/r9
+# 2. verify + extract + decompress (walkthrough in docs/01 §3)
+#    samloader verify-md5 <BL tar.md5>   (exit 0 for both revs)
+#    unzip FUS zip -> tar -x -> lz4.frame decompress each .lz4 (project .venv has python-lz4)
+
+# 3. record per-component digests (original .lz4 AND decompressed images)
+& $py scripts/provenance.py hash-dir firmware/extracted/r7 --out analysis/manifest/r7-manifest-extracted.json
+& $py scripts/provenance.py hash-dir firmware/extracted/r9 --out analysis/manifest/r9-manifest-extracted.json
+
+# 4. classify modules (ELF/MBN/RAW + ELF32/64 headers, sha256) -> analysis/01-source/<rev>/bl-modules.json
+& $py scripts/bl_modules.py <project-root>
+
+# 5. r7↔r9 per-module comparison -> analysis/01-source/bl-r7-vs-r9-diff.json
+& $py scripts/bl_diff.py <project-root>
 ```
+
+Current result (2026-11-13): 20 decompressed BL modules per rev; **every module
+differs** between r7 and r9 (xbl.elf 3,124,728 → 3,124,856 bytes; all in-scope ELF
+headers structurally identical between revs — a clean diff pair).

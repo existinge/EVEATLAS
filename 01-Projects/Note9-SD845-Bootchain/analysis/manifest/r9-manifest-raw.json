@@ -1,0 +1,13 @@
+{
+  "root": "firmware/raw/r9",
+  "entries": [
+    {
+      "rel": "SM-N960U_2_20220723013851_n60buczjuw_fac.zip",
+      "sha256": "c5381b4ff4b64f13a1d957bfdb6c177928dea6dd9b3958a4230587801bd274fd",
+      "sha1": "5a7e95b7a9fde1f6071ef3011fb0de57a6cc5120",
+      "size": 5079601297,
+      "mtime": 1794612429
+    }
+  ],
+  "count": 1
+}

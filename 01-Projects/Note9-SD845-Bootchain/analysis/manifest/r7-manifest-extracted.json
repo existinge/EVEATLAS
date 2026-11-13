@@ -1,0 +1,307 @@
+{
+  "root": "firmware/extracted/r7",
+  "entries": [
+    {
+      "rel": "BL/abl.elf",
+      "sha256": "f1556e47e9ac704498df9fdc5d0f3c72ac0f5fb18c07b8b7841c5413d68c86fd",
+      "sha1": "9e87ba6a1da9c45fdec28099cce08311ae123e67",
+      "size": 2109952,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/abl.elf.lz4",
+      "sha256": "e6d72ad5e1d51d61fa1c239806166cc835ea018f3ac03b05990945a527fcb91e",
+      "sha1": "a7f8cbe92c7f63e6ec884b028e2a36fab0ee70cc",
+      "size": 1066795,
+      "mtime": 1611646650
+    },
+    {
+      "rel": "BL/aop.mbn",
+      "sha256": "4189769a96528bac64f59b52b1e264ce79ccfd63a4d1852ff96ffb88aca61d9f",
+      "sha1": "21e3c60e0b3e1a1456492b4d8fad25517b24d3d3",
+      "size": 184868,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/aop.mbn.lz4",
+      "sha256": "a7a06ec76f43565361588b3ff7c7c8f535cf68afb22526af2f3db709f596be72",
+      "sha1": "e57caa0013a827ba40f3e30b1804019c719f40a2",
+      "size": 114378,
+      "mtime": 1611646647
+    },
+    {
+      "rel": "BL/apdp.mbn",
+      "sha256": "bda05b43bd3e9df41c9dfa634fd26293334a45ce7366dfb4220374f6d85eeffc",
+      "sha1": "139114db74866aa5aeda8e0c83a8355e954df031",
+      "size": 13892,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/apdp.mbn.lz4",
+      "sha256": "1265c8e4276bff5da82c69a93d73dbb0e0177a095ba078b74ffacf177f554305",
+      "sha1": "8038139886edc923f3fbb38fce5ff37b4ca5ff1c",
+      "size": 3385,
+      "mtime": 1611646657
+    },
+    {
+      "rel": "BL/bksecapp.mbn",
+      "sha256": "e6d9a906c5953fb92a35243e47794f4588e3e1fca965a5fb29bdafeca875128e",
+      "sha1": "99751ccf3567234a3dcf0d8498d76ef2ad53502e",
+      "size": 162259,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/bksecapp.mbn.lz4",
+      "sha256": "55015529bf6cfd4cc3d0eec7f366b6cf33dd2520bfea804f88673dfb99cc0046",
+      "sha1": "5a7b449dab5df8c5aa2c1aaff5513852909e5db8",
+      "size": 49688,
+      "mtime": 1611646649
+    },
+    {
+      "rel": "BL/cmnlib.mbn",
+      "sha256": "21f39660e48d4fca521ef144bcafbd802693c1166a510ec49c1e859345d3fb36",
+      "sha1": "c96f35296dfef8600cb335ef77fe943305d6babd",
+      "size": 376780,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/cmnlib.mbn.lz4",
+      "sha256": "42b0d40edb210d586b6a228c9cfa650d05444cf82e8cc9e98e3c11183dc32505",
+      "sha1": "2c10feaf295bca7b98daace2d7b3ef2bc3421559",
+      "size": 283444,
+      "mtime": 1611646646
+    },
+    {
+      "rel": "BL/cmnlib64.mbn",
+      "sha256": "8333fbfdb67a17562ca4da14c43ac5317f6016bab20608d6515dcf245517f63c",
+      "sha1": "21b67ed8f48af3f0e91ced00e1df6f8531c27d4b",
+      "size": 496918,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/cmnlib64.mbn.lz4",
+      "sha256": "464a61e3be7464a69d455cb843c15435b5c4d3e8f5bd64cff7e3eee10fac52ee",
+      "sha1": "cb968567b7658873fb8018e3dd24f7d2409475f8",
+      "size": 350007,
+      "mtime": 1611646648
+    },
+    {
+      "rel": "BL/devcfg.mbn",
+      "sha256": "4453c7938c431f7b75e469f6581351583f42dfd269d0789252baec5eea477bdf",
+      "sha1": "c896d1c9a50ce958d68630ac44ab154a04b665db",
+      "size": 39112,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/devcfg.mbn.lz4",
+      "sha256": "19c84ed54806c6c1e2c7bc72d951c470c18943ad29eb48041883bd4f9a55ba5c",
+      "sha1": "c85212a09d48deac6202f656c21a99ba3f3768d7",
+      "size": 20398,
+      "mtime": 1611646645
+    },
+    {
+      "rel": "BL/engmode.mbn",
+      "sha256": "13f68a29780d63ad549db73a28f640b69da6853c353f925764fe9c0a15a61222",
+      "sha1": "9087a542196ab158eafa44aa9039c5428a6d0184",
+      "size": 942540,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/engmode.mbn.lz4",
+      "sha256": "a175347e0753a9bd9ccadbd75448231bf0ac3697b2e28451352549e36f38e1a5",
+      "sha1": "2f32a363e465f2578b0e37cbd80ef0aabd9c217a",
+      "size": 626802,
+      "mtime": 1611646660
+    },
+    {
+      "rel": "BL/hyp.mbn",
+      "sha256": "4787f0eadc243b9ef0a9f88eb3862f96af59be91c6434789ff788290f1dc269d",
+      "sha1": "55be8c153016ebac8bc41c7258cc5025f58a2d44",
+      "size": 427856,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/hyp.mbn.lz4",
+      "sha256": "9f468cb9330bae2edd9e0d00256862d16a4da6b89cfbdf662440559881f28b9e",
+      "sha1": "850aa91981e2d4fdeb2e11381965eec0022cc42a",
+      "size": 186859,
+      "mtime": 1611646647
+    },
+    {
+      "rel": "BL/keymaster64.mbn",
+      "sha256": "ebac2ba250909ef3f0701d8f5ec8d14df0c3e27cce9eac1e5b883853ff6181f8",
+      "sha1": "642720ebdedbb60f225120c6528ec33a9cc29a4f",
+      "size": 233394,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/keymaster64.mbn.lz4",
+      "sha256": "798950a70483f4402d6b6206228447c4908c122d6dc8e7eed6fa556ddbb9c257",
+      "sha1": "ab8206d0edd83a5963335552f1a3256eae2050e6",
+      "size": 148010,
+      "mtime": 1611646649
+    },
+    {
+      "rel": "BL/msadp.mbn",
+      "sha256": "83a61f35c925405a1318e44952fcc6763ee4a81d5e1f3becf01fc143bf628744",
+      "sha1": "450688cd86c470bd5dd7836d7043208a5090f195",
+      "size": 13892,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/msadp.mbn.lz4",
+      "sha256": "1772f3ac073ecc0c3fd7fbc1bd9e10273343d4c78c4e1ad736c8e36f8f759d4e",
+      "sha1": "42f3aec829074c718cdab4f9d4a42fa2b671f8b8",
+      "size": 3368,
+      "mtime": 1611646658
+    },
+    {
+      "rel": "BL/NON-HLOS.bin",
+      "sha256": "98c90b45da115225fd3559a6f5e994b45677d73879e8b194c49bebcf78e44767",
+      "sha1": "2bf1588e4cb9ee1e19cd52276876753401d49fa2",
+      "size": 59322880,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/NON-HLOS.bin.lz4",
+      "sha256": "960e8e8cdc177674e2c6b90b1601ad76f9f874434a4edee895936f6478e2b3d9",
+      "sha1": "837e736b90677c8a789b5e371bf1859b17a6186a",
+      "size": 34856351,
+      "mtime": 1611646654
+    },
+    {
+      "rel": "BL/pmic.elf",
+      "sha256": "5603d93719ea471e4b26807f4742ab2660e84300d3be64ae2499daa2a509a88d",
+      "sha1": "08f88aa35db266de1ddcb232e281340e4e566ce0",
+      "size": 45080,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/pmic.elf.lz4",
+      "sha256": "2b11b33dad51d95cd872aefc61d62d3a7abbc146741b2bb3c9885f27d405b9a3",
+      "sha1": "8d48f5092f0fd6a4291012581ab74b87b1108191",
+      "size": 13863,
+      "mtime": 1611646644
+    },
+    {
+      "rel": "BL/qupv3fw.elf",
+      "sha256": "01b56434922234db5a571527595424f134fbe0f397b2435b57b9c0371f5774bc",
+      "sha1": "95f43aaa839cc3fc63d50c26e56b5738d1761080",
+      "size": 65535,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/qupv3fw.elf.lz4",
+      "sha256": "9eaa34aa202284bec66e56959071ab90ea6df8a4f2b4fc6e3e9f63a9611433fb",
+      "sha1": "549c906c9c9bd8d5fc78910d7d3422d0433347f6",
+      "size": 25063,
+      "mtime": 1611646653
+    },
+    {
+      "rel": "BL/sec.dat",
+      "sha256": "c8c87fca09bb7c6d8ed2da4b1ecec085f6cd44b86567a1bfa5708095e78e507a",
+      "sha1": "ea5117a2be3376c5b07c79d37ac7917f514d5c19",
+      "size": 948,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/sec.dat.lz4",
+      "sha256": "b788d594815e07662e0d547cd3b6496e07214b90bd3edaf21a4c488c8b7f53b8",
+      "sha1": "9d0049393e36f7ecbfa4403ae644c1a6eea084f3",
+      "size": 708,
+      "mtime": 1611646656
+    },
+    {
+      "rel": "BL/storsec.mbn",
+      "sha256": "34c4aca98568c0eb4dcc295c09d254d26f5770635e2c7182a9b7d3b5ac5dfce4",
+      "sha1": "43f504c761c0020d60fccf6a5d21c88d9df7e4dc",
+      "size": 21289,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/storsec.mbn.lz4",
+      "sha256": "9309ee700aa47937e9c27080ffbe681c457fd2dda8c8eb88c98cba1e2676f297",
+      "sha1": "df3c6ae3d21af7d0a954948f455524bc13c9c130",
+      "size": 9613,
+      "mtime": 1611646658
+    },
+    {
+      "rel": "BL/tz.mbn",
+      "sha256": "41787bcb600f57b3242211e9e8c80e90314db770a0be7a7cc253e06ba98500ae",
+      "sha1": "b2b09af9103c7792d89546e0a3b9882ce5b9a838",
+      "size": 2032128,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/tz.mbn.lz4",
+      "sha256": "784229f51131a42aa73ab54410a858ec93c9743a7e912dcfac41c5c8f28a21a0",
+      "sha1": "e99f70cd1e09edb07ebeae0644549b37950200b0",
+      "size": 746091,
+      "mtime": 1611646651
+    },
+    {
+      "rel": "BL/vaultkeeper.mbn",
+      "sha256": "293d2e7a4ddb99640d5ab40550fe1ff66f8cef9ff56ed4f30a82abc07f1cbb4a",
+      "sha1": "035d6c6fcc2f24bba595d5402ad703e8c81bbabd",
+      "size": 1163281,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/vaultkeeper.mbn.lz4",
+      "sha256": "e7ce2f4c40b4de31d7b430c7605d93667904cadfe81ab715255c1198616febf3",
+      "sha1": "c5a17e37d9e842903c2523309dc250d6658301ba",
+      "size": 691092,
+      "mtime": 1611646659
+    },
+    {
+      "rel": "BL/xbl.elf",
+      "sha256": "9b3d898a640765138a95b058dc9ed799f7a24749b24883e936bef665f39e5943",
+      "sha1": "3a774abcd881f84a67f69c9c7b854682787eeec0",
+      "size": 3124728,
+      "mtime": 1794612983
+    },
+    {
+      "rel": "BL/xbl.elf.lz4",
+      "sha256": "cd0f6eccf920b16d9443b5fe6d39bd1b561f8417330fca9da09c7a9d3f25a8b7",
+      "sha1": "e40e35d9cb922fed3cfd4ff24883b961bb3bbc22",
+      "size": 2404941,
+      "mtime": 1611646652
+    },
+    {
+      "rel": "BL/xbl_config.elf",
+      "sha256": "767b0f28f59569e4b54119c410c5d4fccbe4be82fe76ff3b5969de21f897f034",
+      "sha1": "5c37cf879f4313923b587a176a296f199d889e25",
+      "size": 98556,
+      "mtime": 1794612984
+    },
+    {
+      "rel": "BL/xbl_config.elf.lz4",
+      "sha256": "fa53263fb7a88a37a070c6a53a96e6e88b7b7d9ad3db370645bb29a07c6ac5e3",
+      "sha1": "c97a893e81c4956a79ff2910a875c7db079abdad",
+      "size": 23054,
+      "mtime": 1611646652
+    },
+    {
+      "rel": "BL_N960U1UES7FUA1_CL19871035_QB37768954_REV00_user_low_ship_MULTI_CERT.tar.md5",
+      "sha256": "24518e435ad5bc0a3927e9d3d7b9470c2f4a11bc640ae538ed15f0ad5008c4fc",
+      "sha1": "c795c33cd47f1c1d4a9ddcbad0d353bf991bff01",
+      "size": 41646270,
+      "mtime": 1794612282
+    },
+    {
+      "rel": "CP_N960U1UES7FUA1_CP18045144_CL19871035_QB37768954_REV00_user_low_ship_MULTI_CERT.tar.md5",
+      "sha256": "363c1af815a18483ced5b48ddb5b2ffa3f882f1a06ef5e34b394473ed6c01c82",
+      "sha1": "524b2a892bd08a451d2d09d4bd7dd6c6644d8963",
+      "size": 66539721,
+      "mtime": 1794612283
+    },
+    {
+      "rel": "CSC_OMC_OYM_N960U1OYM7FUA1_CL19871035_QB37768954_REV00_user_low_ship_MULTI_CERT.tar.md5",
+      "sha256": "3071d336ad04da492feb0ea6284c562dfc801ff36b6ddb96023cf8bd541c7ad5",
+      "sha1": "3b6ab7ac7abaf16ab99b403c3f113b3fe9a76706",
+      "size": 117104840,
+      "mtime": 1794612283
+    }
+  ],
+  "count": 43
+}

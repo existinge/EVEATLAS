@@ -49,9 +49,10 @@ After install, smoke-test with `python -c "import lief, capstone, z3"`.
 
 - `xbl.elf`, `abl.elf`: ELF; symbols are usually retained → **symbol-anchored**
   alignment first (exact-name priority in `diff_functions.py`).
-- `tz.mbn`, `rpm.mbn`: Qualcomm MBN containers → **stripped**; structural matching and
-  reload-address math matter; `lief` can parse the ELF inside the MBN once extracted.
-- `hyp.elf`, `pmic.elf`: small; treat as supporting evidence, not primary diff targets.
+- `tz.mbn`, `hyp.mbn`: Qualcomm MBN containers (ELF inside) → **stripped**;
+  structural matching and reload-address math matter; `lief` can parse the ELF
+  inside the MBN once extracted. (No `rpm.mbn` exists in this BL block.)
+- `pmic.elf`: small; treat as supporting evidence, not a primary diff target.
 
 ## 6. Environment provenance
 

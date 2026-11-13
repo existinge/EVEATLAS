@@ -9,8 +9,11 @@ claims a sha256 or a download URL that we have not observed ourselves. Anything 
 
 Obtain exactly **two** stock Samsung packages for the Note 9 **SM-N960U** (Snapdragon
 SDM845, USA): a **revision-7** build and a **revision-9** build, per the phase-1 mandate.
-Only the BL (bootloader) partition content is in scope: `xbl.elf`, `abl.elf`, `tz.mbn`,
-`hyp.elf`, `rpm.mbn`, `pmic.elf` as present in the BL image.
+Only the BL (bootloader) partition content is in scope: `xbl.elf`, `abl.elf`,
+`tz.mbn`, `hyp.mbn`, `pmic.elf` as present in the BL image.
+(Execution note 2026-11-13: the hypervisor ships as `hyp.mbn` in this build family —
+not `hyp.elf` — and the BL block contains **no `rpm.mbn`**; SDM845 RPM firmware is
+not a standalone BL member here. See `analysis/01-source/README.md`.)
 
 Hard rules:
 - **Static analysis only — no flashing.** We never write these images to a device.
@@ -86,7 +89,7 @@ Generic considerations (apply before using any channel):
 4. **Integrity layer 2 (two-owner rule):** first owner computes sha256 of every raw
    file via `scripts/provenance.py`; a **second person** (different owner) repeats the
    computation from their own download. Both digests must match before extraction.
-5. **Record provenance:** `python scripts/provenance.py hash-dir firmware/raw/r7 --out analysis/manifest/r7-manifest.json` (same for r9) and commit the manifests.
+5. **Record provenance:** `python scripts/provenance.py hash-dir firmware/raw/r7 --out analysis/manifest/r7-manifest-raw.json` (same for r9) and commit the manifests.
 6. **Extract:**
    ```powershell
    # raw -> tar
@@ -98,7 +101,9 @@ Generic considerations (apply before using any channel):
    ```
    Organize per the layout in docs/01: `firmware/extracted/r7/`, `firmware/extracted/r9/`.
 7. **Verify module naming** against the expectation table in docs/01 §2; record the
-   actual file list (names, sizes) in `analysis/manifest/*-manifest.json`.
+   actual file list (names, sizes, sha256) in `analysis/manifest/r{7,9}-manifest-raw.json`
+   (raw zips) and `r{7,9}-manifest-extracted.json` (per-component), plus the module
+   classification in `analysis/01-source/<rev>/bl-modules.json`.
 
 ## 6. Rollback / TOFU guardrails
 
