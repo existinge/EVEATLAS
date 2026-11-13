@@ -28,3 +28,7 @@ analysis/modules/*.md
 
 # Findings/triage scratch
 findings/
+
+# Device-side operator logs (recovery-mode prompt events) - ephemeral
+analysis/device/*.log
+!analysis/device/.gitkeep

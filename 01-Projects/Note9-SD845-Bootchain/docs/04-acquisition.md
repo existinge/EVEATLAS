@@ -117,3 +117,25 @@ deliberately embeds only observed facts plus the citation URLs. **verify-at-exec
 items: exact samloader CLI flags for SM-N960U, U1 zips' continued availability, and the
 `NS_Rev.ver`-style rollback-window behavior in the OTA path (deferred to the analysis
 phase; no live source has been confirmed for it yet).
+
+## 8. Device-assisted verification (read-only, optional)
+
+The operator owns an SM-N960U. With it in Recovery Mode (`Vol Up + Bixby + Power`,
+release on the SAMSUNG logo, land on the blue "Android Recovery" screen), stock
+Note 9 recovery is normally adb-reachable, so the device can be interrogated
+**without flashing**:
+
+1. `getprop ro.bootloader` / build props — the exact bootloader + firmware revision
+   currently fused on the phone (ground truth for the r7/r9 hypothesis).
+2. Bootloader / `last_kmsg` logs — anti-rollback / RPMB rollback-counter evidence.
+3. Read-only hash of live BL partitions via `adb shell` (e.g. `dd` from
+   `/dev/block/bootdevice/by-name/...` piped to the recovery's digest tooling) —
+   device-side hash cross-check against the downloaded files (third provenance
+   layer, single-owner).
+
+Flow: `scripts\phone_recovery_prompt.bat` pops the operator request, waits up to
+5 min for adb to report the device in recovery, and logs events to
+`analysis/device/recovery-prompt.log` (git-ignored). Read-only discipline: no
+flashing, no partition writes, no "wipe data", no OEM-unlock toggles — recovery
+is used purely as a read gate. Tool availability (recovery adb, digest binaries)
+is verified at execution time, not asserted here.
