@@ -15,9 +15,11 @@ Independent technical research: reverse-engineering the Samsung Galaxy Note 9
 1. Read the operating contract first: [`.agent/instructions.md`](.agent/instructions.md)
    (persona, research questions, REA-style harness, output standards, provenance).
 2. Roadmap docs:
-   - [docs/01-firmware-extraction.md](docs/01-firmware-extraction.md) — Odin/ELF/MBN extraction runbook
+   - [docs/01-firmware-extraction.md](docs/01-firmware-extraction.md) — Odin/ELF/MBN extraction runbook (+ `analysis/manifest/` layout)
    - [docs/02-ghidra-bindiff-pipeline.md](docs/02-ghidra-bindiff-pipeline.md) — Ghidra headless + aligner design
    - [docs/03-vulnerability-triage.md](docs/03-vulnerability-triage.md) — validation-gap triage plan
+   - [docs/04-acquisition.md](docs/04-acquisition.md) — verified acquisition runbook (rev identification, sources, two-owner hashing)
+   - [docs/05-environment.md](docs/05-environment.md) — environment & toolchain plan (Ghidra/JDK, BinDiff, pip extras)
 3. Scripts: `scripts/run_pipeline.py` (export|diff), `scripts/provenance.py`
    (hash-dir|tree-compare), `scripts/diff/diff_functions.py` (aligner),
    `scripts/ghidra/` (headless export), `scripts/test/` (self-tests).

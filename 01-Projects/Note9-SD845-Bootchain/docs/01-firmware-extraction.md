@@ -12,7 +12,7 @@ Turn two public Odin packages (Rev 7 bootloader set and Rev 9 patched set) into 
 clean, provenance-tracked, per-component workspace:
 
 ```
-firmware/
+firmware/                       # GIT-IGNORED, local only (top README explains layout)
 ├── raw/
 │   ├── r7/   N960U...<rev7>.tar.md5
 │   └── r9/   N960U...<rev9>.tar.md5
@@ -24,14 +24,16 @@ firmware/
 │   │   ├── hyp.elf, rpm.mbn, pmic.elf
 │   │   └── ...
 │   └── r9/   (mirror)
-├── manifest/                  # COMMITTED: sha256 + metadata per build (provenance.py)
-│   ├── r7-manifest.json
-│   └── r9-manifest.json
-└── README.md                  # what/why/how-toreproduce, keep binaries out of git
+└── README.md                  # what/why/how-to-reproduce (local only)
+
+analysis/manifest/              # COMMITTED: sha256 + metadata per build (provenance.py)
+├── r7-manifest.json
+└── r9-manifest.json
 ```
 
-`firmware/raw` and `firmware/extracted` are **git-ignored**; only the manifest JSON
-(hashes, sizes, provenance) and this runbook are committed to the public repo.
+`firmware/` (raw + extracted) is **git-ignored**; only the digest manifests under
+`analysis/manifest/`, this runbook, and the acquisition record (docs/04) are
+committed to the public repo.
 
 ## 2. Acquisition & provenance
 
@@ -52,15 +54,15 @@ firmware/
    reported as image-relative + image-base-relative deltas (see instructions §6).
 4. For MBN payloads (`tz.mbn`, `rpm.mbn`): note MBN magic/header (Qualcomm secure
    MBN / standard MBN), document format before disassembly.
-5. Write `firmware/manifest/<rev>-manifest.json` (via `scripts/provenance.py`) with
+5. Write `analysis/manifest/<rev>-manifest.json` (via `scripts/provenance.py`) with
    every digest + the fields above.
 
 ## 4. Reproducible runbook
 
 ```powershell
 # 1. record raw digests
-python scripts/provenance.py hash-dir firmware/raw/r7 --out firmware/manifest/r7-manifest.json
-python scripts/provenance.py hash-dir firmware/raw/r9 --out firmware/manifest/r9-manifest.json
+python scripts/provenance.py hash-dir firmware/raw/r7 --out analysis/manifest/r7-manifest.json
+python scripts/provenance.py hash-dir firmware/raw/r9 --out analysis/manifest/r9-manifest.json
 
 # 2. extract (during setup only; binaries stay git-ignored)
 #    (extraction helper documented here once finalized)

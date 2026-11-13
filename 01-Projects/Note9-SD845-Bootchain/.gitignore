@@ -2,7 +2,8 @@
 # Binary/proprietary payloads and derived analysis artifacts stay local.
 # Only methodology, scripts, manifests (digests), and symbol/offset claims are public.
 
-# Firmware payloads (Odin/MD5, AP tar, raw/extracted components) — NEVER commit
+# Firmware payloads (Odin/MD5, AP tar, raw/extracted components) — NEVER commit.
+# Digests of these go to committed analysis/manifest/*.json instead.
 firmware/
 *.tar
 *.tar.md5
@@ -11,6 +12,10 @@ firmware/
 *.mbn
 *.elf
 *.img
+*.lz4
+
+# Local virtualenv for analysis extras (docs/05-environment.md)
+.venv/
 
 # Ghidra project files / analysis artifacts
 *.gpr

@@ -1,10 +1,11 @@
-﻿# Agent Registry
+# Agent Registry
 
 | Role | Responsible for | Default allowed | Stop boundary |
 |---|---|---|---|
 | EveClaw coordinator | planning, memory retrieval, delegation | read vault, create drafts | no outside spend, outreach or production writes |
 | Market researcher | timestamped evidence, competing alternatives | approved public research | no unauthorized scraping or contact |
 | Builder: ZCode / Antigrav | scoped implementation | branches, tests, PR proposals | no automatic publishing/deploy |
+| Firmware-security analyst | RE of Note9-SD845 bootchain: acquisition, extraction, diffing, findings | approved public research sources, local toolchain, digests | no firmware/binaries in git, no flashing, no fabricated evidence |
 | Independent reviewer | critical assessment of diff and evidence | read docs/code and report issues | never self-approve |
 | Finance reporter | aggregate business performance | redacted reconciled summaries | no private financial data in public Git |
 

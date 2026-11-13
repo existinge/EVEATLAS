@@ -75,7 +75,9 @@ stages. Locally we implement the equivalent with:
 ├── docs/                         # roadmap + runbooks
 │   ├── 01-firmware-extraction.md
 │   ├── 02-ghidra-bindiff-pipeline.md
-│   └── 03-vulnerability-triage.md
+│   ├── 03-vulnerability-triage.md
+│   ├── 04-acquisition.md
+│   └── 05-environment.md
 ├── scripts/                      # Python orchestration + Ghidra/BinDiff bridge
 │   ├── run_pipeline.py           # stage orchestrator (extract -> load -> export -> diff -> report)
 │   ├── provenance.py             # sha256 manifest + metadata (chain of custody)
@@ -99,7 +101,7 @@ We do not vendor REA code; we mirror its contract design. Verify before reuse.
 ## 5. Standard operating procedures (SOPs)
 
 ### SOP-1 Evidence capture (every binary, every build)
-- Record SHA-256 of each payload and package; store in `firmware/manifest/*.json`.
+- Record SHA-256 of each payload and package; store in `analysis/manifest/*.json`.
 - Record Odin package name, CSC/country code, bootloader rev (letter/tail number),
   MD5 of the `.tar.md5`, and download provenance/source URL/date.
 - A claim without a hash + path + reproducible command is a hypothesis, not a finding.
@@ -152,7 +154,7 @@ Each report in `analysis/modules/<component>-rev7-vs-rev9.md` MUST contain:
 
 ## 7. Provenance & git hygiene
 - `firmware/`, `findings/`, `*.gpr`, `*.bin`, `*.md5`, `*.tar`, `*.mbn`, `*.elf`
-  are git-ignored; their digests live in `firmware/manifest/` and `analysis/` only.
+  are git-ignored; their digests live in `analysis/manifest/` only.
 - Never commit extracted bootloader binaries, device-scoped identifiers beyond the
   public model codes, or any credentials/keys.
 - Commits follow vault style: `scope: action summary`, e.g. `docs(bootchain): ...`,

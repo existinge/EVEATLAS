@@ -5,7 +5,7 @@ Records sha256 (and optionally sha1) + size + mtime for every file under a tree,
 so binary artifacts can stay git-ignored while their digests remain committed.
 
 Usage:
-  python scripts/provenance.py hash-dir firmware/raw/r7 --out firmware/manifest/r7-manifest.json
+  python scripts/provenance.py hash-dir firmware/raw/r7 --out analysis/manifest/r7-manifest.json
   python scripts/provenance.py tree-compare firmware/extracted/r7 firmware/extracted/r9
 
 Python 3.8+; stdlib only.
