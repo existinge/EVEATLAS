@@ -27,6 +27,7 @@ Independent technical research: reverse-engineering the Samsung Galaxy Note 9
 ## Status
 
 - [x] Framework scaffold & pipeline scripts (phase 1)
+- [x] Bootloader-unlock landscape researched & verdict written (see below)
 - [ ] Odin packages located + sha256 manifest (phase 2)
 - [ ] Extraction → `firmware/extracted/{r7,r9}/`
 - [ ] Ghidra headless exports → `analysis/export/<comp>-r<rev>.json`
@@ -35,5 +36,13 @@ Independent technical research: reverse-engineering the Samsung Galaxy Note 9
 
 ## Answered so far
 
-Nothing claimed yet — evidence-first. Findings only appear with a repro snippet,
-per `.agent/instructions.md` §6–7.
+- **Can the reviewed SM-N960U (AT&T, One UI 2.5, SPL Jul 2022, BL rev 9) be
+  bootloader-unlocked?** → **No reliable route exists.** Community consensus
+  (V0latyle Oct 2024; joshw0000) + the paid-token alternative (unSAM.lock,
+  closed Oct 2023) caps Note 9 at **BL V1–7** — this unit is on **V9**, the
+  final-ever build `N960USQU9FVG2`. Full evidence-linked verdict:
+  [analysis/unlock-research/01-unlock-verdict.md](analysis/unlock-research/01-unlock-verdict.md)
+  (captures in `.research/`, 2026-11-12/13). Unlock avenue remains **closed**;
+  the r7→r9 bindiff continues as forensic work on a locked reference device.
+
+Further findings only appear with a repro snippet, per `.agent/instructions.md` §6–7.

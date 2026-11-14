@@ -1,0 +1,23 @@
+2026 Update Galaxy Note 9 To Android 16 LineageOS 23 ...
+  URL: https://www.youtube.com/watch?v=mja98I6fl7k
+  Android 16 Unofficial Port Galaxy Note 9. Snapdragon are not supported Must have an Unlock bootloader Good battery fastest response opening ...
+
+Where can I find official LineageOS 20 recovery and ROM ...
+  URL: https://www.reddit.com/r/GalaxyNote9/comments/1vpv0j9/where_can_i_find_official_lineageos_20_recovery/
+  Where can I find official LineageOS 20 recovery and ROM files for crownlte (Galaxy Note9)?. I've looked everywhere and couldn't find it. 1 ...
+
+Samsung Note 9 SM-N960U1 Qual Snapdragon
+  URL: https://community.e.foundation/t/samsung-note-9-sm-n960u1-qual-snapdragon/15518
+  A new unofficial Q-build for Samsung Note 9. (crownlte) This is an untested build so make a backup first and share your experience.
+
+Samsung Galaxy Note 9
+  URL: https://xdaforums.com/c/samsung-galaxy-note-9.8012/
+  Improve your Samsung Galaxy Note 9's (Exynos) battery life, performance, and look by rooting it and installing a custom ROM, kernel, and more. 149. 37.1K.
+
+Samsung Galaxy Note 9
+  URL: https://wiki.lineageos.org/devices/crownlte/
+  The Samsung Galaxy Note 9 is no longer maintained. A build guide is available for developers that would like to make private builds, or even restart official ...
+
+Install Stable ONE UI 7 NOBLE Rom 5.2 ON Galaxy Note 9 ...
+  URL: https://www.youtube.com/watch?v=GKyvendWNGM
+  NOBLE ROM Version 5.2 Stable got released. ONE UI 7 Port Android 15 Supported Devices Galaxy Note 9 Galaxy S9+ Galaxy S9 Exynos Only Stable ...

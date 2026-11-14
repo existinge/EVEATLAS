@@ -1,0 +1,23 @@
+Does the SM-N9600 have a unlocked bootloader
+  URL: https://xdaforums.com/t/does-the-sm-n9600-have-a-unlocked-bootloader.3834022/
+  We probably will need China, or Hong Kong fw flashed, then crom will work. Then any n9600 fw can be flashed, and bl will still be unlocked.
+
+Developers have exploited the Samsung Galaxy S9 and ...
+  URL: https://dev.to/xda/developers-have-exploited-the-samsung-galaxy-s9-and-note-9-to-get-root-access-on-the-snapdragon-models-401l
+  Developers have exploited the Samsung Galaxy S9 and Note 9 to get root access on the Snapdragon models. #forumlinks #minixda #newsbrief #root.
+
+How to Root Galaxy Note 9! [EASIEST METHOD]
+  URL: https://www.youtube.com/watch?v=y6zbcnjeJWQ
+  In this tutorial, I am going to show you how to root the Samsung Galaxy Note 9 easily and quickly using a few tools like ODIN, Magisk, and TWRP ...
+
+Anyone tried the Bootloader Unlock tutorial in this page for ...
+  URL: https://www.reddit.com/r/GalaxyNote9/comments/dor57r/anyone_tried_the_bootloader_unlock_tutorial_in/
+  You actually should be good with a N9600, it's Snapdragon with an unlocked bootloader. they are locked down tight plus rooting and unlocking ...
+
+Unofficial TWRP and first custom ROM available for the ...
+  URL: https://www.facebook.com/xda.developers/posts/unofficial-twrp-and-first-custom-rom-available-for-the-exynos-samsung-galaxy-not/10155736885591302/
+  XDA-DEVELOPERS.COM. Step 1: Enabling Developer Options Step 2: Enabling the OEM Unlocking Option Step 3: Unlocking the Bootloader. Link Page ...
+
+Snapdragon Samsung Galaxy S9 and Note 9 can now be ...
+  URL: https://www.xda-developers.com/samsung-galaxy-s9-galaxy-note-9-snapdragon-root/
+  Loaded: 0%
