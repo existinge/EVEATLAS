@@ -95,6 +95,8 @@ def align(r7: list, r9: list) -> list[dict]:
 
 
 def _row(x, y, kind) -> dict:
+    h7 = x.get("sha256") if x else None
+    h9 = y.get("sha256") if y else None
     return {
         "name": (x or y)["name"],
         "kind": kind,
@@ -105,12 +107,20 @@ def _row(x, y, kind) -> dict:
         "dva": (y["addr"] - x["addr"]) if (x and y) else None,
         "dsize": (y["size"] - x["size"]) if (x and y) else None,
         "sim": round(structural(x, y), 4) if (x and y) else None,
+        "sha256_r7": h7, "sha256_r9": h9,
+        "sha_match": (h7 == h9) if (h7 is not None and h9 is not None) else None,
     }
 
 
 def verdict(r: dict) -> str:
     if r["kind"] in ("added-r9", "unmatched-r7"):
         return r["kind"]  # not an aligned pair; label as-is
+    # byte-true ground truth: when both sides carry a block sha256, it decides.
+    if r["sha_match"] is True:
+        return "same"
+    if r["sha_match"] is False:
+        return "changed"
+    # legacy/Ghidra-export fallback (no per-function hashes)
     if r["dva"] == 0 and r["dsize"] == 0:
         return "same"
     if r["dsize"] == 0 and r["sim"] >= 0.99:
