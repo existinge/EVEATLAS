@@ -94,7 +94,19 @@ class R91Index:
             if r.get("relation")=="edit":
                 return {"state":"known","reason":"alternate_edit_not_new","resolution":r,"effective":{}}
             candidate=self.registry.enrich(candidate)
-        return self.base.check(candidate)
+        result=self.base.check(candidate)
+        if (hit and hit.get('state')=='resolved' and result.get('state')=='quarantine' and
+            result.get('reason')=='fuzzy_identity_review'):
+            r=hit['row']
+            if r.get('relation') in {'sequel','special','remake'} and r.get('reviewed_novel') is True:
+                parent=title_key(r.get('parent_title'))
+                parent_records=getattr(self.base,'by_key',{}).get(parent,[])
+                parent_keys={parent}
+                for record in parent_records:
+                    parent_keys.update(title_key(n) for n in [record.get('title',''),*record.get('aliases',[])])
+                if parent_records and set(result.get('matches',[])) <= parent_keys:
+                    return {'state':'unresolved','reason':'verified_distinct_related_production_parent_only'}
+        return result
 
 
 def apply_private_overlay(index,rows):
@@ -123,7 +135,7 @@ def resolve_prior_quarantine(prior_rows,registry,index):
             out["resolved_accounted"].append({**entry,"resolution":r});continue
         if r["scope_class"]!="target_male_male_live_action" or r.get("relation")=="edit":
             out["resolved_out_of_scope"].append({**entry,"resolution":r});continue
-        enriched=registry.enrich(c); state=wrapped.base.check(enriched)
+        enriched=registry.enrich(c); state=wrapped.check(enriched)
         if state["state"]=="known": out["resolved_accounted"].append({**entry,"resolution":r,"identity":state})
         elif state["state"]=="unresolved": out["target_survivors"].append({**entry,"resolution":r,"candidate":enriched})
         else: out["collisions"].append({**entry,"resolution":r,"identity":state})

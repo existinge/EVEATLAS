@@ -37,4 +37,11 @@ class R91Tests(unittest.TestCase):
   t=LiveConnectorTransport(invoke);out=t('interact',{'url':'https://example.invalid/catalog'});self.assertTrue(out['success']);self.assertEqual(t.calls[0]['receipt_id'],'live-1')
  def test_resolution_collision_quarantines(self):
   self.add();self.reg.add(dict(title='Candidate',production_id='official:other',production_id_type='program',scope_class='target_male_male_live_action',source=SRC('https://example.invalid/o','other production')));self.assertEqual(R91Index(self.idx,self.reg).check({'title':'Candidate'})['state'],'quarantine')
+
+ def test_verified_special_survives_parent_only_fuzzy(self):
+  idx=IdentityIndex();idx.add("School Trip: Joined a Group I'm Not Close To",status='Completed')
+  reg=ResolutionRegistry();reg.add(dict(title="School Trip : Joined a Group I'm Not Close To (Special)",production_id='official:special',production_id_type='program',scope_class='target_male_male_live_action',relation='special',parent_title="School Trip: Joined a Group I'm Not Close To",reviewed_novel=True,source=SRC('https://example.invalid/special','official distinct special')))
+  r=R91Index(idx,reg).check({'title':"School Trip : Joined a Group I'm Not Close To (Special)"})
+  self.assertEqual(r['state'],'unresolved')
+
 if __name__=='__main__':unittest.main()
