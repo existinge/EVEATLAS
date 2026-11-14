@@ -7,24 +7,24 @@ from engine.r91_resolution import ResolutionRegistry,R91Index,apply_private_over
 SRC=lambda u,e:{'url':u,'excerpt':e,'reviewed':True}
 class R91Tests(unittest.TestCase):
  def setUp(self):
-  self.idx=IdentityIndex();self.idx.add('Known English',['æ¢ç¥ä½å'],status='Completed',score=8)
+  self.idx=IdentityIndex();self.idx.add('Known English',['既知作品'],status='Completed',score=8)
   self.reg=ResolutionRegistry()
  def add(self,**kw):
-  row=dict(title='åè£',aliases=['Candidate'],production_id='official:123',production_id_type='official_program_id',scope_class='target_male_male_live_action',source=SRC('https://example.invalid/123','paired native and English titles'),**kw);self.reg.add(row);return row
+  row=dict(title='候補',aliases=['Candidate'],production_id='official:123',production_id_type='official_program_id',scope_class='target_male_male_live_action',source=SRC('https://example.invalid/123','paired native and English titles'),**kw);self.reg.add(row);return row
  def test_resolution_requires_attributable_id(self):
   with self.assertRaises(ValueError):self.reg.add(dict(title='X',production_id_type='slug',scope_class='non_bl',source=SRC('https://example.invalid/x','not BL')))
  def test_out_of_scope_excluded_not_added_to_history(self):
   self.reg.add(dict(title='Documentary',production_id='jfdb:1',production_id_type='jfdb',scope_class='documentary',source=SRC('https://example.invalid/doc','documentary')))
   r=R91Index(self.idx,self.reg).check({'title':'Documentary'});self.assertEqual(r['state'],'known');self.assertIn('verified_out_of_scope',r['reason']);self.assertNotIn('documentary',self.idx.by_key)
  def test_native_crosswalk_blocks_existing_english(self):
-  self.reg.add(dict(title='æ¢ç¥ä½å',aliases=['Known English'],production_id='official:k',production_id_type='program',scope_class='target_male_male_live_action',source=SRC('https://example.invalid/k','same production')))
-  self.assertEqual(R91Index(self.idx,self.reg).check({'title':'æ¢ç¥ä½å'})['state'],'known')
+  self.reg.add(dict(title='既知作品',aliases=['Known English'],production_id='official:k',production_id_type='program',scope_class='target_male_male_live_action',source=SRC('https://example.invalid/k','same production')))
+  self.assertEqual(R91Index(self.idx,self.reg).check({'title':'既知作品'})['state'],'known')
  def test_private_overlay_is_blocker_only(self):
   idx=IdentityIndex();apply_private_overlay(idx,[{'title':'Only for Fans','status':'Completed','score':4,'explicit':True}]);self.assertEqual(idx.check({'title':'Only for Fans'})['effective']['score'],4)
  def test_overlay_requires_explicit_history(self):
   with self.assertRaises(ValueError):apply_private_overlay(self.idx,[{'title':'Guess','status':'Completed'}])
  def test_target_survives_when_distinct(self):
-  self.add(reviewed_novel=True,country='Japan',format='series');audit=resolve_prior_quarantine([{'candidate':{'title':'åè£'}}],self.reg,self.idx);self.assertEqual(len(audit['target_survivors']),1)
+  self.add(reviewed_novel=True,country='Japan',format='series');audit=resolve_prior_quarantine([{'candidate':{'title':'候補'}}],self.reg,self.idx);self.assertEqual(len(audit['target_survivors']),1)
  def test_accounted_resolution_blocks(self):
   self.add(accounted_for=True);self.assertEqual(R91Index(self.idx,self.reg).check({'title':'Candidate'})['reason'],'recovered_accounted_identity')
  def test_edit_is_not_new(self):
