@@ -1,0 +1,9 @@
+# R91 quarantine resolution + live connector contract
+
+R91 keeps the R90 catalog-first architecture and adds a reviewed resolution registry for catalog rows that were previously quarantined. A resolution is public research metadata, **not** a canonical watch-history mutation. Each resolved row requires an attributable external production identifier, identifier type, reviewed source URL and excerpt, plus a scope classification. Non-BL, GL, animation, documentary, adult/erotic and wrong-region identities are excluded before detailed romance research. Target live-action M/M identities are enriched with verified native/English aliases and rechecked against the private history before evidence retrieval.
+
+`apply_private_overlay()` supports explicit user facts recovered from prior chats/files when a checkpoint has a known import gap. The overlay exists only in the in-memory exclusion index; callers must keep the overlay outside the public repository and must never infer a status or rating.
+
+`LiveConnectorTransport` is the host boundary for authenticated Firecrawl connectors. The repository stores no connector credentials. The host injects `invoke(operation,args)` and the adapter records public call metadata/receipt ids. `interact_titles()` validates the actual Firecrawl interact envelope used to paginate dynamic catalogs such as Heavenly. A recorded projection may still be used for deterministic replay, but a projection is not represented as an autonomous connector call.
+
+R91's discovery gates remain unchanged: exact/alias/history matches are blocked before evidence research; fuzzy or conflicting identities are quarantined; alternate edits are not new productions; distinct sequels/specials require reviewed production evidence; a final recommendation still needs completed substantial live-action JP/KR M/M romance, mutual payoff, happy ending, non-erotic/non-coercive relationship, and official US-accessible viewing evidence. No quota padding.

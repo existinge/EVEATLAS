@@ -1,7 +1,8 @@
 name: BL Engine v3 tests
 on:
   push:
-    branches: [feat/bl-engine-v3-gates]
+    branches: [feat/bl-engine-v3-gates, feat/bl-engine-firecrawl]
+    paths: ['BL-ENGINE/**', '.github/workflows/bl-engine-v3.yml']
   pull_request:
     paths: ['BL-ENGINE/**', '.github/workflows/bl-engine-v3.yml']
 jobs:

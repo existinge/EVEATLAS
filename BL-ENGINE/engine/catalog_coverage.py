@@ -9,6 +9,7 @@ from .firecrawl_research import build_index, load_history_archive, rest_transpor
 from urllib.parse import urlsplit, urlunsplit
 from .firecrawl_research import (CATALOG_SCHEMA, CATALOG_PROMPT, catalog_titles,
     title_key, names, run_round, public_evidence, FirecrawlProvider)
+from .r91_resolution import ResolutionRegistry, R91Index, apply_private_overlay
 
 
 def canonical_url(url):
@@ -108,21 +109,28 @@ def catalog_batches(provider, plan, ledger):
         yield {'id':item['id'],'source':url,'candidates':[{**c,'catalog_source':url,'metadata_unverified':True} for c in candidates if title_key(c.get('title'))]}
 
 
-def run_catalog_round(index, crosswalk, provider, plan, verify, target=5, min_runtime=80):
+def run_catalog_round(index, crosswalk, provider, plan, verify, target=5, min_runtime=80, resolution_registry=None):
     coverage=[]; wrapped=CatalogIndex(index,crosswalk)
+    if resolution_registry is not None:
+        wrapped=R91Index(wrapped,resolution_registry)
     seen=set()
     def batches():
         for batch in catalog_batches(provider,plan,coverage):
             unique=[]; duplicates=0
             for c in batch['candidates']:
                 reviewed=crosswalk.resolve(c)
+                if resolution_registry is not None:
+                    reviewed=resolution_registry.enrich(reviewed)
                 key=reviewed.get('production_id') or title_key(c.get('title'))
                 if key in seen: duplicates+=1; continue
                 seen.add(key); unique.append(c)
             coverage[-1]['crosswalk_duplicates']=duplicates
             yield {**batch,'candidates':unique}
+    def identity_review(candidate):
+        reviewed=crosswalk.resolve(candidate)
+        return resolution_registry.enrich(reviewed) if resolution_registry is not None else reviewed
     result=run_round(wrapped,batches(),verify,
-                     min_runtime,target,identity_review=crosswalk.resolve)
+                     min_runtime,target,identity_review=identity_review)
     result['coverage']=coverage
     result['coverage_complete']=False
     return result
@@ -144,20 +152,26 @@ def main():
     for key in ('checkpoint','workbook','history-archive','plan','crosswalk','reviews','output'):
         p.add_argument('--'+key,required=True)
     p.add_argument('--extra-workbook',action='append',default=[])
-    p.add_argument('--replay'); p.add_argument('--target',type=int,default=5); p.add_argument('--min-runtime',type=int,default=80)
+    p.add_argument('--replay'); p.add_argument('--resolution-registry'); p.add_argument('--private-overlay')
+    p.add_argument('--target',type=int,default=5); p.add_argument('--min-runtime',type=int,default=80)
     a=p.parse_args(); read=lambda f:json.loads(Path(f).read_text(encoding='utf-8'))
     index=build_index(read(a.checkpoint),a.workbook,load_history_archive(a.history_archive),a.extra_workbook)
+    if a.private_overlay: apply_private_overlay(index,read(a.private_overlay))
     cw=Crosswalk()
     for row in read(a.crosswalk): cw.add(row)
+    rr=None
+    if a.resolution_registry:
+        rr=ResolutionRegistry()
+        for row in read(a.resolution_registry): rr.add(row)
     transport=ConnectorReplayTransport(read(a.replay)) if a.replay else rest_transport
     provider=FirecrawlProvider(transport); reviews=read(a.reviews)
     def verify(candidate):
         review=reviews.get(candidate.get('production_id'),{})
         return public_evidence(provider,candidate,review.get('urls',[]),lambda item:{**item,**review.get('reviewed',{})})
-    result=run_catalog_round(index,cw,provider,read(a.plan),verify,a.target,a.min_runtime)
+    result=run_catalog_round(index,cw,provider,read(a.plan),verify,a.target,a.min_runtime,rr)
     result.update(mode='live-connector-projection-replay' if a.replay else 'rest',
-        inputs={Path(x).name:digest(x) for x in [a.checkpoint,a.workbook,a.history_archive,*a.extra_workbook,a.plan,a.crosswalk,a.reviews,*([a.replay] if a.replay else [])]},
-        connector_calls=getattr(transport,'calls',[]),limitations=['Bounded catalogs; no exhaustive coverage claim.','Reviewed source assertions are required; unmatched does not mean novel.','Connector projection replay is not a deployed autonomous connector runtime.'])
+        inputs={Path(x).name:digest(x) for x in [a.checkpoint,a.workbook,a.history_archive,*a.extra_workbook,a.plan,a.crosswalk,a.reviews,*([a.resolution_registry] if a.resolution_registry else []),*([a.private_overlay] if a.private_overlay else []),*([a.replay] if a.replay else [])]},
+        connector_calls=getattr(transport,'calls',[]),limitations=['Bounded catalogs; no exhaustive coverage claim.','Reviewed source assertions are required; unmatched does not mean novel.','Connector projection replay is not a deployed autonomous connector runtime; hosts may inject LiveConnectorTransport for authenticated calls.'])
     path=Path(a.output); path.parent.mkdir(parents=True,exist_ok=True); path.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
     print(json.dumps({k:len(result[k]) for k in ('coverage','excluded','quarantine','researched','recommendations')}))
 
