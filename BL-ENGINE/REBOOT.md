@@ -80,6 +80,18 @@ A recent recommendation failure established that **beautiful cinematography, goo
 - Prioritize **compatibility** after verifying real romantic closure: a technically genuine M/M romance with violent crime, coercion, grim drama, tragedy, or prolonged couple separation may be a poor recommendation for a user seeking lively teasing romance. Label these as research-only or low-fit, instead of showcasing them as the night's primary choice.
 - All numeric user ratings come exclusively from the private canonical history or user input, never aggregated review scores. Keep private WATCH records out of this public guide. Preserve substantive research receipts privately and don't claim automation or other executable pipeline steps ran unless verified.
 
+## Aesthetic / emotional-mirroring discovery lane
+
+For searches motivated by the emotional experience of a drama, distinguish beautiful scenery from emotionally credible relationship writing.
+
+- Search the dynamic of two people with different ages or backgrounds recognizing mirrored vulnerabilities, loneliness or hopes and becoming a refuge for each other through ordinary care, playful conversation and organic pacing. The age gap may be incidental rather than the central trope.
+- Require dialogue space: characters consciously acknowledge or reciprocate their feelings. Cinematography, lingering looks, music and promotional BL framing alone never prove that romance is written into the story.
+- Verify finale-level acknowledgment, mutual development, narrative pace and overall visual craft. Warn of lengthy separations, manipulative resets, weak scripts and side-couple payoff problems.
+- Do not recycle familiar scenic/age-gap titles endlessly. An explicitly poor rating for an attractive production proves scenery alone is not a taste match.
+- Remake disambiguation: an original from one country and a remake from another year or country are distinct productions. Resolve by original title, year, country, cast and distributor. Do not transfer a user rating across remakes merely because the marketing title is shared.
+- Label fresh production, previously suggested but unreacted, and existing Plan to Watch as separate statuses. Revisit only if new scene-level evidence explains relevance.
+- Keep private watch records and personal reactions in private checkpoints only. This is public methodology.
+
 ## Known transition (historical, not necessarily current)
 - R95 private archaeology checkpoint and receipts were saved on 2026-11-17.
 - R96 user feedback: **A Dog and a Plane — Dropped; ChermChey — Dropped; Love Upon a Time — Seen; Popular Serizawa Acts Weird Around Me — Seen.** No ratings supplied.
