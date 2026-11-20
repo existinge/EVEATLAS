@@ -3,7 +3,7 @@
 - UID: `654252915`
 - Nickname: イブ
 - Adventure Rank: 58
-- Fetched: 2026-11-19T19:05:00.830777+00:00
+- Fetched: 2026-11-20T03:46:20.671648+00:00
 - Scope: **public Character Showcase only** — not the full roster or inventory.
 
 | Character | Lv | C | Talents N / E / Q | Weapon | Weapon Lv | Artifact sets |
