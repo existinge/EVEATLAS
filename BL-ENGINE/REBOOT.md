@@ -70,6 +70,16 @@ A recent recommendation failure established that **beautiful cinematography, goo
 - Never promote a work from research-only to strong watch-now merely because the full season has become available; verify narrative payoff separately.
 - Do not turn the user's praise of production values into an official numeric score for the show. Preserve source-of-truth distinction between taste notes and scored ratings.
 
+## R106 audit hardening — research reports are untrusted candidate pools
+
+- A multi-source/deep-research report calling 20–30 titles “verified” is **not** a canonical user-ready shortlist. Independently cross-check every item against the full private WATCH, all aliases/overrides, and feedback **before** using phrases like new or recommended. Report the gross research pool, catalog collisions, provisional leads and genuinely eligible fresh titles separately.
+- Verify **live-action drama adaptation** endings from complete-episode discussion. Manga awards, source-novel success, distributor genre tags, an incomplete reviewer summary, promotional trailer, or "BL" category alone **do not prove romantic resolution**. An early kiss does not establish that the finale pays off.
+- For multiple M/M couples, verify **couple-specific** outcomes. Do not label the whole series a happy ending if another major pair separates or ends unresolved. If reliable finale accounts conflict or use speculative timelines, classify the ending as disputed and say so upfront.
+- Distinguish titles with near-identical names by year, country, original-language name, cast, and production; do not collapse different works or treat a previously rated show as a brand-new production. Conversely a different-language remake can be a distinct work but must be identified as such.
+- Check **local date vs premiere day** before calling a future or tomorrow premiere watchable tonight, especially when a research run crosses midnight in another timezone.
+- Prioritize **compatibility** after verifying real romantic closure: a technically genuine M/M romance with violent crime, coercion, grim drama, tragedy, or prolonged couple separation may be a poor recommendation for a user seeking lively teasing romance. Label these as research-only or low-fit, instead of showcasing them as the night's primary choice.
+- All numeric user ratings come exclusively from the private canonical history or user input, never aggregated review scores. Keep private WATCH records out of this public guide. Preserve substantive research receipts privately and don't claim automation or other executable pipeline steps ran unless verified.
+
 ## Known transition (historical, not necessarily current)
 - R95 private archaeology checkpoint and receipts were saved on 2026-11-17.
 - R96 user feedback: **A Dog and a Plane — Dropped; ChermChey — Dropped; Love Upon a Time — Seen; Popular Serizawa Acts Weird Around Me — Seen.** No ratings supplied.
