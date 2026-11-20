@@ -57,6 +57,19 @@ When the button launches R{N+1}, the sent request should convey this entire inst
 - For the user's "tonight" goal, distinguish what exists in a platform catalog from what was actually confirmed playable as of the requested date; show a caution when platform entitlement or regional playback isn't verified.
 - When a title's supposed male romance is merely staged to pursue a woman, classify it as **BL-adjacent / M/M endgame unverified**, excluded from confirmed-BL picks pending convincing payoff evidence.
 
+## R105 quality gate: confirm the romance *actually pays off*
+
+A recent recommendation failure established that **beautiful cinematography, good music, early couple chemistry, and BL platform marketing are not substitutes for an actual romance**. The viewer may love every other aspect of a series and still feel baited by a romantically open-ended finale.
+
+- Treat **endgame/payoff evidence** as a separate required field from genre/marketing and initial romantic setup. Before a confident watch-now BL recommendation, establish with a trustworthy synopsis of the *whole* work, episode/ending recaps, or independent completed-viewer accounts that the central men actually develop mutual romantic feelings and receive a meaningful romantic resolution. A kiss is not always required; **a meaningful romantic payoff is**. If evidence is weak, classify as **PAYOFF UNVERIFIED — research-only**, not "verified BL".
+- If reliable accounts indicate unresolved bromance, queerbait, one-sided interest without romantic resolution, or a bait-and-switch heterosexual center, classify as **NO CONFIRMED M/M PAYOFF** and **exclude from confident BL recommendations**. Qualify disputed endings honestly. Do not guarantee an ending based only on a trailer or the first episodes.
+- For works the viewer dropped specifically for romantic non-payoff, preserve the user's experience *as their observation*, not an independently proven universal claim. Flag such works to prevent resurfacing as validated romantic recommendations.
+- For a recommendation: report (1) romance identity, (2) ending/payoff confidence, (3) completion evidence, (4) official viewing access, and (5) largest compatibility risk; no unsupported assertions.
+- When the user corrects a title to **Seen**, do not infer watched-to-completion. **Investigate** is a research queue item, not Want, Watch, or a rating. Distinguish similarly named singular/plural series and different productions; scrutinize title identity.
+- Geographical exceptions should be clearly labeled and not silently treated as matching an Asia-produced hard requirement.
+- Never promote a work from research-only to strong watch-now merely because the full season has become available; verify narrative payoff separately.
+- Do not turn the user's praise of production values into an official numeric score for the show. Preserve source-of-truth distinction between taste notes and scored ratings.
+
 ## Known transition (historical, not necessarily current)
 - R95 private archaeology checkpoint and receipts were saved on 2026-11-17.
 - R96 user feedback: **A Dog and a Plane — Dropped; ChermChey — Dropped; Love Upon a Time — Seen; Popular Serizawa Acts Weird Around Me — Seen.** No ratings supplied.
