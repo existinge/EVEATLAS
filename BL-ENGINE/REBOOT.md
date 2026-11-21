@@ -92,6 +92,17 @@ For searches motivated by the emotional experience of a drama, distinguish beaut
 - Label fresh production, previously suggested but unreacted, and existing Plan to Watch as separate statuses. Revisit only if new scene-level evidence explains relevance.
 - Keep private watch records and personal reactions in private checkpoints only. This is public methodology.
 
+## Thailand deep-search source and completion audit
+
+- For Thailand-only discovery, don't rely solely on GMMTV and BL listicles. Cross-check official Thai broadcasters, small studio channels, World of BL's episode logs, Thai-language original titles and reliable independent **completed**-series or film reviews. A high-scoring aggregator entry is **not proof** of romantic payoff, correct story synopsis, or active streaming access.
+- Treat cancelled or abruptly discontinued mini-series as **not complete**, even if some sites label them Ended or Finished; inspect actual official episode inventory. Resolve discrepancies between planned episodes, released episodes, and edits/short-film replacements.
+- Check who the **central** couple is. An attractive Thai indie production with gay *supporting* characters may not be a central BL. Label supporting-only honestly and exclude from primary recommendations when the user asks for a central M/M romance.
+- Distinguish **couple-level resolution** (e.g. reconciliation, explicit confession, romantic commitment) from **other plot** resolution (ghost mystery, curse, social struggle, crime or illness). A kiss earlier in the series is not enough to verify the ending. A mystical reincarnation identity may remain ambiguous even when the actual male leads choose one another; label the distinction precisely.
+- When seeking cinema-quality emotional mirroring, confirm independent reviewer observations of two leads understanding shared wounds, day-to-day care, playful chemistry and romantic **dialogue space**. A gorgeously photographed work may still have a rushed, thin or unresolved romantic plot. Tell the user both the attraction and the biggest creative risk.
+- Research frontier labels are **fresh-to-loaded-catalog**, **existing backlog**, **previously surfaced unreacted**, **short-format exception**, **research-only unresolved**, **excluded**. Exact absence from a 770-entry WATCH history doesn't establish the user personally never saw it. Normalize title/alias AND check whether a regional remake is a separate production.
+- Surface official title-specific watch pages and separately note English subtitle availability and unknown regional playback. Do not present general homepage as a confirmed show link.
+- Keep personal watch scores/status changes and candidate research receipts PRIVATE; public repository stores only reusable methodology.
+
 ## Known transition (historical, not necessarily current)
 - R95 private archaeology checkpoint and receipts were saved on 2026-11-17.
 - R96 user feedback: **A Dog and a Plane — Dropped; ChermChey — Dropped; Love Upon a Time — Seen; Popular Serizawa Acts Weird Around Me — Seen.** No ratings supplied.
