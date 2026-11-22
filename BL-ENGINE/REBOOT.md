@@ -103,6 +103,15 @@ For searches motivated by the emotional experience of a drama, distinguish beaut
 - Surface official title-specific watch pages and separately note English subtitle availability and unknown regional playback. Do not present general homepage as a confirmed show link.
 - Keep personal watch scores/status changes and candidate research receipts PRIVATE; public repository stores only reusable methodology.
 
+## Thailand R108 refinement — romance versus satisfying romance
+
+- Distinguish THREE separate judgments: (1) the male/male romance genuinely happens and is reciprocated, (2) the final romantic outcome is satisfying and non-bait, and (3) the production has writing, pace, dialogue and visual craft suited to the viewer. A romantic kiss can validate (1) yet coexist with a tragic, ambiguously staged or sudden-breakup finale that fails (2); gorgeous landscape can coexist with thin plot and fail (3).
+- For the *Lost in the Woods* emotional-mirroring lane, never elevate a photogenic pastoral/arts romance based on its early episodes. Find completed-series reviews describing final episode fate, on-screen commitment, and separately each important couple. Flag tragic, disputed, unexplained separation, and unearned endings *before* watch-now recommendations.
+- Consult full private WATCH **including Country=null records**: manual skips of translated titles may lack region/year metadata and are missed by Thailand-only country filters. Query normalized title identities across ALL WATCH plus aliases and overrides before calling a work fresh.
+- Distinguish official-English-subtitled access **by season and regional market**: one season may be licensed without English subtitles while a sequel has them. A WeTV/iQIYI listing existing does not prove that the user's specific region can stream it.
+- When searching obscure Thai rural settings, supplement BL directories with native-language scholarship, independent completed-viewer accounts and actual producer channels. Documentary-quality Isan cultural representation is a meaningful aesthetic discovery, but a supporting M/M plot in a female-led ensemble does not satisfy a central-BL requirement.
+- Treat a completed-series review's criticism of choppy plots, romantic underdevelopment, soundtrack repetition or minimal dialogue as a substantive compatibility warning, even when it reports a happy ending. Do not substitute mere 'endgame confirmed' for overall show quality.
+
 ## Known transition (historical, not necessarily current)
 - R95 private archaeology checkpoint and receipts were saved on 2026-11-17.
 - R96 user feedback: **A Dog and a Plane — Dropped; ChermChey — Dropped; Love Upon a Time — Seen; Popular Serizawa Acts Weird Around Me — Seen.** No ratings supplied.
