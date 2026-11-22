@@ -112,6 +112,17 @@ For searches motivated by the emotional experience of a drama, distinguish beaut
 - When searching obscure Thai rural settings, supplement BL directories with native-language scholarship, independent completed-viewer accounts and actual producer channels. Documentary-quality Isan cultural representation is a meaningful aesthetic discovery, but a supporting M/M plot in a female-led ensemble does not satisfy a central-BL requirement.
 - Treat a completed-series review's criticism of choppy plots, romantic underdevelopment, soundtrack repetition or minimal dialogue as a substantive compatibility warning, even when it reports a happy ending. Do not substitute mere 'endgame confirmed' for overall show quality.
 
+## R109 cross-region film and release verification
+
+- For **cross-region co-productions and films**, distinguish *production year*, theatrical premiere date, streaming release and season/episode publishing date. A provider page with an earlier year doesn't prove the user could watch it then; compare local date to verified actual episode release.
+- Resolve distinctive **original titles, transliterations, international titles, remake identities and production regions** as a bundle. Similar names can refer to different live-action works or to a separate original and adaptation; do not transfer WATCH status between unrelated productions.
+- An official streaming provider **catalog page is not confirmed playback in the user's region**. Confirm English subtitles on the exact **title page**, and independently check country restrictions and availability where possible. Japanese-only subtitles on a Netflix Japan listing must be labeled English-subtitles-unverified, not US watch-now. An official finale episode page and explicit subtitle languages are stronger evidence than advance calendar snippets.
+- Distinguish **narrative promise** from **production focus**: a show about a family member writing BL may have an actual same-sex romance for a younger character, but should be clearly labeled family-first/ensemble rather than lead-pair-centric. Romantic themes in older generations may be sad even while the younger lead pair receives a happy ending.
+- When independent reviews suggest a beautiful location/film aesthetic but problematic love triangles, violence, tragic loss or little romantic dialogue, prefer a transparent rejection over appearance-driven recs. Cross-language posters and same-name images remain optional: omit them unless the correct identity is verified.
+- Never call a work 'fresh' solely because its exact English spelling was not in WATCH: verify identities/aliases and use the label **new to loaded catalog, user exposure unconfirmed** as appropriate.
+- In the final shortlist, present **verified watch-now** separately from **full movie with inaccessible/unknown English subtitles**, **airing first-episode-only**, **short film**, and **research-only romance-payoff unverified**.
+- Keep full candidate provenance privately, with reason codes for reject/hold, distinct from public reusable methodology.
+
 ## Known transition (historical, not necessarily current)
 - R95 private archaeology checkpoint and receipts were saved on 2026-11-17.
 - R96 user feedback: **A Dog and a Plane — Dropped; ChermChey — Dropped; Love Upon a Time — Seen; Popular Serizawa Acts Weird Around Me — Seen.** No ratings supplied.
