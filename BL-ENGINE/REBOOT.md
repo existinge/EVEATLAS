@@ -137,6 +137,15 @@ Before each discovery round, run a **two-source canonical WATCH integrity audit*
 - Gate a candidate against the **whole canonical set plus all prior research frontiers**. Return actual discoveries, familiar backlog investigations, strong craft-oriented revisits, and research-only film/shorts in separate categories. No forced quotas, no reintroducing old titles to appear productive.
 - Preserve R### user feedback controls, save/clear/next mechanics, non-destructive private checkpoint provenance, and public/private separation. Update this public procedure only with reusable quality requirements, never the private WATCH, ratings or review notes.
 
+## R111 indie-film and alternate-ending checks
+
+- Audit **older landmark queer feature films** and regional independent-cinema catalogues when contemporary BL series yield mostly already-watched titles. An older film absent from WATCH may be a more credible quality-first prospect than a newly released production with weak dialogue or rushed writing. Re-check original-language aliases and original-vs-remake years before calling it new.
+- Treat *romance clearly acknowledged on screen*, *couple's final fate* and *overall writing/visual quality* as independent axes. An explicitly spoken confession or kiss followed by separation is an authentic bittersweet romance, not intrinsically bait; a technically happy last-minute kiss with little meaningful romantic dialogue can still be a poor fit.
+- **Alternate / special endings:** verify original finale and any later alternate-edit or post-finale special independently, with exact release date and narrative differences. Do not silently replace a known sad original with an unverified happy-version assumption or merge alternate cuts as distinct unrelated productions.
+- **Festival vs public release:** a film may premiere at an LGBTQ festival months or years before a public theatrical/streaming release; do not mark the film watch-now from festival screening alone. Check distribution plans and whether the production is actually human live-action rather than AI-generated, animation or a pitch.
+- **Subtitle-specific providers:** a GagaOOLala title page may list only non-English subtitles while a *separate* Prime Video edition is explicitly English-subtitled. Report both accurately. The existence of a retailer listing does not prove account-specific current playback or a US rental.
+- For each R###, the private handoff should preserve exact original WATCH rows, never overwrite their scores/statuses as a side-effect of research, and record candidates by category with source URLs and confidence. Do not push user-specific WATCH data or ratings to public GitHub.
+
 ## Known transition (historical, not necessarily current)
 - R95 private archaeology checkpoint and receipts were saved on 2026-11-17.
 - R96 user feedback: **A Dog and a Plane — Dropped; ChermChey — Dropped; Love Upon a Time — Seen; Popular Serizawa Acts Weird Around Me — Seen.** No ratings supplied.
