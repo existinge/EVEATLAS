@@ -1,0 +1,31 @@
+name: Atlas Loop checks
+on:
+  push:
+    paths:
+      - 'tools/atlas_loop.py'
+      - 'tools/atlas_treasurer.py'
+      - 'tools/atlas_brain.py'
+      - 'tests/test_atlas_loop.py'
+      - 'tests/test_atlas_treasurer.py'
+      - 'tests/test_atlas_brain.py'
+      - 'examples/atlas-loop-plan.json'
+      - '.github/workflows/atlas-loop-checks.yml'
+  pull_request:
+    paths:
+      - 'tools/atlas_loop.py'
+      - 'tests/test_atlas_loop.py'
+      - 'examples/atlas-loop-plan.json'
+      - '.github/workflows/atlas-loop-checks.yml'
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - run: python tools/atlas.py audit

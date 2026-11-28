@@ -1,0 +1,145 @@
+{
+  "version": "1.0.0",
+  "authority": {
+    "policy": "AGENTS.md",
+    "prompt": "02-Agents/Universal Alignment Protocol.md",
+    "final_review_role": "codex_final_reviewer",
+    "secrets": "environment/secret manager only"
+  },
+  "tiers": [
+    {
+      "id": "T0",
+      "label": "Deterministic control",
+      "providers": [
+        "python"
+      ],
+      "roles": [
+        "coordinator_runtime",
+        "treasurer",
+        "policy_guard",
+        "scheduler"
+      ],
+      "priority": 0,
+      "llm": false
+    },
+    {
+      "id": "T1",
+      "label": "Micro inference",
+      "providers": [
+        "groq"
+      ],
+      "model_candidates": [
+        "openai/gpt-oss-20b",
+        "openai/gpt-oss-120b"
+      ],
+      "roles": [
+        "scout",
+        "classifier",
+        "extractor",
+        "triage"
+      ],
+      "priority": 1,
+      "llm": true
+    },
+    {
+      "id": "T2",
+      "label": "Economical implementation",
+      "providers": [
+        "deepseek",
+        "google"
+      ],
+      "model_candidates": [
+        "deepseek-flash",
+        "gemini-flash"
+      ],
+      "roles": [
+        "builder",
+        "repair",
+        "planner",
+        "analyst"
+      ],
+      "priority": 2,
+      "llm": true
+    },
+    {
+      "id": "T3",
+      "label": "Frontier review and escalation",
+      "providers": [
+        "codex"
+      ],
+      "model_candidates": [
+        "configured_codex_model"
+      ],
+      "roles": [
+        "codex_final_reviewer",
+        "architecture_escalation"
+      ],
+      "priority": 3,
+      "llm": true
+    }
+  ],
+  "assignments": [
+    {
+      "identity": "EveClaw",
+      "role": "administrative_client",
+      "tier": "T0",
+      "execution": "optional_pc_client",
+      "can_final_approve": false
+    },
+    {
+      "identity": "ATLAS Coordinator",
+      "role": "coordinator_runtime",
+      "tier": "T0",
+      "execution": "cloud_required_for_unattended_runs",
+      "can_final_approve": false
+    },
+    {
+      "identity": "ATLAS Treasurer",
+      "role": "treasurer",
+      "tier": "T0",
+      "execution": "cloud_state",
+      "can_final_approve": false
+    },
+    {
+      "identity": "ATLAS Scout",
+      "role": "scout",
+      "tier": "T1",
+      "preferred_provider": "groq",
+      "can_final_approve": false
+    },
+    {
+      "identity": "ATLAS Builder",
+      "role": "builder",
+      "tier": "T2",
+      "preferred_provider": "deepseek",
+      "fallback_provider": "google",
+      "can_final_approve": false
+    },
+    {
+      "identity": "ATLAS Planner",
+      "role": "planner",
+      "tier": "T2",
+      "preferred_provider": "google",
+      "fallback_provider": "deepseek",
+      "can_final_approve": false
+    },
+    {
+      "identity": "Codex Final Reviewer",
+      "role": "codex_final_reviewer",
+      "tier": "T3",
+      "preferred_provider": "codex",
+      "can_final_approve": true
+    }
+  ],
+  "rules": {
+    "review_required_for": [
+      "nontrivial_engineering_objectives"
+    ],
+    "review_on_unavailability": "AWAITING_FINAL_REVIEW",
+    "paid_dispatch_requires": "treasurer_reservation",
+    "provider_fallback": "authorized_nonfinal_only",
+    "external_actions": "human_approval",
+    "model_ids": "verify against current provider account before activation",
+    "configured_does_not_mean_connected": true
+  }
+}
